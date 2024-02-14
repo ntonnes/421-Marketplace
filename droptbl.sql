@@ -1,0 +1,17 @@
+DROP TABLE Shipment;
+DROP TABLE Product;
+DROP TABLE Order;
+DROP TABLE Restock;
+DROP TABLE Card;
+DROP TABLE Manages;
+DROP TABLE Admin;
+DROP TABLE Coupon;
+DROP TABLE Member;
+DROP TABLE Review;
+DROP TABLE InCart;
+DROP TABLE Customer;
+DROP TABLE User;
+DROP TABLE Belongs;
+DROP TABLE Model;
+DROP TABLE BrandPage;
+DROP TABLE Category;
