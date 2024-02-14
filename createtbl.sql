@@ -85,7 +85,7 @@ CREATE TABLE Manages(
     UserID INT,
     URL VARCHAR(255),
     Since DATE NOT NULL,
-    ClearanceFlag INT NOT NULL,
+    ClearanceFlag INT NOT NULL CONSTRAINT rangeClearance CHECK (ClearanceFlag > 0 AND ClearanceFlag <= 5),
     PRIMARY KEY (UserID, URL),
     FOREIGN KEY (UserID) REFERENCES Admin(UserID),
     FOREIGN KEY (URL) REFERENCES BrandPage(URL)
