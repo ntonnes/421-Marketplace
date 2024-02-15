@@ -48,12 +48,27 @@ do
     echo "$url,$name,$description" >> BrandPage.csv
 done
 
-
 echo "Assigning each admin to 0-4 BrandPages with random clearance levels..."
+
 # Clear the file and add headers
 echo "UserID,BrandPage,ClearanceLevel" > Manages.csv
 
-# For each row in Admin.csv, excluding the header
+# Get all admins
+mapfile -t admins < <(tail -n +2 Admin.csv | cut -d, -f1)
+
+# Get all brand pages
+mapfile -t brand_pages < <(tail -n +2 BrandPage.csv | cut -d, -f1)
+
+# Shuffle admins and brand_pages arrays
+readarray -t admins < <(printf '%s\n' "${admins[@]}" | shuf)
+readarray -t brand_pages < <(printf '%s\n' "${brand_pages[@]}" | shuf)
+
+# Assign level 5 admins
+for ((i=0; i<${#admins[@]} && i<${#brand_pages[@]}; i++)); do
+    echo "${admins[i]},${brand_pages[i]},5" >> Manages.csv
+done
+
+# Assign the rest of the admins
 tail -n +2 Admin.csv | while IFS=, read -r userID
 do
     # Trim userID
@@ -80,38 +95,4 @@ do
 done
 
 echo "Generated 'Manages.csv' with $(wc -l < Manages.csv) rows."
-echo
-echo "Ensuring each BrandPage has at least one admin with clearance level 5..."
-
-# Initialize a counter for the number of rows added
-rows_added=0
-
-# Ensure each BrandPage has at least one admin with clearance level 5
-tail -n +2 BrandPage.csv | while IFS=, read -r brandPage
-do
-    # Trim brandPage
-    brandPage=$(echo "$brandPage" | cut -d',' -f1 | tr -d '[:space:]')
-
-    # If the brandPage does not have an admin with clearance level 5
-    if ! grep -q ",$brandPage,5" Manages.csv; then
-        # Keep selecting a random admin until we find one that does not already manage the brand
-        while true; do
-            # Get a random admin from Admin.csv, excluding the header
-            admin=$(tail -n +2 Admin.csv | shuf -n 1 | tr -d '[:space:]')
-
-            # Check if the admin-brand relationship already exists
-            if ! grep -q "^$admin,$brandPage," Manages.csv; then
-                # Write the row to Manages.csv
-                echo "$admin,$brandPage,5" >> Manages.csv
-
-                # Increment the counter
-                ((rows_added++))
-
-                break
-            fi
-        done
-    fi
-done
-
-echo "Added $rows_added rows to Manages.csv."
 echo

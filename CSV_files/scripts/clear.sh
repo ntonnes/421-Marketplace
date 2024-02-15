@@ -4,7 +4,7 @@
 for file in *.csv
 do
     # Skip Categories.csv
-    if [ "$file" == "Categories.csv" ]; then
+    if [ "$file" == "Category.csv" ]; then
         continue
     fi
 
@@ -15,4 +15,4 @@ do
     fi
 done
 
-echo "Cleared all CSV files in the current directory except Categories.csv."
+echo "Cleared all CSV files in the current directory except Category.csv."

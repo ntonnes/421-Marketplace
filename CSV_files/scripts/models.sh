@@ -28,7 +28,7 @@ fi
 mapfile -t urls < <(tail -n +2 BrandPage.csv | cut -d, -f1)
 
 # Read CNames from Category.csv into an array, skipping the header
-mapfile -t cnames < <(tail -n +2 Category.csv | cut -d, -f1)
+mapfile -t cnames < <(tail -n +2 Category.csv | cut -d, -f1 | tr -d '\r')
 
 # CSV header
 echo "ModelID,Price,URL,Stars" > Model.csv
@@ -68,7 +68,7 @@ do
     for ((j=0; j<$num_categories; j++))
     do
         # Select random CName from the array
-        CName=${cnames[$RANDOM % ${#cnames[@]}]}
+        CName=$(echo "${cnames[$RANDOM % ${#cnames[@]}]}" | tr -d '\n')
 
         # Append row to Belongs.csv
         echo "$CName,$ModelID" >> Belongs.csv

@@ -1,8 +1,10 @@
 #!/bin/bash
 
+./scripts/clear.sh
+
 # Ask for number of customers, members, admins, and guests
 echo
-read -p "Enter number of customers: " x
+read -p "Enter number of customers (non-members): " x
 read -p "Enter number of members: " y
 read -p "Enter number of admins: " z
 read -p "Enter number of guests: " w
@@ -29,9 +31,24 @@ read -p "Enter maximum number of coupons per member: " c
 # Run coupons.sh script
 ./scripts/coupons.sh $c
 
-# Run coupons.sh script
+# Run create-carts.sh script
 echo
 ./scripts/create-carts.sh
+
+# Ask for number of restocks
+echo
+read -p "Enter number of restocks: " r
+
+# Run restocks.sh script
+./scripts/restocks.sh $r
+
+# Ask for number of guest cards and maximum number of cards per customer
+echo
+read -p "Enter number of cards without a UserID: " c1
+read -p "Enter maximum number of cards per customer: " c2
+
+# Run restocks.sh script
+./scripts/cards.sh $c1 $c2
 
 echo
 echo "Data refreshed successfully."
