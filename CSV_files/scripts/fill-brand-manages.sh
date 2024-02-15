@@ -1,5 +1,20 @@
 #!/bin/bash
 
+# Check if argument is provided
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <number_of_rows>"
+    exit 1
+fi
+
+# Check if argument is a positive integer
+if ! [[ $1 =~ ^[0-9]+$ ]]; then
+    echo "Error: Argument must be a positive integer"
+    exit 1
+fi
+
+echo
+echo "Generating 'BrandPage.csv' with $1 rows..."
+
 # Get the number of rows from the first script argument
 num_rows=$1
 
@@ -34,7 +49,7 @@ do
 done
 
 
-
+echo "Assigning each admin to 0-4 BrandPages with random clearance levels..."
 # Clear the file and add headers
 echo "UserID,BrandPage,ClearanceLevel" > Manages.csv
 
@@ -44,8 +59,8 @@ do
     # Trim userID
     userID=$(echo "$userID" | tr -d '[:space:]')
 
-    # Generate a random number of rows to create (0-5)
-    num_rows=$((RANDOM % 6))
+    # Generate a random number of rows to create (0-4)
+    num_rows=$((RANDOM % 5))
 
     # For each row to create
     for ((i=0; i<$num_rows; i++))
@@ -64,6 +79,13 @@ do
     done
 done
 
+echo "Generated 'Manages.csv' with $(wc -l < Manages.csv) rows."
+echo
+echo "Ensuring each BrandPage has at least one admin with clearance level 5..."
+
+# Initialize a counter for the number of rows added
+rows_added=0
+
 # Ensure each BrandPage has at least one admin with clearance level 5
 tail -n +2 BrandPage.csv | while IFS=, read -r brandPage
 do
@@ -81,8 +103,15 @@ do
             if ! grep -q "^$admin,$brandPage," Manages.csv; then
                 # Write the row to Manages.csv
                 echo "$admin,$brandPage,5" >> Manages.csv
+
+                # Increment the counter
+                ((rows_added++))
+
                 break
             fi
         done
     fi
 done
+
+echo "Added $rows_added rows to Manages.csv."
+echo

@@ -7,6 +7,7 @@ num_admins=$3
 num_guests=$4
 
 # Clear the files and add headers
+echo
 echo "UserID" > User.csv
 echo "UserID" > Customer.csv
 echo "UserID" > Member.csv
@@ -32,10 +33,16 @@ create_users() {
 }
 
 # Create customers
+echo
 create_users $num_customers 100000000 Customer.csv
+echo "Generated 'Customer.csv' with $num_customers rows."
 # Create members
 create_users $num_members 110000000 Member.csv
+echo "Generated 'Member.csv' with $num_members rows."
 # Create admins
 create_users $num_admins 200000000 Admin.csv
+echo "Generated 'Admin.csv' with $num_admins rows."
 # Create guests
 create_users $num_guests 300000000 Guest.csv
+echo "Generated 'User.csv' with $((num_customers + num_members + num_admins + num_guests)) rows."
+echo
