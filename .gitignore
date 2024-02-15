@@ -1,2 +1,2 @@
 # Ignore all CSV files in ./CSV_files
-CSV_files/*.csv
+./CSV_files/*.csv
