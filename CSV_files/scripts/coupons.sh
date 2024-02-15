@@ -15,6 +15,8 @@ if ! [[ $max_coupons =~ ^[0-9]+$ ]]; then
     exit 1
 fi
 
+echo "Assigning 0-$max_coupons Coupons per Member..."
+
 # CSV header
 echo "UserID,ModelID,Discount,PointCost,Expiration" > Coupon.csv
 

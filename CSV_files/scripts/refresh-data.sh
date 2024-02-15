@@ -28,3 +28,10 @@ read -p "Enter maximum number of coupons per member: " c
 
 # Run coupons.sh script
 ./scripts/coupons.sh $c
+
+# Run coupons.sh script
+echo
+./scripts/create-carts.sh
+
+echo
+echo "Data refreshed successfully."
