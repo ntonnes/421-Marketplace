@@ -47,8 +47,15 @@ echo
 read -p "Enter number of cards without a UserID: " c1
 read -p "Enter maximum number of cards per customer: " c2
 
-# Run restocks.sh script
+# Run cards.sh script
 ./scripts/cards.sh $c1 $c2
+
+# Ask for maximum number of products per model
+echo
+read -p "Enter maximum number of products per model: " p
+
+# Run products.sh script
+./scripts/products.sh $p
 
 echo
 echo "Data refreshed successfully."
