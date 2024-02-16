@@ -3,11 +3,6 @@
 # Loop over all CSV files in the current directory
 for file in *.csv
 do
-    # Skip Categories.csv
-    if [ "$file" == "Category.csv" ]; then
-        continue
-    fi
-
     # Check if file exists
     if [ -f "$file" ]; then
         # Clear the file
@@ -15,4 +10,5 @@ do
     fi
 done
 
-echo "Cleared all CSV files in the current directory except Category.csv."
+echo
+echo "Cleared the contents of all CSV files."

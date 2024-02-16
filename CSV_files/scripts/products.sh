@@ -1,17 +1,5 @@
 #!/bin/bash
 
-# Check if arguments are provided
-if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 <max_number_of_products_per_model>"
-    exit 1
-fi
-
-# Check if arguments are positive integers
-if ! [[ $1 =~ ^[0-9]+$ ]]; then
-    echo "Error: Argument must be a positive integer"
-    exit 1
-fi
-
 # Get the max number of products per model from the script argument
 max_products_per_model=$1
 
@@ -20,6 +8,12 @@ echo "ModelID,SerialNo,Return,OrderID,SupplierName,RestockNo" > Product.csv
 
 # Get all model IDs
 mapfile -t modelIDs < <(tail -n +2 Model.csv | cut -d, -f1)
+
+# Get total number of models
+total_models=${#modelIDs[@]}
+
+# Initialize counter for processed models
+processed_models=0
 
 # Get all restock rows
 mapfile -t restockRows < <(tail -n +2 Restock.csv)
@@ -49,7 +43,14 @@ do
         # Increment the next serial number
         ((nextSerialNo++))
     done
-done
 
-echo "Generated 'Product.csv' with $(wc -l < Product.csv) rows."
+    # Increment counter for processed models
+    processed_models=$((processed_models + 1))
+
+    # Calculate percentage of progress as a floating-point number and convert it to an integer
+    percent=$(awk "BEGIN {printf \"%.0f\", 100 * $processed_models / $total_models}")
+
+    # Print percentage of progress
+    printf "\rProgress: %d%%" $percent
+done
 echo

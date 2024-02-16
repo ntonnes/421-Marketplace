@@ -1,27 +1,21 @@
 #!/bin/bash
 
-# Check if argument is provided
-if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 <max_number_of_coupons>"
-    exit 1
-fi
-
 # Get maximum number of coupons per member from the first script argument
 max_coupons=$1
 
-# Check if max_coupons is a number
-if ! [[ $max_coupons =~ ^[0-9]+$ ]]; then
-    echo "Error: Maximum number of coupons must be a number"
-    exit 1
-fi
-
-echo "Assigning 0-$max_coupons Coupons per Member..."
+echo "Assigning 0-$max_coupons coupons per member..."
 
 # CSV header
 echo "UserID,ModelID,Discount,PointCost,Expiration" > Coupon.csv
 
 # Read member.csv into an array, excluding the header
 mapfile -t members < <(tail -n +2 member.csv)
+
+# Get total number of members
+total_members=${#members[@]}
+
+# Initialize counter for processed members
+processed_members=0
 
 # For each member
 for member in "${members[@]}"
@@ -32,11 +26,14 @@ do
     # Generate a random number of coupons (0-max_coupons)
     num_coupons=$((RANDOM % (max_coupons + 1)))
 
+    # Get a shuffled list of ModelIDs
+    mapfile -t modelIDs < <(tail -n +2 Model.csv | shuf | cut -d',' -f1)
+
     # For each coupon
     for ((i=0; i<$num_coupons; i++))
     do
-        # Generate a random ModelID (100000-999999)
-        modelID=$((RANDOM % 900000 + 100000))
+        # Get a ModelID from the shuffled list
+        modelID=${modelIDs[$i]}
 
         # Generate a random Discount (0.00-0.99) without using bc
         discount="0.$((RANDOM % 100))"
@@ -53,7 +50,14 @@ do
         # Write the coupon to Coupon.csv
         echo "$userID,$modelID,$discount,$pointCost,$expiration" >> Coupon.csv
     done
-done
 
-# Print success message
-echo "Generated 'Coupon.csv' with $(wc -l < Coupon.csv) rows."
+    # Increment counter for processed members
+    processed_members=$((processed_members + 1))
+
+    # Calculate percentage of progress as a floating-point number and convert it to an integer
+    percent=$(awk "BEGIN {printf \"%.0f\", 100 * $processed_members / $total_members}")
+
+    # Print percentage of progress
+    printf "\rProgress: %d%%" $percent
+done
+echo

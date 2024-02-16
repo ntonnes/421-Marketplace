@@ -1,28 +1,8 @@
 #!/bin/bash
 
-# Check if argument is provided
-if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 <number_of_rows>"
-    exit 1
-fi
-
-# Check if argument is a number
-if ! [[ $1 =~ ^[0-9]+$ ]]; then
-    echo "Error: Argument must be a number"
-    exit 1
-fi
-
 # Number of rows to generate
 num_rows=$1
-
-# Ask for maximum number of categories per model
-read -p "Enter maximum number of categories per model: " max_categories
-
-# Check if max_categories is a number
-if ! [[ $max_categories =~ ^[0-9]+$ ]]; then
-    echo "Error: Maximum number of categories must be a number"
-    exit 1
-fi
+max_categories=$2
 
 # Read URLs from BrandPage.csv into an array, skipping the header
 mapfile -t urls < <(tail -n +2 BrandPage.csv | cut -d, -f1)
@@ -34,8 +14,14 @@ mapfile -t cnames < <(tail -n +2 Category.csv | cut -d, -f1 | tr -d '\r')
 echo "ModelID,Price,URL,Stars" > Model.csv
 echo "CName,ModelID" > Belongs.csv
 
-# Associative array to store generated ModelIDs
+# Associative array to store generated ModelIDs and assigned categories
 declare -A modelIDs
+declare -A assignedCategories
+
+echo "Assigning 0-$max_categories Categories per Model..."
+
+# Initialize counter for processed rows
+processed_rows=0
 
 # Generate rows
 for (( i=1; i<=$num_rows; i++ ))
@@ -64,16 +50,33 @@ do
     # Generate a random number of categories (0-max_categories)
     num_categories=$((RANDOM % (max_categories + 1)))
 
+    # Clear assigned categories for this model
+    unset assignedCategories
+    declare -A assignedCategories
+
     # For each category
     for ((j=0; j<$num_categories; j++))
     do
         # Select random CName from the array
-        CName=$(echo "${cnames[$RANDOM % ${#cnames[@]}]}" | tr -d '\n')
+        while true; do
+            CName=$(echo "${cnames[$RANDOM % ${#cnames[@]}]}" | tr -d '\n')
+            if [[ -z ${assignedCategories[$CName]} ]]; then
+                assignedCategories[$CName]=1
+                break
+            fi
+        done
 
         # Append row to Belongs.csv
         echo "$CName,$ModelID" >> Belongs.csv
     done
-done
 
-echo "Generated 'Model.csv' with $num_rows rows."
-echo "Generated 'Belongs.csv' with $(wc -l < Belongs.csv) rows."
+    # Increment counter for processed rows
+    processed_rows=$((processed_rows + 1))
+
+    # Calculate percentage of progress as a floating-point number and convert it to an integer
+    percent=$(awk "BEGIN {printf \"%.0f\", 100 * $processed_rows / $num_rows}")
+
+    # Print percentage of progress
+    printf "\rProgress: %d%%" $percent
+done
+echo
