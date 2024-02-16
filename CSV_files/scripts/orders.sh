@@ -49,10 +49,13 @@ do
     done < purchased_items.csv
     rm purchased_items.csv
 
-    # Get the current date
-    currentDate=$(date +%Y-%m-%d)
+    # Get a random number of days in the past (up to 365)
+    daysAgo=$((RANDOM % 365))
+
+    # Get a date in the past
+    pastDate=$(date -d "-$daysAgo days" +%Y-%m-%d)
 
     # Write the row to Order.csv
-    echo "$orderID,$deliverAdd,$total,$currentDate,$email,$cardNum" >> Order.csv
+    echo "$orderID,$deliverAdd,$total,$pastDate,$email,$cardNum" >> Order.csv
     counter=$((counter + 1))
 done

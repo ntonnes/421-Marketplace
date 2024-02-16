@@ -75,7 +75,7 @@ echo "Creating products..."
 #   max_products_per_model is the maximum number of existing products per model
 #   total_orders is the maximum number of orders that can be placed
 #   each product has a 33% chance of being assigned to an order randomly
-./scripts/products.sh 15 40
+./scripts/products.sh 20 50
 echo "Generated 'Product.csv' with $(( $(wc -l < Product.csv) - 1 )) rows."
 
 echo
