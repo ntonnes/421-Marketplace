@@ -6,7 +6,7 @@ products_per_shipment=$2
 echo "ShipmentNo,ShipperName,OrderID,ModelID,SerialNo,DeliverDate,ShipDate" > Shipment.csv
 
 # Filter Product.csv for rows with non-NULL OrderIDs, shuffle them, and save to filtered_products.csv
-awk -F, 'NR > 1 && $4 != "NULL"' Product.csv | shuf > filtered_products.csv
+awk -F, 'NR > 1 && $4 != "NULL" && $1 != "NULL" && $2 != "NULL"' Product.csv | shuf > filtered_products.csv
 
 # Initialize shipment number and shipper number
 shipmentNo=1

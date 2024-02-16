@@ -86,4 +86,8 @@ done
 
 # Write the output to Product.csv
 echo -e $output > Product.csv
+
+# Remove trailing newlines from Product.csv
+sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' Product.csv
+
 echo
