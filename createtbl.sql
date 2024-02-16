@@ -35,7 +35,7 @@ CREATE TABLE Customer(
     DOB DATE,
     Password VARCHAR(255) NOT NULL,
     Email VARCHAR(255) NOT NULL UNIQUE,
-    Name VARCHAR(255) NOT NULL CHECK (REGEXP_LIKE(Name, '^[A-Za-z ]+$')),
+    Name VARCHAR(255) NOT NULL,
     FOREIGN KEY (UserID) REFERENCES User(UserID)
 );
 
@@ -44,7 +44,7 @@ CREATE TABLE InCart(
     ModelID INT NOT NULL,
     Copies INT NOT NULL CHECK (Copies > 0),
     PRIMARY KEY (UserID, ModelID),
-    FOREIGN KEY (UserID) REFERENCES Customer(UserID),
+    FOREIGN KEY (UserID) REFERENCES User(UserID),
     FOREIGN KEY (ModelID) REFERENCES Model(ModelID)
 );
 
@@ -92,7 +92,7 @@ CREATE TABLE Manages(
 );
 
 CREATE TABLE Card(
-    CardNum INT NOT NULL PRIMARY KEY CHECK (CardNum >= 1000000000000000 AND CardNum <= 9999999999999999),
+    CardNum BIGINT NOT NULL PRIMARY KEY CHECK (CardNum >= 1000000000000000 AND CardNum <= 9999999999999999),
     CardExp DATE NOT NULL,
     UserID INT,
     FOREIGN KEY (UserID) REFERENCES Customer(UserID)
@@ -109,10 +109,10 @@ CREATE TABLE Restock(
 CREATE TABLE Order(
     OrderID INT NOT NULL PRIMARY KEY CHECK (OrderID >= 100000000 AND OrderID <= 999999999),
     DeliverAdd VARCHAR(255) NOT NULL,
-    Total DECIMAL NOT NULL CHECK (Total > 0),
+    Total DECIMAL NOT NULL CHECK (Total >= 0),
     Date DATE NOT NULL,
     Email VARCHAR(255) NOT NULL,
-    CardNum INT NOT NULL,
+    CardNum BIGINT NOT NULL,
     FOREIGN KEY (CardNum) REFERENCES Card(CardNum)
 );
 
@@ -120,7 +120,7 @@ CREATE TABLE Product(
     ModelID INT NOT NULL,
     SerialNo INT NOT NULL CHECK (SerialNo >= 100000000 AND SerialNo <= 999999999),
     Return SMALLINT,
-    OrderID INT NOT NULL,
+    OrderID INT,
     SupplierName VARCHAR(255) NOT NULL,
     RestockNo INT NOT NULL,
     PRIMARY KEY (SerialNo, ModelID),
