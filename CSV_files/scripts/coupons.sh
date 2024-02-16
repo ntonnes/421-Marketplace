@@ -9,7 +9,7 @@ echo "Assigning 0-$max_coupons coupons per member..."
 echo "UserID,ModelID,Discount,PointCost,Expiration" > Coupon.csv
 
 # Read member.csv into an array, excluding the header
-mapfile -t members < <(tail -n +2 member.csv)
+mapfile -t members < <(tail -n +2 Member.csv)
 
 # Get total number of members
 total_members=${#members[@]}

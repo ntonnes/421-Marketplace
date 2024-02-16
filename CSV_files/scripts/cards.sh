@@ -1,17 +1,3 @@
-#!/bin/bash
-
-# Check if arguments are provided
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 <number_of_null_cards> <max_number_of_cards_per_customer>"
-    exit 1
-fi
-
-# Check if arguments are positive integers
-if ! [[ $1 =~ ^[0-9]+$ ]] || ! [[ $2 =~ ^[0-9]+$ ]]; then
-    echo "Error: Arguments must be positive integers"
-    exit 1
-fi
-
 # Get the number of null cards and max number of cards per customer from the script arguments
 num_null_cards=$1
 max_cards_per_customer=$2

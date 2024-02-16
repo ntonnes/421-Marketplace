@@ -53,4 +53,13 @@ echo "Creating products.."
 echo "Generated 'Product.csv' with $(( $(wc -l < Product.csv) - 1 )) rows."
 
 echo
+echo "Creating orders..."
+./scripts/orders.sh 10
+echo "Generated 'Order.csv' with $(( $(wc -l < Order.csv) - 1 )) rows."
+
+echo
+echo "Creating shipments.."
+echo "Generated 'Shipment.csv' with $(( $(wc -l < Shipment.csv) - 1 )) rows."
+
+echo
 echo "Data refreshed successfully."
