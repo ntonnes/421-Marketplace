@@ -19,7 +19,6 @@ processed_models=0
 mapfile -t restockRows < <(tail -n +2 Restock.csv)
 
 total_orders=$2
-ordered_products_limit=$3
 # Create an array of order IDs
 orderIDs=()
 for ((i=1; i<=total_orders; i++))
@@ -60,11 +59,11 @@ do
 
         nextSerialNo=$((nextSerialNo + 1))
 
-        if [ $ordered_products_limit -eq 0 ]; then
-            nextOrderID=NULL
-        else
+        # Assign products to orders randomly
+        if (( RANDOM % 3 > 1 )); then
             nextOrderID=${orderIDs[$RANDOM % ${#orderIDs[@]}]}
-            ordered_products_limit=$((ordered_products_limit - 1))
+        else
+            nextOrderID=NULL
         fi
 
         # Add the row to output variable

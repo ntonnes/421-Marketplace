@@ -48,11 +48,17 @@ mapfile -t brand_pages < <(tail -n +2 BrandPage.csv | cut -d, -f1)
 readarray -t admins < <(printf '%s\n' "${admins[@]}" | shuf)
 readarray -t brand_pages < <(printf '%s\n' "${brand_pages[@]}" | shuf)
 
+# Declare the associative array
+declare -A existingRelationships
+
 # Assign level 5 admins
 for ((i=0; i<${#admins[@]} && i<${#brand_pages[@]}; i++)); do
     # Generate a random date in the format YYYY-MM-DD
     since=$(date -d "$((RANDOM % 3653 + 1)) days ago" +'%Y-%m-%d')
     echo "${admins[i]},${brand_pages[i]},$since,5" >> Manages.csv
+
+    # Add the new relationship to the array
+    existingRelationships["${admins[i]},${brand_pages[i]}"]=1
 done
 
 echo "Generated 'BrandPage.csv' with $(( $(wc -l < BrandPage.csv) - 1 )) rows."
@@ -67,12 +73,6 @@ total_admins=${#admins[@]}
 
 # Initialize counter for processed admins
 processed_admins=0
-
-# Load existing relationships into an associative array
-declare -A existingRelationships
-while IFS= read -r line; do
-    existingRelationships["$line"]=1
-done < Manages.csv
 
 # For each admin
 for admin in "${admins[@]}"

@@ -74,8 +74,8 @@ echo "Creating products..."
 # products.sh max_products_per_model total_orders ordered_products_limit
 #   max_products_per_model is the maximum number of existing products per model
 #   total_orders is the maximum number of orders that can be placed
-#   ordered_products_limit is the number products that have been purchased (OrderID is not NULL)
-./scripts/products.sh 15 40 50
+#   each product has a 33% chance of being assigned to an order randomly
+./scripts/products.sh 15 40
 echo "Generated 'Product.csv' with $(( $(wc -l < Product.csv) - 1 )) rows."
 
 echo
@@ -86,7 +86,9 @@ echo "Generated 'Order.csv' with $(( $(wc -l < Order.csv) - 1 )) rows."
 
 echo
 echo "Creating shipments.."
-# shipments.sh num_shippers max_products per shipment
+# shipments.sh num_shippers max_products
+#   num_shippers is the number of shippers to iterate through
+#   each shipment has 1-max_products products
 ./scripts/shipments.sh 3 5
 echo "Generated 'Shipment.csv' with $(( $(wc -l < Shipment.csv) - 1 )) rows."
 
