@@ -1,5 +1,8 @@
 #!/bin/bash
 
+per_user=$1
+cps=$2
+
 # CSV header
 printf "Assigning 1-3 copies of 0-5 models to each user's cart...\n"
 printf "UserID,ModelID,Copies\n" > InCart.csv
@@ -23,7 +26,7 @@ do
     userID=$(echo "$user" | cut -d',' -f1)
 
     # Generate a random number of items (0-5)
-    num_items=$((RANDOM % 6))
+    num_items=$((RANDOM % per_user))
 
     # For each item
     for ((i=0; i<$num_items; i++))
@@ -32,7 +35,7 @@ do
         modelID=${modelIDs[$i]}
 
         # Generate a random number of copies (1-3)
-        copies=$((RANDOM % 3 + 1))
+        copies=$((RANDOM % cps + 1))
 
         # Write the item to InCart.csv
         printf "%s,%s,%s\n" "$userID" "$modelID" "$copies" >> InCart.csv

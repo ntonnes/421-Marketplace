@@ -1,56 +1,58 @@
 #!/bin/bash
 
-# Check if the number of orders to create was provided
-if [ $# -eq 0 ]
-then
-    echo "Please provide the number of orders to create as a command line argument."
-    exit 1
-fi
-
-# CSV header
+# Clear the file and add headers
 echo "OrderID,DeliverAdd,Total,Date,Email,CardNum" > Order.csv
 
-# Read Card.csv into an array, excluding the header
-mapfile -t cards < <(tail -n +2 Card.csv | shuf)
+# Get all order IDs
+mapfile -t orderIDs < <(tail -n +2 Product.csv | cut -d, -f4 | sort | uniq)
 
-# Get total number of cards
-total_cards=${#cards[@]}
+# Get all card numbers
+mapfile -t cardNums < <(tail -n +2 Card.csv | cut -d, -f1)
 
-# Initialize counter for created orders
-created_orders=0
+counter=1
 
-# For each order to create
-for ((i=1; i<=$1; i++))
+# For each order ID
+for orderID in "${orderIDs[@]}"
 do
-    # Generate a unique OrderID
-    orderID=$((100000000 + i))
+    # Skip if orderID is NULL
+    if [ "$orderID" = "NULL" ]; then
+        continue
+    fi
 
-    # Generate a unique DeliverAdd
-    deliverAdd="Address $i"
+    # Get a random card number
+    cardNum=${cardNums[$RANDOM % ${#cardNums[@]}]}
 
-    # Initialize Total to 0
+    # Get the UserID associated with the card number
+    userID=$(awk -F, -v cardNum="$cardNum" '$1 == cardNum {print $3}' Card.csv)
+
+    if [ -n "$userID" ] && [ "$userID" != "NULL" ]; then
+        # If the card is associated with a UserID, use that customer's email
+        email=$(awk -F, -v userID="$userID" '$1 == userID {print $4}' Customer.csv)
+    else
+        # Otherwise, generate an email for the order
+        email="guest$counter@example.com"
+    fi
+
+    deliverAdd="Address $counter"
+
+    # Filter Product.csv for rows where column 4 = $orderID and save to purchased_items.csv
+    awk -F, -v orderID="$orderID" '$4 == orderID' Product.csv > purchased_items.csv
+
+    # Initialize total
     total=0
 
-    # Generate a random Date in the past
-    date=$(date -d "$((RANDOM % 365)) days ago" +%Y-%m-%d)
+    # Read the purchased_items.csv file line by line
+    while IFS=, read -r modelID serialNo return currentOrderID supplierName restockNo; do
+        # Retrieve the price for this modelID from Model.csv and add it to total
+        price=$(awk -F, -v modelID="$modelID" '$1 == modelID {print $2}' Model.csv)
+        total=$(awk -v total="$total" -v price="$price" 'BEGIN {print total + price}')
+    done < purchased_items.csv
+    rm purchased_items.csv
 
-    # Generate a unique Email
-    email="Email$i@example.com"
+    # Get the current date
+    currentDate=$(date +%Y-%m-%d)
 
-    # Get a CardNum from the shuffled list
-    cardNum=$(echo "${cards[$((i % total_cards))]}" | cut -d',' -f1)
-
-    # Write the order to Order.csv
-    echo "$orderID,$deliverAdd,$total,$date,$email,$cardNum" >> Order.csv
-
-    # Increment counter for created orders
-    created_orders=$((created_orders + 1))
-
-    # Calculate percentage of progress as a floating-point number and convert it to an integer
-    percent=$(awk "BEGIN {printf \"%.0f\", 100 * $created_orders / $1}")
-
-    # Print percentage of progress
-    printf "\rProgress: %d%%" $percent
+    # Write the row to Order.csv
+    echo "$orderID,$deliverAdd,$total,$currentDate,$email,$cardNum" >> Order.csv
+    counter=$((counter + 1))
 done
-
-printf "\n"

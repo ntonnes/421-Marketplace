@@ -130,7 +130,7 @@ CREATE TABLE Product(
 );
 
 CREATE TABLE Shipment(
-    ShipmentNo INT NOT NULL CHECK (ShipmentNo >= 100000 AND ShipmentNo <= 999999),
+    ShipmentNo INT NOT NULL,
     ShipperName VARCHAR(255) NOT NULL,
     OrderID INT NOT NULL,
     ModelID INT NOT NULL,

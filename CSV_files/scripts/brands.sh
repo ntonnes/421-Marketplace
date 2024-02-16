@@ -55,6 +55,8 @@ for ((i=0; i<${#admins[@]} && i<${#brand_pages[@]}; i++)); do
     echo "${admins[i]},${brand_pages[i]},$since,5" >> Manages.csv
 done
 
+echo "Generated 'BrandPage.csv' with $(( $(wc -l < BrandPage.csv) - 1 )) rows."
+echo
 echo "Assigning each admin 0-3 additional brand pages with a random clearance level..."
 
 # Read Admin.csv into an array, excluding the header
@@ -65,6 +67,12 @@ total_admins=${#admins[@]}
 
 # Initialize counter for processed admins
 processed_admins=0
+
+# Load existing relationships into an associative array
+declare -A existingRelationships
+while IFS= read -r line; do
+    existingRelationships["$line"]=1
+done < Manages.csv
 
 # For each admin
 for admin in "${admins[@]}"
@@ -82,7 +90,7 @@ do
         brandPage=$(tail -n +2 BrandPage.csv | shuf -n 1 | cut -d',' -f1)
 
         # Check if the admin-brand relationship already exists
-        if ! grep -q "^$userID,$brandPage," Manages.csv; then
+        if [ -z "${existingRelationships["$userID,$brandPage"]}" ]; then
             # Generate a random clearance level (1-5)
             clearanceLevel=$((RANDOM % 5 + 1))
 
@@ -91,6 +99,9 @@ do
 
             # Write the row to Manages.csv
             echo "$userID,$brandPage,$since,$clearanceLevel" >> Manages.csv
+
+            # Add the new relationship to the array
+            existingRelationships["$userID,$brandPage"]=1
         fi
     done
 

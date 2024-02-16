@@ -36,5 +36,3 @@ do
     # Append row to Restock.csv
     echo "$SupplierName,$RestockNo,$Location,$Date" >> Restock.csv
 done
-
-echo "Successfully filled Restock.csv with $X rows."

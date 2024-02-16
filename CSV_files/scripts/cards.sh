@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Get the number of null cards and max number of cards per customer from the script arguments
 num_null_cards=$1
 max_cards_per_customer=$2
@@ -15,13 +17,14 @@ declare -A cardNumbers
 processed_cards=0
 
 # Calculate total number of cards
-total_cards=$((num_null_cards + ${#userIDs[@]} * max_cards_per_customer))
+total_cards=$num_null_cards
 
 # For each user ID
 for userID in "${userIDs[@]}"
 do
     # Generate a random number of cards for this user ID
     num_cards=$((RANDOM % (max_cards_per_customer+1)))
+    total_cards=$((total_cards+num_cards))
 
     # For each card to create
     for ((i=1; i<=$num_cards; i++))
