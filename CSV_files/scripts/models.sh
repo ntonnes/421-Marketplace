@@ -1,76 +1,55 @@
 #!/bin/bash
 
-num_rows=$1
+num_models=$1
 max_categories=$2
 
 mapfile -t urls < <(tail -n +2 BrandPage.csv | cut -d, -f1)
 mapfile -t cnames < <(tail -n +2 Category.csv | cut -d, -f1 | tr -d '\r')
-
-echo "ModelID,Price,URL,Stars" > Model.csv
-echo "CName,ModelID" > Belongs.csv
-
 declare -A modelIDs
 declare -A assignedCategories
 
-echo "Assigning 0-$max_categories Categories per Model..."
+echo "ModelID,Price,URL,Stars" > Model.csv
+echo "CName,ModelID" > Belongs.csv
+echo "Creating $num_models models with 0-$max_categories categories each..."
 
-# Initialize counter for processed rows
-processed_rows=0
-
-# Generate rows
-for (( i=1; i<=$num_rows; i++ ))
+models_added=0                                      # Initialize counter
+for (( i=1; i<=$num_models; i++ ))                  # For each model to add
 do
-    # Generate a unique ModelID
-    while true; do
-        ModelID=$(( RANDOM % 900000 + 100000 ))
+    while true; do                                  # Loop until a unique ModelID is generated
+        ModelID=$(( RANDOM % 900000 + 100000 ))    
         if [[ -z ${modelIDs[$ModelID]} ]]; then
             modelIDs[$ModelID]=1
             break
         fi
     done
 
-    # Generate random Price between 1 and 1000 with 2 decimal places
-    Price=$(( RANDOM % 500 + 1 )).$(printf "%02d" $(( RANDOM % 100 )))
+    Price=$(( RANDOM % 500 + 1 )).$(printf "%02d" $(( RANDOM % 100 )))  # Generate random price between 1.00 and 500.99
+    URL=${urls[$RANDOM % ${#urls[@]}]}                                  # Select random URL from the array
+    echo "$ModelID,$Price,$URL,0" >> Model.csv                          # Append row to Model.csv
 
-    # Select random URL from the array
-    URL=${urls[$RANDOM % ${#urls[@]}]}
+    num_categories=$((RANDOM % (max_categories + 1)))                   # Generate a random number of categories (0-max_categories)
+    unset assignedCategories                                            # Clear the associative array
+    declare -A assignedCategories                                       # Declare the associative array
 
-    # Generate random Stars between 0 and 10
-    Stars=$(( RANDOM % 11 ))
-
-    # Append row to Model.csv
-    echo "$ModelID,$Price,$URL,$Stars" >> Model.csv
-
-    # Generate a random number of categories (0-max_categories)
-    num_categories=$((RANDOM % (max_categories + 1)))
-
-    # Clear assigned categories for this model
-    unset assignedCategories
-    declare -A assignedCategories
-
-    # For each category
-    for ((j=0; j<$num_categories; j++))
+    for ((j=0; j<$num_categories; j++))                                 # For each category to assign
     do
-        # Select random CName from the array
-        while true; do
+        while true; do                                                  # Loop until a unique CName is generated
             CName=$(echo "${cnames[$RANDOM % ${#cnames[@]}]}" | tr -d '\n')
             if [[ -z ${assignedCategories[$CName]} ]]; then
                 assignedCategories[$CName]=1
                 break
             fi
         done
-
-        # Append row to Belongs.csv
-        echo "$CName,$ModelID" >> Belongs.csv
+        echo "$CName,$ModelID" >> Belongs.csv                           # Append row to Belongs.csv
     done
 
-    # Increment counter for processed rows
-    processed_rows=$((processed_rows + 1))
-
-    # Calculate percentage of progress as a floating-point number and convert it to an integer
-    percent=$(awk "BEGIN {printf \"%.0f\", 100 * $processed_rows / $num_rows}")
-
-    # Print percentage of progress
+    
+    models_added=$((models_added + 1))                                         # Increment counter
+    percent=$(awk "BEGIN {printf \"%.0f\", 100 * $models_added / $num_models}")  # Calculate progress
     printf "\rProgress: %d%%" $percent
+
 done
+
 echo
+echo "Generated 'Model.csv' with $(( $(wc -l < Model.csv) - 1 )) rows."
+echo "Generated 'Belongs.csv' with $(( $(wc -l < Belongs.csv) - 1 )) rows."

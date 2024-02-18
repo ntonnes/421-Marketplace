@@ -26,13 +26,10 @@ echo
 
 
 echo
-echo "Creating models..."
 # models.sh num_models max_cat_per_model
 #   num_models --> number of rows in Model.csv
 #   each model is assigned 0-max_cat_per_model categories
 ./scripts/models.sh 30 3
-echo "Generated 'Model.csv' with $(( $(wc -l < Model.csv) - 1 )) rows."
-echo "Generated 'Belongs.csv' with $(( $(wc -l < Belongs.csv) - 1 )) rows."
 
 echo
 echo "Creating coupons..."
