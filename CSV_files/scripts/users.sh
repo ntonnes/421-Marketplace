@@ -11,7 +11,6 @@ echo "UserID,DOB,Password,Email,Name" > Customer.csv
 echo "UserID,ExpDate,Points" > Member.csv
 echo "UserID" > User.csv
 echo "UserID" > Admin.csv
-echo "UserID" > Guest.csv
 
 mapfile -t names < <(tail -n +2 scripts/Names.csv | awk -F ',' '{print $1 " " $2}')
 readarray -t names < <(printf '%s\n' "${names[@]}" | shuf)
@@ -44,16 +43,20 @@ make_email() {
         start="${firstname}.the.${adjectives[$(( RANDOM % ${#adjectives[@]} ))]}"
     elif (( bin_digit == 3 )); then
         nouns=("boss" "king" "queen" "ninja" "chief" "captain" "knight" "prince" "princess" "wizard")
-        start="${nouns[$(( RANDOM % ${#nouns[@]} ))]}.${firstname}"
+        start="${nouns[$(( RANDOM % ${#nouns[@]} ))]}.${name}"
     elif (( bin_digit == 2 )); then
         start="${firstname}.${lastname}"
     elif (( bin_digit == 1 )); then
-        start="${firstname}$(( RANDOM % 100 ))"
+        start="${name}$(( RANDOM % 100 ))"
     else
         start="${firstname:0:1}${lastname}$(( RANDOM % 100 ))"
     fi
 
-    domains=("google.com" "yahoo.com" "hotmail.com" "aol.com" "msn.com" "live.com" "outlook.com" "gmail.com" "mail.com" "protonmail.com")
+    domains=(
+        "google.com" "yahoo.com" "hotmail.com" 
+        "aol.com" "msn.com" "live.com" "outlook.com" 
+        "gmail.com" "mail.com" "protonmail.com"
+    )
     random_domain=${domains[$(( RANDOM % ${#domains[@]} ))]}
 
     echo "${start}@${random_domain}"
@@ -63,15 +66,19 @@ make_email() {
 # Function to create users
 create_users() {
     local num_users=$1
-    local base_user_id=$2
-    local file_name=$3
-    local second_file_name=$4
+    local file_name=$2
+    local second_file_name=$3
 
     # For each user to create
     for ((i=1; i<=$num_users; i++))
     do
-        # Calculate the user ID for this user
-        user_id=$((base_user_id + i))
+        # Generate a unique user ID for this user
+        while true; do
+            user_id=$((100000000 + RANDOM % 900000000))
+            if ! grep -q "$user_id" User.csv; then
+                break
+            fi
+        done
 
         # Write the row to User.csv and the specific user type file
         echo "$user_id" >> User.csv
@@ -89,7 +96,7 @@ create_users() {
             email=$(make_email "${names[j]}")
             echo "$user_id,$dob,$password,$email,${names[j]}" >> $file_name
 
-        else
+        elif [ "$file_name" == "Admin.csv" ]; then
             echo "$user_id" >> $file_name
         fi
 
@@ -113,14 +120,13 @@ create_users() {
 }
 
 
-echo "Creating users..."
+echo -e "\nCreating users..."
 
 # Create members (who are also customers)
-create_users $num_members 110000000 Customer.csv Member.csv 
+create_users $num_members Customer.csv Member.csv 
 # Create customers
-create_users $num_customers 100000000 Customer.csv
+create_users $num_customers Customer.csv
 # Create admins
-create_users $num_admins 200000000 Admin.csv
+create_users $num_admins Admin.csv
 # Create guests
-create_users $num_guests 300000000 Guest.csv
-echo "Generated 'User.csv' with $(( $(wc -l < User.csv) - 1 )) rows."
+create_users $num_guests User.csv

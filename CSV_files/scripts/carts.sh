@@ -43,6 +43,9 @@ do
     do
         # Get a ModelID from the shuffled list
         next_model
+        while grep -q "^$userID,${modelIDs[$j]}" InCart.csv; do
+            next_model
+        done
         modelID=${modelIDs[$j]}
 
         # Generate a random number of copies (1-cps)

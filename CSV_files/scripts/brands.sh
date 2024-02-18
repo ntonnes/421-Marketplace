@@ -50,9 +50,9 @@ for ((i=0; i<$num_brands; i++)); do                                             
     num_manages=$((RANDOM % $max_manages+1))                                    # Random number of admins for this brand page       
     for ((k=0; k<$num_manages; k++)); do
 
-        if [ -z "${existingRelationships["$userID,$brandPage"]}" ]; then        # Check if the admin-brand relationship already exists
-            next_admin                                                          # Get the next random admin ID
-        fi
+        while [[ -n "${existingRelationships["${admins[j]},${brand_pages[i]}"]}" ]]; do
+            next_admin
+        done
 
         if (( k == 0 )); then clearance=5;                                      # The first admin always has clearance level 5                                                                       
         else clearance=$((RANDOM % 5 + 1)); fi                                  # The rest have a random clearance level                    

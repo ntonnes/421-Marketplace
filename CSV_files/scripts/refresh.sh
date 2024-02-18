@@ -15,7 +15,7 @@ while true; do
     fi
 done
 
-echo
+
 # users.sh num_cust num_mem num_admin num_guest
 #   num_cust + num_mem  --> number of rows in Customer.csv
 #   num_mem             --> number of rows in Member.csv
@@ -25,14 +25,12 @@ n=$(( x*5 ))
 ./scripts/users.sh $n $n $n $n
 
 
-echo
 # categories.sh num_cat
 #   num_categories --> number of rows in Category.csv
 n=$(( x*5 ))
 ./scripts/categories.sh $n
 
 
-echo
 # brands.sh num_brand max_manages
 #   num_brands  --> number of rows in BrandPage.csv
 #   max_manages --> maximum number of admins per brand page
@@ -52,12 +50,11 @@ m=$(( x+1 ))
 ./scripts/models.sh $n $m
 
 echo
-echo "Creating coupons..."
 # coupons.sh max_coup
 #   max_coup --> each member is assigned 0-max_coup coupons
-n=$(( x ))
+n=$(( x*2 ))
 ./scripts/coupons.sh $n
-echo "Generated 'Coupon.csv' with $(( $(wc -l < Coupon.csv) - 1 )) rows."
+
 
 echo
 echo "Creating carts..."
