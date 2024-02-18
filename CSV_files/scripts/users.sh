@@ -58,11 +58,22 @@ create_users() {
     done
 }
 
-# Create customers
-create_users $num_customers 100000000 Customer.csv
+
+echo "Creating users..."
+
 # Create members (who are also customers)
 create_users $num_members 110000000 Member.csv Customer.csv
+echo "Generated 'Member.csv' with $(( $(wc -l < Member.csv) - 1 )) rows."
+
+# Create customers
+create_users $num_customers 100000000 Customer.csv
+echo "Generated 'Customer.csv' with $(( $(wc -l < Customer.csv) - 1 )) rows."
+
 # Create admins
 create_users $num_admins 200000000 Admin.csv
+echo "Generated 'Admin.csv' with $(( $(wc -l < Admin.csv) - 1 )) rows."
+
 # Create guests
 create_users $num_guests 300000000 Guest.csv
+echo "Generated 'Guest.csv' with $(( $(wc -l < Guest.csv) - 1 )) rows."
+echo "Generated 'User.csv' with $(( $(wc -l < User.csv) - 1 )) rows."

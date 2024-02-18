@@ -1,39 +1,34 @@
 #!/bin/bash
 ./scripts/clear.sh
 
+
 echo
-echo "Creating users..."
 # users.sh num_customers num_members num_admins num_guests
-#   num_customers + num_members is the number of rows in Customer.csv
-#   num_members is the number of rows in Member.csv
-#   num_admins is the number of rows in Admin.csv
-#   num_guests + num_members + num_customers + num_admins is the number of rows in User.csv
+#   num_customers + num_members --> number of rows in Customer.csv
+#   num_members                 --> number of rows in Member.csv
+#   num_admins                  --> number of rows in Admin.csv
+#   sum of all fout             --> number of rows in User.csv
 ./scripts/users.sh 25 25 25 25
-echo "Generated 'Customer.csv' with $(( $(wc -l < Customer.csv) - 1 )) rows."
-echo "Generated 'Member.csv' with $(( $(wc -l < Member.csv) - 1 )) rows."
-echo "Generated 'Admin.csv' with $(( $(wc -l < Admin.csv) - 1 )) rows."
-echo "Generated 'Guest.csv' with $(( $(wc -l < Guest.csv) - 1 )) rows."
-echo "Generated 'User.csv' with $(( $(wc -l < User.csv) - 1 )) rows."
+
 
 echo
-echo "Creating categories..."
 # categories.sh num_categories
-#   num_categories is the number of rows in Category.csv
+#   num_categories --> number of rows in Category.csv
 ./scripts/categories.sh 20
-echo "Generated 'Category.csv' with $(( $(wc -l < Category.csv) - 1 )) categories."
+
 
 echo
-echo "Creating brand pages..."
-# brands.sh num_brands
-#   num_brands is the number of rows in BrandPage.csv
+# brands.sh num_brands max_manages
+#   num_brands  --> number of rows in BrandPage.csv
+#   max_manages --> maximum number of admins per brand page
 #   20% of the brands will have no description 
-./scripts/brands.sh 20
-echo "Generated 'Manages.csv' with $(( $(wc -l < Manages.csv) - 1 )) rows."
+./scripts/brands.sh 20 5
+
 
 echo
 echo "Creating models..."
 # models.sh num_models max_cat_per_model
-#   num_models is the number of rows in Model.csv
+#   num_models --> number of rows in Model.csv
 #   each model is assigned 0-max_cat_per_model categories
 ./scripts/models.sh 30 3
 echo "Generated 'Model.csv' with $(( $(wc -l < Model.csv) - 1 )) rows."

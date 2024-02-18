@@ -1,23 +1,16 @@
 #!/bin/bash
 
-# Get number of categories from the first script argument
+echo "Creating categories..."
 num_categories=$1
-
-# Create CSV header
 echo "CName" > Category.csv
 
-# ASCII value for 'A'
-ascii_value=65
+ascii_value=65      # ASCII value for 'A'
 
-# Create categories
-for ((i=1; i<=num_categories; i++))
+for ((i=1; i<=num_categories; i++))                     # For each category to add
 do
-    # Convert ASCII value to character
-    letter=$(printf "\\$(printf '%03o' $ascii_value)")
-
-    echo "category$letter" >> Category.csv
-
-    # Increment ASCII value
-    ascii_value=$((ascii_value + 1))
-
+    letter=$(printf "\\$(printf '%03o' $ascii_value)")  # Convert ASCII value to character
+    echo "category$letter" >> Category.csv              # Write the row to Category.csv
+    ascii_value=$((ascii_value + 1))                    # Increment ASCII value
 done
+
+echo "Generated 'Category.csv' with $(( $(wc -l < Category.csv) - 1 )) categories."

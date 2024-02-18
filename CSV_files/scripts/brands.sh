@@ -1,117 +1,68 @@
 #!/bin/bash
 
-# Get the number of rows from the first script argument
-num_rows=$1
 
-# Calculate the number of rows without a description
-num_no_description=$((num_rows / 5))
+#######################
+#    BrandPage.csv    #
+#######################
+num_brands=$1                                                   # Number of brand pages to create
+echo -e "\nCreating $num_brands brand pages..."
+echo "URL,Name,Description" > BrandPage.csv                     # Create BrandPage.csv and add headers
 
-# Create an array of row indices
-indices=($(seq 1 $num_rows))
-
-# Shuffle the array
-shuffled_indices=($(for i in "${indices[@]}"; do echo "$i"; done | shuf))
-
-# Clear the file and add headers
-echo "URL,Name,Description" > BrandPage.csv
-
-# For each row to create
-for ((i=1; i<=$num_rows; i++))
-do
-    # Create a URL and Name for the brand
-    url="www.421market.com/brand$i"
-    name="Brand $i"
-
-    # If this row is in the first 20% of the shuffled indices
-    if [[ " ${shuffled_indices[@]:0:$num_no_description} " =~ " $i " ]]; then
-        description="NULL"
-    else
-        description="This is the description for Brand $i."
+for ((i=1; i<=$num_brands; i++)); do                            # For each brand page to create
+    url="www.421market.com/brand$i"                             # Create a URL
+    name="Brand $i"                                             # Create a name                          
+    
+    if (( i % 5 == 0 )); then description="NULL"                # give ~20% NULL descriptions
+    else description="This is the description for Brand $i."    # give ~80% a description
     fi
 
-    # Write the row to BrandPage.csv
-    echo "$url,$name,$description" >> BrandPage.csv
-done
-
-echo "Assigning each brand pages a random level 5 admin..."
-
-# Clear the file and add headers
-echo "UserID,BrandPage,Since,ClearanceLevel" > Manages.csv
-
-# Get all admins
-mapfile -t admins < <(tail -n +2 Admin.csv | cut -d, -f1)
-
-# Get all brand pages
-mapfile -t brand_pages < <(tail -n +2 BrandPage.csv | cut -d, -f1)
-
-# Shuffle admins and brand_pages arrays
-readarray -t admins < <(printf '%s\n' "${admins[@]}" | shuf)
-readarray -t brand_pages < <(printf '%s\n' "${brand_pages[@]}" | shuf)
-
-# Declare the associative array
-declare -A existingRelationships
-
-# Assign level 5 admins
-for ((i=0; i<${#admins[@]} && i<${#brand_pages[@]}; i++)); do
-    # Generate a random date in the format YYYY-MM-DD
-    since=$(date -d "$((RANDOM % 3653 + 1)) days ago" +'%Y-%m-%d')
-    echo "${admins[i]},${brand_pages[i]},$since,5" >> Manages.csv
-
-    # Add the new relationship to the array
-    existingRelationships["${admins[i]},${brand_pages[i]}"]=1
+    echo "$url,$name,$description" >> BrandPage.csv             # Write the row to BrandPage.csv
 done
 
 echo "Generated 'BrandPage.csv' with $(( $(wc -l < BrandPage.csv) - 1 )) rows."
+
+
+#####################
+#    Manages.csv    #
+#####################
+max_manages=$2                                                          # Max number of admins per brand page
 echo
-echo "Assigning each admin 0-3 additional brand pages with a random clearance level..."
+echo "Assigning each brand page 1-$max_manages admins..."
+echo "UserID,BrandPage,Since,ClearanceLevel" > Manages.csv              # Create Manages.csv and add headers
 
-# Read Admin.csv into an array, excluding the header
-mapfile -t admins < <(tail -n +2 Admin.csv)
+mapfile -t admins < <(tail -n +2 Admin.csv | cut -d, -f1)               # Get all admin IDs into array 'admins'
+mapfile -t brand_pages < <(tail -n +2 BrandPage.csv | cut -d, -f1)      # Get all brand page URLs into array 'brand_pages'
+readarray -t admins < <(printf '%s\n' "${admins[@]}" | shuf)            # Shuffle the admin IDs array
+declare -A existingRelationships                                        # Declare an associative array to store existing relationships
 
-# Get total number of admins
-total_admins=${#admins[@]}
+j=0
+next_admin () {                                                         # Function to get the next random admin ID
+    if (( j < ${#admins[@]} - 1 )); then                                # If there are more admin IDs
+        j=$((j + 1))                                                    # Next admin ID
+    else 
+        readarray -t admins < <(printf '%s\n' "${admins[@]}" | shuf)    # Shuffle the admin IDs array
+        j=0                                                             # Reset counter
+    fi
+}
 
-# Initialize counter for processed admins
-processed_admins=0
+for ((i=0; i<$num_brands; i++)); do                                             # For each brand page
 
-# For each admin
-for admin in "${admins[@]}"
-do
-    # Get UserID
-    userID=$(echo "$admin" | tr -d '[:space:]')
+    num_manages=$((RANDOM % $max_manages+1))                                    # Random number of admins for this brand page       
+    for ((k=0; k<$num_manages; k++)); do
 
-    # Generate a random number of rows to create (0-3)
-    num_rows=$((RANDOM % 4))
-
-    # For each row to create
-    for ((i=0; i<$num_rows; i++))
-    do
-        # Get a random brand page from BrandPage.csv, excluding the header
-        brandPage=$(tail -n +2 BrandPage.csv | shuf -n 1 | cut -d',' -f1)
-
-        # Check if the admin-brand relationship already exists
-        if [ -z "${existingRelationships["$userID,$brandPage"]}" ]; then
-            # Generate a random clearance level (1-5)
-            clearanceLevel=$((RANDOM % 5 + 1))
-
-            # Generate a random date in the format YYYY-MM-DD
-            since=$(date -d "$((RANDOM % 3653 + 1)) days ago" +'%Y-%m-%d')
-
-            # Write the row to Manages.csv
-            echo "$userID,$brandPage,$since,$clearanceLevel" >> Manages.csv
-
-            # Add the new relationship to the array
-            existingRelationships["$userID,$brandPage"]=1
+        if [ -z "${existingRelationships["$userID,$brandPage"]}" ]; then        # Check if the admin-brand relationship already exists
+            next_admin                                                          # Get the next random admin ID
         fi
-    done
 
-    # Increment counter for processed admins
-    processed_admins=$((processed_admins + 1))
+        if (( k == 0 )); then clearance=5;                                      # The first admin always has clearance level 5                                                                       
+        else clearance=$((RANDOM % 5 + 1)); fi                                  # The rest have a random clearance level                    
 
-    # Calculate percentage of progress as a floating-point number and convert it to an integer
-    percent=$(awk "BEGIN {printf \"%.0f\", 100 * $processed_admins / $total_admins}")
-
-    # Print percentage of progress
-    printf "\rProgress: %d%%" $percent
+        since=$(date -d "$((RANDOM % 3653 + 1)) days ago" +'%Y-%m-%d')          # Generate a random date in the past 10 years     
+        echo "${admins[j]},${brand_pages[i]},$since,$clearance" >> Manages.csv  # Write the row to Manages.csv      
+        existingRelationships["${admins[j]},${brand_pages[i]}"]=1               # Add the new relationship to the array       
+        next_admin                                                              # Get the next random admin ID
+    done    
+                                 
 done
-echo
+
+echo "Generated 'Manages.csv' with $(( $(wc -l < Manages.csv) - 1 )) rows."

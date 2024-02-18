@@ -1,20 +1,14 @@
 #!/bin/bash
 
-# Number of rows to generate
 num_rows=$1
 max_categories=$2
 
-# Read URLs from BrandPage.csv into an array, skipping the header
 mapfile -t urls < <(tail -n +2 BrandPage.csv | cut -d, -f1)
-
-# Read CNames from Category.csv into an array, skipping the header
 mapfile -t cnames < <(tail -n +2 Category.csv | cut -d, -f1 | tr -d '\r')
 
-# CSV header
 echo "ModelID,Price,URL,Stars" > Model.csv
 echo "CName,ModelID" > Belongs.csv
 
-# Associative array to store generated ModelIDs and assigned categories
 declare -A modelIDs
 declare -A assignedCategories
 
