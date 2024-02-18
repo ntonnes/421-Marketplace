@@ -4,7 +4,7 @@ per_user=$1
 cps=$2
 
 # CSV header
-printf "Assigning 1-3 copies of 0-5 models to each user's cart...\n"
+printf "Assigning 1-$cps copies of 0-$per_user models to each user's cart...\n"
 printf "UserID,ModelID,Copies\n" > InCart.csv
 
 # Read User.csv into an array, excluding the header
@@ -19,22 +19,33 @@ processed_users=0
 # Get a shuffled list of ModelIDs
 mapfile -t modelIDs < <(tail -n +2 Model.csv | shuf | cut -d',' -f1)
 
+j=0
+next_model () {
+    if (( j < ${#modelIDs[@]} - 1 )); then
+        j=$((j + 1))
+    else
+        readarray -t modelIDs < <(printf '%s\n' "${modelIDs[@]}" | shuf)
+        j=0
+    fi
+}
+
 # For each user
 for user in "${users[@]}"
 do
     # Get UserID
     userID=$(echo "$user" | cut -d',' -f1)
 
-    # Generate a random number of items (0-5)
+    # Generate a random number of items (0-per_user)
     num_items=$((RANDOM % per_user))
 
     # For each item
     for ((i=0; i<$num_items; i++))
     do
         # Get a ModelID from the shuffled list
-        modelID=${modelIDs[$i]}
+        next_model
+        modelID=${modelIDs[$j]}
 
-        # Generate a random number of copies (1-3)
+        # Generate a random number of copies (1-cps)
         copies=$((RANDOM % cps + 1))
 
         # Write the item to InCart.csv

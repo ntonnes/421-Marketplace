@@ -30,7 +30,7 @@ do
         email=$(awk -F, -v userID="$userID" '$1 == userID {print $4}' Customer.csv)
     else
         # Otherwise, generate an email for the order
-        email="guest$counter@example.com"
+        email="guest$counter@domain.com"
     fi
 
     deliverAdd="Address $counter"

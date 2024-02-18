@@ -42,10 +42,7 @@ do
         pointCost=$((RANDOM % 101))
 
         # Generate a random Expiration date (2022-01-01 to 2026-12-31)
-        year=$((RANDOM % 5 + 2022))
-        month=$(printf "%02d" $((RANDOM % 12 + 1)))
-        day=$(printf "%02d" $((RANDOM % 28 + 1)))
-        expiration="$year-$month-$day"
+        expiration=$(date -d "$(( RANDOM % (365 * 4) + 1 )) days" +'%Y-%m-%d')
 
         # Write the coupon to Coupon.csv
         echo "$userID,$modelID,$discount,$pointCost,$expiration" >> Coupon.csv

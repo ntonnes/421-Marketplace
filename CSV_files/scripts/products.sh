@@ -67,7 +67,7 @@ do
         fi
 
         # Add the row to output variable
-        output+="$modelID,$nextSerialNo,NULL,$nextOrderID,$supplierName,$restockNo\n"
+        output+="$modelID,$nextSerialNo,0,$nextOrderID,$supplierName,$restockNo\n"
 
         # Increment counter for total products
         total_products=$((total_products + 1))

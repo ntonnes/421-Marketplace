@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "Creating categories..."
 num_categories=$1
+echo "Creating $num_categories categories..."
 echo "CName" > Category.csv
 
 ascii_value=65      # ASCII value for 'A'
