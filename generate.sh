@@ -48,12 +48,19 @@ do
     # Read the CSV file into an array, excluding the header
     mapfile -t rows < <(tail -n +2 "$file")
 
-    # For each row
-    for row in "${rows[@]}"
-    do
-        # Convert the row to a SQL insert statement and append it to loaddata.sql
-        echo "INSERT INTO $table_name VALUES ($(echo "$row" | sed "s/,/','/g" | sed "s/^/'/" | sed "s/$/'/" | sed "s/'NULL'/NULL/g"));" >> ../loaddata.sql
-    done
+    if [[ $table_name == "Review" ]]; then
+        for row in "${rows[@]}"
+        do
+            echo "$row" | awk -F'"' -v OFS='' '{ gsub(",", "", $2); print $1 $2 $3 }' | awk -F, -v table="$table_name" 'BEGIN{OFS=","} {printf "INSERT INTO " table " VALUES ('\''%s'\'','\''%s'\'','\''%s'\'','\''%s'\'');\n", $1, $2, $3, $4}' >> ../loaddata.sql
+        done
+    else
+        for row in "${rows[@]}"
+        do
+            # Convert the row to a SQL insert statement and append it to loaddata.sql
+
+            echo "INSERT INTO $table_name VALUES ($(echo "$row" | awk 'BEGIN{FS=OFS=","} {for(i=1;i<=NF;i++) if($i ~ /^".*"$/) gsub(/,/,"",$i)} 1' | sed "s/,/','/g" | sed "s/^/'/" | sed "s/$/'/" | sed "s/'NULL'/NULL/g"));" >> ../loaddata.sql
+        done
+    fi
 
     # Increment counter for processed files
     processed_files=$((processed_files + 1))

@@ -60,7 +60,7 @@ echo
 echo "Creating carts..."
 # carts.sh max_items max_copies
 #   each user is assigned 1-max_items copies of 0-max_copies models
-n=$(( x*2 ))
+n=$(( x ))
 m=$(( x+1 ))
 ./scripts/carts.sh $n $m
 echo "Generated 'InCart.csv' with $(( $(wc -l < InCart.csv) - 1 )) rows."
@@ -93,7 +93,6 @@ echo "Creating products..."
 #   each product has a 33% chance of being assigned to an order randomly
 n=$(( x*5 ))
 m=$(( x*10 ))
-
 ./scripts/products.sh $n $m
 echo "Generated 'Product.csv' with $(( $(wc -l < Product.csv) - 1 )) rows."
 
@@ -112,6 +111,10 @@ n=$(( x ))
 m=$(( x*2 ))
 ./scripts/shipments.sh $n $m
 echo "Generated 'Shipment.csv' with $(( $(wc -l < Shipment.csv) - 1 )) rows."
+
+echo "Creating reviews.."
+./scripts/reviews.sh
+echo "Generated 'Review.csv' with $(( $(wc -l < Review.csv) - 1 )) rows."
 
 echo
 echo "Data refreshed successfully."

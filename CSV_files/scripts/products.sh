@@ -60,7 +60,7 @@ do
         nextSerialNo=$((nextSerialNo + 1))
 
         # Assign products to orders randomly
-        if (( RANDOM % 3 > 1 )); then
+        if (( RANDOM % 2 == 1 )); then
             nextOrderID=${orderIDs[$RANDOM % ${#orderIDs[@]}]}
         else
             nextOrderID=NULL

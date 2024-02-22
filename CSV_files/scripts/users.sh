@@ -29,7 +29,7 @@ next_name () {
 make_email() {
     firstname=$(echo $1 | cut -d' ' -f1 | tr '[:upper:]' '[:lower:]')
     lastname=$(echo $1 | cut -d' ' -f2 | tr '[:upper:]' '[:lower:]')
-    bin_digit=$(( RANDOM % 5 ))
+    digit=$(( RANDOM % 5 ))
     name_choice=$(( RANDOM % 2 ))
 
     if (( name_choice == 0 )); then
@@ -38,15 +38,15 @@ make_email() {
         name="${lastname}"
     fi
 
-    if (( bin_digit == 4 )); then
+    if (( digit == 4 )); then
         adjectives=("happy" "sad" "angry" "sleepy" "hungry" "thirsty" "fast" "slow" "hot" "cold")
         start="${firstname}.the.${adjectives[$(( RANDOM % ${#adjectives[@]} ))]}"
-    elif (( bin_digit == 3 )); then
+    elif (( digit == 3 )); then
         nouns=("boss" "king" "queen" "ninja" "chief" "captain" "knight" "prince" "princess" "wizard")
         start="${nouns[$(( RANDOM % ${#nouns[@]} ))]}.${name}"
-    elif (( bin_digit == 2 )); then
+    elif (( digit == 2 )); then
         start="${firstname}.${lastname}"
-    elif (( bin_digit == 1 )); then
+    elif (( digit == 1 )); then
         start="${name}$(( RANDOM % 100 ))"
     else
         start="${firstname:0:1}${lastname}$(( RANDOM % 100 ))"
@@ -74,7 +74,7 @@ create_users() {
     do
         # Generate a unique user ID for this user
         while true; do
-            user_id=$((100000000 + RANDOM % 900000000))
+            user_id=$((100 + RANDOM % 900))$((100 + RANDOM % 900))$((100 + RANDOM % 900))
             if ! grep -q "$user_id" User.csv; then
                 break
             fi
@@ -90,7 +90,7 @@ create_users() {
             if (( i % 4 == 0 )); then
                 dob=NULL
             else
-                dob=$(date -d "$(( RANDOM % 365 * 18 + 6570 )) days ago" +'%Y-%m-%d')
+                dob=$(date -d "$(( RANDOM % 365 * 18 + 13140 )) days ago" +'%Y-%m-%d')
             fi
 
             email=$(make_email "${names[j]}")
