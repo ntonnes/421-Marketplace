@@ -1,8 +1,13 @@
 #!/bin/bash
 
+# Set up CSV file with headers
 echo "SupplierName,RestockNo,Location,Date" > Restock.csv
+
+# Get the number of restocks and suppliers from the script arguments
 num_restocks=$1
 num_suppliers=$2
+
+# Get the supplier data
 mapfile -t suppliers < <(tail -n +2 scripts/Suppliers.csv | tr -d '\r' | shuf -n $num_suppliers)
 
 echo "Creating $num_restocks restocks using $num_suppliers suppliers..."
@@ -33,4 +38,5 @@ do
     # Append row to Restock.csv
     echo "$SupplierName,$RestockNo,"$Location",$Date" >> Restock.csv
 done
+
 echo -e "Generated 'Restock.csv' with $(( $(wc -l < Restock.csv) - 1 )) rows.\n"

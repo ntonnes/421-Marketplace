@@ -3,20 +3,17 @@
 per_user=$1
 cps=$2
 
-# CSV header
+# Initialize CSV file
 printf "Assigning 1-$cps copies of 0-$per_user models to each user's cart...\n"
 printf "UserID,ModelID,Copies\n" > InCart.csv
 
-# Read User.csv into an array, excluding the header
+# Get user data from User.csv
 mapfile -t users < <(tail -n +2 User.csv)
 
-# Get total number of users
 total_users=${#users[@]}
-
-# Initialize counter for processed users
 processed_users=0
 
-# Get a shuffled list of ModelIDs
+# Get shuffled list of ModelIDs from Model.csv
 mapfile -t modelIDs < <(tail -n +2 Model.csv | shuf | cut -d',' -f1)
 
 j=0
@@ -29,39 +26,32 @@ next_model () {
     fi
 }
 
-# For each user
+# Assign models to users' carts
 for user in "${users[@]}"
 do
-    # Get UserID
     userID=$(echo "$user" | cut -d',' -f1)
-
-    # Generate a random number of items (0-per_user)
     num_items=$((RANDOM % per_user))
 
-    # For each item
     for ((i=0; i<$num_items; i++))
     do
-        # Get a ModelID from the shuffled list
+        # Get a unique ModelID for the user
         next_model
         while grep -q "^$userID,${modelIDs[$j]}" InCart.csv; do
             next_model
         done
         modelID=${modelIDs[$j]}
 
-        # Generate a random number of copies (1-cps)
+        # Generate random number of copies
         copies=$((RANDOM % cps + 1))
 
-        # Write the item to InCart.csv
+        # Write data to CSV
         printf "%s,%s,%s\n" "$userID" "$modelID" "$copies" >> InCart.csv
     done
 
-    # Increment counter for processed users
+    # Print progress
     processed_users=$((processed_users + 1))
-
-    # Calculate percentage of progress
     percent=$((100 * processed_users / total_users))
-
-    # Print percentage of progress
     printf "\rProgress: %d%%" $percent
 done
+
 echo -e "\nGenerated 'InCart.csv' with $(( $(wc -l < InCart.csv) - 1 )) rows.\n"

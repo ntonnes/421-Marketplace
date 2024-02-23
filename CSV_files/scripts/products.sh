@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Get the max number of products per model from the script argument
+# Get the maximum number of products per model from the script argument
 max_products_per_model=$1
 echo "Creating 0-$max_products_per_model products for each model..."
+
 # Initialize output variable with headers
 output="ModelID,SerialNo,Return,SupplierName,RestockNo\n"
 
@@ -28,10 +29,7 @@ mapfile -t randomNumbers < <(for ((i=0; i<$total_models; i++)); do echo $((RANDO
 for ((index=0; index<${#modelIDs[@]}; index++))
 do
     modelID=${modelIDs[$index]}
-    # Initialize the serial number counter to 1 for each model
     nextSerialNo=100000000
-
-    # Retrieve the number of products for this model ID from the array
     num_products=${randomNumbers[$index]}
 
     # For each product to create

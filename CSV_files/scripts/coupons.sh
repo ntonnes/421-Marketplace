@@ -1,60 +1,43 @@
 #!/bin/bash
 
-# Get maximum number of coupons per member from the first script argument
 max_coupons=$1
 
+# Initialize CSV file
 echo "Creating 0-$max_coupons coupons for each member..."
-
-# CSV header
 echo "UserID,ModelID,Discount,PointCost,Expiration" > Coupon.csv
 
-# Read member.csv into an array, excluding the header
+# Get member data from Member.csv
 mapfile -t members < <(tail -n +2 Member.csv)
 
-# Get total number of members
 total_members=${#members[@]}
-
-# Initialize counter for processed members
 processed_members=0
 
-# For each member
+# Assign coupons to members
 for member in "${members[@]}"
 do
-    # Get UserID
     userID=$(echo "$member" | cut -d',' -f1)
-
-    # Generate a random number of coupons (0-max_coupons)
     num_coupons=$((RANDOM % (max_coupons + 1)))
 
-    # Get a shuffled list of ModelIDs
+    # Get shuffled list of ModelIDs from Model.csv
     mapfile -t modelIDs < <(tail -n +2 Model.csv | shuf | cut -d',' -f1)
 
-    # For each coupon
+    # Generate random coupon data
     for ((i=0; i<$num_coupons; i++))
     do
-        # Get a ModelID from the shuffled list
         modelID=${modelIDs[$i]}
-
-        # Generate a random Discount (0.00-0.99) without using bc
         discount="0.$((RANDOM % 100))"
-
-        # Generate a random PointCost (0-100)
         pointCost=$((RANDOM % 101))
+        expiration=$(date -d "$(( RANDOM % (365 * 5) + 1 )) days" +'%Y-%m-%d')
 
-        # Generate a random Expiration date (2022-01-01 to 2026-12-31)
-        expiration=$(date -d "$(( RANDOM % (365 * 4) + 1 )) days" +'%Y-%m-%d')
-
-        # Write the coupon to Coupon.csv
+        # Write coupon data to CSV
         echo "$userID,$modelID,$discount,$pointCost,$expiration" >> Coupon.csv
     done
 
-    # Increment counter for processed members
     processed_members=$((processed_members + 1))
 
-    # Calculate percentage of progress as a floating-point number and convert it to an integer
+    # Print progress
     percent=$(awk "BEGIN {printf \"%.0f\", 100 * $processed_members / $total_members}")
-
-    # Print percentage of progress
     printf "\rProgress: %d%%" $percent
 done
+
 echo -e "\nGenerated 'Coupon.csv' with $(( $(wc -l < Coupon.csv) - 1 )) rows.\n"
