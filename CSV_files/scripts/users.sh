@@ -120,7 +120,7 @@ create_users() {
 }
 
 
-echo -e "\nCreating users..."
+echo "Creating users..."
 
 # Create members (who are also customers)
 create_users $num_members Customer.csv Member.csv 

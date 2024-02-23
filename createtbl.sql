@@ -119,25 +119,32 @@ CREATE TABLE Order(
 CREATE TABLE Product(
     ModelID INT NOT NULL,
     SerialNo INT NOT NULL CHECK (SerialNo >= 100000000 AND SerialNo <= 999999999),
-    Return SMALLINT,
-    OrderID INT,
+    Return BOOLEAN NOT NULL,
     SupplierName VARCHAR(255) NOT NULL,
     RestockNo INT NOT NULL,
     PRIMARY KEY (SerialNo, ModelID),
     FOREIGN KEY (ModelID) REFERENCES Model(ModelID),
-    FOREIGN KEY (OrderID) REFERENCES Order(OrderID),
     FOREIGN KEY (SupplierName, RestockNo) REFERENCES Restock(SupplierName, RestockNo)
 );
 
 CREATE TABLE Shipment(
     ShipmentNo INT NOT NULL,
     ShipperName VARCHAR(255) NOT NULL,
-    OrderID INT NOT NULL,
-    ModelID INT NOT NULL,
-    SerialNo INT NOT NULL,
     DeliverDate DATE NOT NULL,
     ShipDate DATE NOT NULL,
-    PRIMARY KEY (ShipmentNo, ShipperName, OrderID, ModelID, SerialNo),
-    FOREIGN KEY (OrderID) REFERENCES Order(OrderID),
-    FOREIGN KEY (ModelID, SerialNo) REFERENCES Product(ModelID, SerialNo)
+    PRIMARY KEY (ShipmentNo, ShipperName),
 );
+
+CREATE TABLE Purchased(
+    ModelID INT NOT NULL, 
+    SerialNo INT NOT NULL,
+    OrderID INT NOT NULL,
+    ShipmentNo INT NOT NULL,
+    ShipperName VARCHAR(255) NOT NULL,
+    PRIMARY KEY (SerialNo, ModelID), 
+    FOREIGN KEY (ModelID, SerialNo) REFERENCES Product(ModelID, SerialNo), 
+    FOREIGN KEY (OrderID) REFERENCES Order(OrderID),
+    FOREIGN KEY (ShipmentNo,ShipperName) REFERENCES Shipment(ShipmentNo,ShipperName)
+);
+
+

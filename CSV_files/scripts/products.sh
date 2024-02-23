@@ -2,9 +2,9 @@
 
 # Get the max number of products per model from the script argument
 max_products_per_model=$1
-
+echo "Creating 0-$max_products_per_model products for each model..."
 # Initialize output variable with headers
-output="ModelID,SerialNo,Return,OrderID,SupplierName,RestockNo\n"
+output="ModelID,SerialNo,Return,SupplierName,RestockNo\n"
 
 # Get all model IDs
 mapfile -t modelIDs < <(tail -n +2 Model.csv | cut -d, -f1)
@@ -17,14 +17,6 @@ processed_models=0
 
 # Get all restock rows
 mapfile -t restockRows < <(tail -n +2 Restock.csv)
-
-total_orders=$2
-# Create an array of order IDs
-orderIDs=()
-for ((i=1; i<=total_orders; i++))
-do
-    orderIDs+=($((100000000 + i)))
-done
 
 # Initialize counter for total products
 total_products=0
@@ -59,15 +51,8 @@ do
 
         nextSerialNo=$((nextSerialNo + 1))
 
-        # Assign products to orders randomly
-        if (( RANDOM % 2 == 1 )); then
-            nextOrderID=${orderIDs[$RANDOM % ${#orderIDs[@]}]}
-        else
-            nextOrderID=NULL
-        fi
-
         # Add the row to output variable
-        output+="$modelID,$nextSerialNo,0,$nextOrderID,$supplierName,$restockNo\n"
+        output+="$modelID,$nextSerialNo,FALSE,$supplierName,$restockNo\n"
 
         # Increment counter for total products
         total_products=$((total_products + 1))
@@ -89,4 +74,4 @@ echo -e $output > Product.csv
 # Remove trailing newlines from Product.csv
 sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' Product.csv
 
-echo
+echo -e "\nGenerated 'Product.csv' with $(( $(wc -l < Product.csv) - 1 )) rows.\n"

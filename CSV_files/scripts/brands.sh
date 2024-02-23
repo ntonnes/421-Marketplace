@@ -65,4 +65,4 @@ for ((i=0; i<$num_brands; i++)); do                                             
                                  
 done
 
-echo "Generated 'Manages.csv' with $(( $(wc -l < Manages.csv) - 1 )) rows."
+echo -e "Generated 'Manages.csv' with $(( $(wc -l < Manages.csv) - 1 )) rows.\n"

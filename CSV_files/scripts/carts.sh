@@ -64,4 +64,4 @@ do
     # Print percentage of progress
     printf "\rProgress: %d%%" $percent
 done
-printf "\n"
+echo -e "\nGenerated 'InCart.csv' with $(( $(wc -l < InCart.csv) - 1 )) rows.\n"

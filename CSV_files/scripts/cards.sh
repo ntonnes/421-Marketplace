@@ -4,6 +4,8 @@
 num_null_cards=$1
 max_cards_per_customer=$2
 
+echo "Creating $num_null_cards cards with no user and 0-$max_cards_per_customer cards per customer..."
+
 # Clear the file and add headers
 echo "CardNum,CardExp,UserID" > Card.csv
 
@@ -101,4 +103,4 @@ do
     # Print percentage of progress
     printf "\rProgress: %d%%" $percent
 done
-echo
+echo -e "\nGenerated 'Card.csv' with $(( $(wc -l < Card.csv) - 1 )) rows.\n"

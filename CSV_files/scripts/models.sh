@@ -52,4 +52,4 @@ done
 
 echo
 echo "Generated 'Model.csv' with $(( $(wc -l < Model.csv) - 1 )) rows."
-echo "Generated 'Belongs.csv' with $(( $(wc -l < Belongs.csv) - 1 )) rows."
+echo -e "Generated 'Belongs.csv' with $(( $(wc -l < Belongs.csv) - 1 )) rows.\n"

@@ -5,6 +5,8 @@ num_restocks=$1
 num_suppliers=$2
 mapfile -t suppliers < <(tail -n +2 scripts/Suppliers.csv | tr -d '\r' | shuf -n $num_suppliers)
 
+echo "Creating $num_restocks restocks using $num_suppliers suppliers..."
+
 # Initialize RestockNo for each supplier
 declare -A restockNo
 for line in "${suppliers[@]}"; do
@@ -31,3 +33,4 @@ do
     # Append row to Restock.csv
     echo "$SupplierName,$RestockNo,"$Location",$Date" >> Restock.csv
 done
+echo -e "Generated 'Restock.csv' with $(( $(wc -l < Restock.csv) - 1 )) rows.\n"

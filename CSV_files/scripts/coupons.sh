@@ -3,7 +3,7 @@
 # Get maximum number of coupons per member from the first script argument
 max_coupons=$1
 
-echo "Createing 0-$max_coupons coupons for each member..."
+echo "Creating 0-$max_coupons coupons for each member..."
 
 # CSV header
 echo "UserID,ModelID,Discount,PointCost,Expiration" > Coupon.csv
@@ -57,4 +57,4 @@ do
     # Print percentage of progress
     printf "\rProgress: %d%%" $percent
 done
-echo -e "\nGenerated 'Coupon.csv' with $(( $(wc -l < Coupon.csv) - 1 )) rows."
+echo -e "\nGenerated 'Coupon.csv' with $(( $(wc -l < Coupon.csv) - 1 )) rows.\n"

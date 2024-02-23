@@ -16,25 +16,12 @@ messages=(
     [10]="Excellent product! I love it!"
 )
 
-# Filter Product.csv for rows where OrderID is not NULL, select $1 percent of those rows
-declare -a filtered_products
-while IFS=, read -r ModelID SerialNo Return OrderID SupplierName RestockNo
-do
-    if [[ $OrderID != NULL && $OrderID != OrderID ]]; then
-        filtered_products+=("$ModelID,$SerialNo,$Return,$OrderID,$SupplierName,$RestockNo")
-    fi
-done < Product.csv
-
-# Calculate the number of rows to select based on the provided percentage
-total_lines=${#filtered_products[@]}
+total_lines=$(( $(wc -l < Purchased.csv) - 1 ))
 num_rows=$((total_lines * 9 / 10))
 
-# Select a random subset of the filtered rows
-selected_products=()
-for i in $(shuf -i  0-$((total_lines-1)) -n $num_rows)
-do
-    selected_products+=("${filtered_products[$i]}")
-done
+echo "Generating reviews for 0-$num_rows products..."
+
+mapfile -t rows < <(tail -n +2 Purchased.csv)
 
 # Output the header
 echo "UserID,ModelID,Rating,Message" > Review.csv
@@ -43,8 +30,13 @@ count=1
 declare -A user_model_pairs
 
 # For each selected row
-for product in "${filtered_products[@]}"; do
-    IFS=, read -r ModelID SerialNo Return OrderID SupplierName RestockNo <<< "$product"
+for purchase in "${rows[@]}"; do
+
+    if ((num_rows == 0)); then
+        break
+    fi
+
+    IFS=',' read -r ModelID _ OrderID _ <<< "$purchase"
 
     # Find the row with the corresponding OrderID in Order.csv and retrieve the email
     Email=$(awk -F, -v OrderID="$OrderID" '$1 == OrderID {print $5}' Order.csv)
@@ -61,7 +53,7 @@ for product in "${filtered_products[@]}"; do
     user_model_pairs["$UserID,$ModelID"]=1
 
     # Generate a random rating between 0 and 10
-    Rating=$((RANDOM % 11))
+    Rating=$((RANDOM % 6))
 
     # Select the corresponding message
     if (( count % 5 == 0 )); then
@@ -69,6 +61,8 @@ for product in "${filtered_products[@]}"; do
     else
         echo "$UserID,$ModelID,$Rating,\"${messages[$Rating]}\"" >> Review.csv
     fi
-    count=$((count + 1))
+    num_rows=$((num_rows - 1))
 
 done
+
+echo -e "Generated 'Review.csv' with $(( $(wc -l < Review.csv) - 1 )) rows.\n"

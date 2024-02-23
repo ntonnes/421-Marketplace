@@ -1,42 +1,32 @@
 #!/bin/bash
 
-num_shippers=$1
-products_per_shipment=$2
+num_shipments=$1
+echo creating $num_shipments shipments...
 
-echo "ShipmentNo,ShipperName,OrderID,ModelID,SerialNo,DeliverDate,ShipDate" > Shipment.csv
+declare -A shippers
+shippers=(
+    ["Canada Post"]=1 ["Purolator"]=1 ["FedEx Canada"]=1 ["UPS Canada"]=1
+    ["Canpar"]=1 ["Loomis Express"]=1 ["DHL Canada"]=1 ["TST Overland Express"]=1
+    ["Dicom"]=1 ["Day & Ross"]=1 ["Mackie Moving Systems"]=1 ["Manitoulin Transport"]=1
+    ["Cardinal Couriers"]=1 ["Nationex"]=1 ["Intelcom Express"]=1
+)
 
-# Filter Product.csv for rows with non-NULL OrderIDs, shuffle them, and save to filtered_products.csv
-awk -F, 'NR > 1 && $4 != "NULL" && $1 != "NULL" && $2 != "NULL"' Product.csv | shuf > filtered_products.csv
+echo "ShipmentNo,ShipperName,DeliverDate,ShipDate" > Shipment.csv
 
-# Initialize shipment number and shipper number
-shipmentNo=1
-shipperNo=1
-num_products=$((RANDOM % products_per_shipment + 1))
+# Convert the keys of the associative array to a regular array
+shipperNames=("${!shippers[@]}")
 
-# Read the filtered_products.csv file line by line
-while IFS=, read -r modelID serialNo return orderID supplierName restockNo; do
+for ((i=1; i<=$num_shipments; i++)); do
+    # Select a random shipper
+    shipperName=${shipperNames[$RANDOM % ${#shipperNames[@]}]}
+
     # Create a shipment in Shipment.csv
     randomDays=$(( RANDOM % 1096 ))
     shipDate=$(date -I -d "2022-01-01 + $randomDays days")
-    deliverDate=$(date -I -d "$shipDate + 3 days")
-    echo "$shipmentNo,Shipper$shipperNo,$orderID,$modelID,$serialNo,$deliverDate,$shipDate" >> Shipment.csv
+    deliverDate=$(date -I -d "$shipDate + $((RANDOM % 8 + 1)) days")
+    echo "${shippers[$shipperName]},$shipperName,$deliverDate,$shipDate" >> Shipment.csv
 
-    num_products=$((num_products - 1))
-
-    # Advance to the next shipment number or shipper number
-    if ((num_products == 0)); then
-        # If the last shipper has been used, reset to the first shipper and increment the shipment number
-        if ((shipperNo == num_shippers)); then
-            shipperNo=1
-            num_products=$((RANDOM % products_per_shipment + 1))
-            shipmentNo=$((shipmentNo + 1))
-        # Otherwise, increment the shipper number
-        else 
-            shipperNo=$((shipperNo + 1))
-            num_products=$((RANDOM % products_per_shipment + 1))
-        fi
-    fi
-done < filtered_products.csv
-
-# Remove the temporary file
-rm filtered_products.csv
+    # Increment the shipment number for the selected shipper
+    shippers[$shipperName]=$((shippers[$shipperName] + 1))
+done
+echo -e "Generated 'Shipment.csv' with $(( $(wc -l < Shipment.csv) - 1 )) rows.\n"

@@ -1,23 +1,27 @@
 #!/bin/bash
 
 # Clear the file and add headers
+echo "Creating $1 orders..."
 echo "OrderID,DeliverAdd,Total,Date,Email,CardNum" > Order.csv
-
-# Get all order IDs
-mapfile -t orderIDs < <(tail -n +2 Product.csv | cut -d, -f4 | sort | uniq)
 
 # Get all card numbers
 mapfile -t cardNums < <(tail -n +2 Card.csv | cut -d, -f1)
-
 counter=1
 
+# Create an associative array to store used OrderIDs
+declare -A usedOrderIDs
+
 # For each order ID
-for orderID in "${orderIDs[@]}"
+for ((i=1; i<=$1; i++)) # replace 100 with the number of orders you want to generate
 do
-    # Skip if orderID is NULL
-    if [ "$orderID" = "NULL" ]; then
-        continue
-    fi
+    # Generate a unique 9-digit OrderID
+    while true; do
+        orderID=$(( RANDOM % 900000000 + 100000000 )) # generate a random 9-digit number
+        if [[ -z ${usedOrderIDs[$orderID]} ]]; then
+            usedOrderIDs[$orderID]=1
+            break
+        fi
+    done
 
     # Get a random card number
     cardNum=${cardNums[$RANDOM % ${#cardNums[@]}]}
@@ -35,20 +39,6 @@ do
 
     deliverAdd="Address $counter"
 
-    # Filter Product.csv for rows where column 4 = $orderID and save to purchased_items.csv
-    awk -F, -v orderID="$orderID" '$4 == orderID' Product.csv > purchased_items.csv
-
-    # Initialize total
-    total=0
-
-    # Read the purchased_items.csv file line by line
-    while IFS=, read -r modelID serialNo return currentOrderID supplierName restockNo; do
-        # Retrieve the price for this modelID from Model.csv and add it to total
-        price=$(awk -F, -v modelID="$modelID" '$1 == modelID {print $2}' Model.csv)
-        total=$(awk -v total="$total" -v price="$price" 'BEGIN {print total + price}')
-    done < purchased_items.csv
-    rm purchased_items.csv
-
     # Get a random number of days in the past (up to 365)
     daysAgo=$((RANDOM % 365))
 
@@ -56,6 +46,7 @@ do
     pastDate=$(date -d "-$daysAgo days" +%Y-%m-%d)
 
     # Write the row to Order.csv
-    echo "$orderID,$deliverAdd,$total,$pastDate,$email,$cardNum" >> Order.csv
+    echo "$orderID,$deliverAdd,0.00,$pastDate,$email,$cardNum" >> Order.csv
     counter=$((counter + 1))
 done
+echo -e "Generated 'Order.csv' with $(( $(wc -l < Order.csv) - 1 )) rows.\n"
