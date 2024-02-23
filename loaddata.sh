@@ -15,6 +15,3 @@ for file in CSV_files/*.csv; do
         echo "INSERT INTO $tablename VALUES $values;" >> loaddata.sql
     done < "$file"
 done
-
-# Load the data into the database - commented out for now
-# db2 -t -v < loaddata.sql 2>&1 | tee loaddata.log

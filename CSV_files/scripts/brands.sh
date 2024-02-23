@@ -3,21 +3,33 @@
 # Number of brand pages to create
 num_brands=$1
 
+brands=(
+    "Apple" "Samsung" "Microsoft" "Sony" "Nike" 
+    "Adidas" "KitchenAid" "Lego" "Hasbro" "Starbucks" 
+    "Amazon" "Google" "Pfizer" "Johnson & Johnson" "Disney" 
+    "Toyota" "Fisher-Price" "Mercedes-Benz" "Canon" "Nikon" 
+    "Chanel" "Gucci" "Louis Vuitton" "IKEA" "Versace" 
+    "Bose" "Dell" "Logitech" "Panasonic" "Philips"
+)
+
+# Shuffle brands and select the first $num_brands
+IFS=$'\n' selected_brands=($(printf "%s\n" "${brands[@]}" | shuf -n $num_brands))
+
 # Create BrandPage.csv and add headers
 echo -e "\nCreating $num_brands brand pages..."
 echo "URL,Name,Description" > BrandPage.csv
 
 # For each brand page to create
-for ((i=1; i<=$num_brands; i++)); do
+for ((i=0; i<$num_brands; i++)); do
     # Create a URL and a name
-    url="www.421market.com/brand$i"
-    name="Brand $i"
+    url="www.421market.com/$(echo "${selected_brands[i]}" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')"
+    name="${selected_brands[i]}"
 
     # Assign ~20% NULL descriptions and ~80% a description
-    if (( i % 5 == 0 )); then
+    if (( (i+1) % 5 == 0 )); then
         description="NULL"
     else
-        description="This is the description for Brand $i."
+        description="This is the description for ${selected_brands[i]}."
     fi
 
     # Write the row to BrandPage.csv
