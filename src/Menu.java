@@ -1,58 +1,55 @@
-import javafx.application.Application;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+import javax.swing.*;
+import java.awt.*;
 
-public class Menu extends Application {
-    @Override
-    public void start(Stage primaryStage) {
+public class Menu {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(Menu::createAndShowGUI);
+    }
 
-        // Create title wrapped in a centered HBox
-        Label title = new Label("421 Marketplace");
-        title.getStyleClass().add("title");
-        HBox hbox = new HBox(title);
-        hbox.setAlignment(Pos.CENTER);
+    private static void createAndShowGUI() {
+        UIManager.put("Panel.background", Color.DARK_GRAY);
+        UIManager.put("Button.background", Color.LIGHT_GRAY);
+        UIManager.put("Button.foreground", Color.BLACK);
+        UIManager.put("Label.foreground", Color.WHITE);
 
-        // Create buttons for tasks and quit
-        Button button1 = new Button("Task 1");
-        Button button2 = new Button("Task 2");
-        Button button3 = new Button("Task 3");
-        Button button4 = new Button("Quit");
+        JFrame frame = new JFrame("421 Marketplace");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 400);
 
-        // Add action listeners to buttons to redirect to tasks or quit
-        button1.setOnAction(e -> System.out.println("You selected task 1"));
-        button2.setOnAction(e -> System.out.println("You selected task 2"));
-        button3.setOnAction(e -> System.out.println("You selected task 3"));
-        button4.setOnAction(e -> {
+        JLabel title = new JLabel("421 Marketplace", SwingConstants.CENTER);
+        title.setFont(new Font("Serif", Font.BOLD, 30)); // Increase font size to 30
+        title.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); // Add 20 pixels of padding to the top
+
+        JButton button1 = new JButton("Task 1");
+        button1.addActionListener(e -> System.out.println("You selected task 1"));
+
+        JButton button2 = new JButton("Task 2");
+        button2.addActionListener(e -> System.out.println("You selected task 2"));
+
+        JButton button3 = new JButton("Task 3");
+        button3.addActionListener(e -> System.out.println("You selected task 3"));
+
+        JButton button4 = new JButton("Quit");
+        button4.addActionListener(e -> {
             System.out.println("Exiting the program...");
             System.exit(0);
         });
 
-        // Create a VBox and add the buttons to it
-        VBox vbox = new VBox(10, button1, button2, button3, button4);
-        vbox.setAlignment(Pos.CENTER);
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 0, 10, 0);
 
-        // Add the title HBox and options VBox to a BorderPane within the scene
-        BorderPane borderPane = new BorderPane();
-        borderPane.setTop(hbox); 
-        borderPane.setCenter(vbox);
-        Scene scene = new Scene(borderPane, 400, 400);
+        buttonPanel.add(button1, gbc);
+        buttonPanel.add(button2, gbc);
+        buttonPanel.add(button3, gbc);
+        buttonPanel.add(button4, gbc);
 
-        // Apply the dark theme CSS stylesheet
-        scene.getStylesheets().add(getClass().getResource("dark-theme.css").toExternalForm());
+        frame.getContentPane().add(title, BorderLayout.NORTH);
+        frame.getContentPane().add(buttonPanel, BorderLayout.CENTER);
 
-        // Set the scene in the stage and show the stage
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("421 Marketplace");
-        primaryStage.show();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 }
