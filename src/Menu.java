@@ -8,6 +8,7 @@ public class Menu {
     private static JLabel nameLabel;
     private static JTextField emailField;
     private static JPasswordField passwordField;
+    private static Login.User user; // Store the logged-in user
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Menu::createAndShowGUI);
@@ -110,9 +111,10 @@ public class Menu {
         String email = emailField.getText();
         String password = new String(passwordField.getPassword());
 
-        if (Login.validate(email, password)) {
-            String name = Login.getName(email); // Assuming you have a method to get the name
-            nameLabel.setText("Hello, " + name);
+        user = Login.validate(email, password); // validate now returns a User object
+
+        if (user != null) { // Check if user is not null instead of checking if validate returned true
+            nameLabel.setText("Hello, " + user.name + "!"); // Get name from User object
 
             frame.getContentPane().remove(loginPanel);
             frame.getContentPane().add(buttonPanel, BorderLayout.CENTER);
