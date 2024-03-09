@@ -24,6 +24,8 @@ public class Login {
     private static JTextField lastNameField;
     private static JFormattedTextField dobField;
 
+    private static Font font = new Font("Serif", Font.BOLD, 16);
+
 
     // Class to hold name, userID, and email
     public static class User {
@@ -51,6 +53,18 @@ public class Login {
         field.setPreferredSize(new Dimension(field.getPreferredSize().width, 30)); 
         field.setCaretColor(Color.WHITE); 
         return field;
+    }
+
+    private static JLabel makeLabel(String text, Boolean required) {
+        String asterisk = "";
+        if (required) {
+            asterisk = "<font color='red'>* </font>";
+        }
+
+        JLabel label = new JLabel("<html>" + asterisk + text + "</html>");
+        label.setFont(font);
+        label.setForeground(Color.WHITE);
+        return label;
     }
 
     // Login/Sign Up Task
@@ -174,7 +188,7 @@ public class Login {
         GridBagConstraints gbcField = new GridBagConstraints();
         gbcField.gridwidth = GridBagConstraints.REMAINDER;
         gbcField.fill = GridBagConstraints.HORIZONTAL;
-        gbcField.insets = new Insets(1, 0, 0, 0); // larger gap after field
+        gbcField.insets = new Insets(1, 5, 0, 0); // larger gap after field
 
         MaskFormatter dateMask;
         try {
@@ -187,9 +201,9 @@ public class Login {
 
         // Add boxes to enter first name, last name, email, password, and date of birth
         firstNameField = (JTextField) beautifyField(new JTextField(120));
-        lastNameField = new JTextField(125);
-        emailField = new JTextField(255);
-        passwordField = new JPasswordField(255);
+        lastNameField = (JTextField) beautifyField(new JTextField(125));
+        emailField = (JTextField) beautifyField(new JTextField(255));
+        passwordField = (JPasswordField) beautifyField(new JPasswordField(20));
         dobField = new JFormattedTextField(dateMask);
 
         // Add a 'Sign Up' button that submits the typed information to the database when clicked
@@ -197,15 +211,15 @@ public class Login {
         signupButton.addActionListener(e -> validateSignup());
 
         // Place the initialized elements in the panel grid
-        signupPanel.add(new JLabel("<html><font color='red'>* </lfont>First Name:</html>"), gbcLabel);
+        signupPanel.add(makeLabel("First Name:", true), gbcLabel);
         signupPanel.add(firstNameField, gbcField);
-        signupPanel.add(new JLabel("<html><font color='red'>* </font>Last Name:</html>"), gbcLabel);
+        signupPanel.add(makeLabel("Last Name:", true), gbcLabel);
         signupPanel.add(lastNameField, gbcField);
-        signupPanel.add(new JLabel("<html><font color='red'>* </font>Email:</html>"), gbcLabel);
+        signupPanel.add(makeLabel("Email:", true), gbcLabel);
         signupPanel.add(emailField, gbcField);
-        signupPanel.add(new JLabel("<html><font color='red'>* </font>Password:</html>"), gbcLabel);
+        signupPanel.add(makeLabel("Password:", true), gbcLabel);
         signupPanel.add(passwordField, gbcField);
-        signupPanel.add(new JLabel("Date of Birth (dd/mm/yyy):"), gbcLabel);
+        signupPanel.add(makeLabel("Date of Birth (MM/DD/YYYY):", false), gbcLabel);
         signupPanel.add(dobField, gbcField);
         signupPanel.add(signupButton, gbcLabel);
 
