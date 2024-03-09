@@ -4,17 +4,19 @@ import java.awt.*;
 public class Menu {
     private static JFrame frame;
     private static JPanel buttonPanel;
-    private static JPanel loginPanel;
     private static JLabel nameLabel;
-    private static JTextField emailField;
-    private static JPasswordField passwordField;
+    private static Login.User user = new Login.User("guest",null,null,null,null);
 
     // This class contains the name, email, and userID of the user who is logged into the app. user=NULL until
     // the user completes the login task, after which the user instance becomes populated with that user's info.
     // Use this information to execute tasks and queries specific to the user.
     // TODO: force the user to either log in, or continue as guest. If the user is a guest, generate a new userID
     // TODO: and add it to the database. Delete the user from the database when the application is closed.
-    private static Login.User user;
+    
+    public static JFrame getFrame() { return frame; }
+    public static JPanel getButtons() { return buttonPanel; }
+    public static JLabel getNameLabel() { return nameLabel; }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Menu::createAndShowGUI);
@@ -30,7 +32,7 @@ public class Menu {
         // Initializes the application managed by the OS
         frame = new JFrame("421 Marketplace");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 400);
+        frame.setSize(1000,800);
 
         // Places the large title in the top + center of the window
         JLabel title = new JLabel("421 Marketplace", SwingConstants.CENTER);
@@ -82,8 +84,8 @@ public class Menu {
         });
 
         // Calls the method to complete the login task when selected
-        JButton loginButton = new JButton("Login");
-        loginButton.addActionListener(e -> showLoginPanel());
+        JButton loginButton = new JButton("Login/Sign Up");
+        loginButton.addActionListener(e -> Login.showLoginPanel());
 
         // Adds the buttons to the GUI
         buttonPanel.add(button1, gbc);
@@ -95,62 +97,8 @@ public class Menu {
         frame.setVisible(true);
     }
 
-    // Method to show the login panel in the GUI
-    private static void showLoginPanel() {
-        // Initialize the panel
-        loginPanel = new JPanel(new GridBagLayout());
-        loginPanel.setBackground(Color.DARK_GRAY);
-
-        // Initialize a grid for formatting within the panel
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(10, 0, 10, 0);
-
-        // Add a boxes to enter email and password
-        emailField = new JTextField(20);
-        passwordField = new JPasswordField(20);
-
-        // Add an 'Enter' button that submits the typed information to validateAndLogin when clicked
-        JButton enterButton = new JButton("Enter");
-        enterButton.addActionListener(e -> validateAndLogin());
-
-        // Place the initialized elements in the panel grid
-        loginPanel.add(new JLabel("Email:"), gbc);
-        loginPanel.add(emailField, gbc);
-        loginPanel.add(new JLabel("Password:"), gbc);
-        loginPanel.add(passwordField, gbc);
-        loginPanel.add(enterButton, gbc);
-
-        // Remove the tasks button panel and add the newly created login panel
-        frame.getContentPane().remove(buttonPanel);
-        frame.getContentPane().add(loginPanel, BorderLayout.CENTER);
-        frame.revalidate();
-        frame.repaint();
-    }
-
-    // Method to adjust the GUI according to the results of the login attempt
-    private static void validateAndLogin() {
-        // Get the typed information
-        String email = emailField.getText();
-        String password = new String(passwordField.getPassword());
-
-        // Get the user object if the login is valid
-        user = Login.validate(email, password);
-
-        // If the login is valid, return to the original home panel and show the welcome message
-        if (user != null) {
-            nameLabel.setText("Hello, " + user.name + "!");
-
-            frame.getContentPane().remove(loginPanel);
-            frame.getContentPane().add(buttonPanel, BorderLayout.CENTER);
-
-            frame.revalidate();
-            frame.repaint();
-
-        // If the login is invalid, show an error popup
-        } else {
-            JOptionPane.showMessageDialog(frame, "Invalid email or password.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+    public static void setUser(Login.User usr) {
+        Menu.user = usr;
+        nameLabel.setText("Welcome, " + user.name + "!");
     }
 }
