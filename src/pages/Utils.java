@@ -37,15 +37,6 @@ public class Utils {
         return label;
     }
 
-    // Method to add non-breaking spaces to a string, fixes a problem with grid formatting
-    public static String space(int n) {
-        StringBuilder sb = new StringBuilder(n);
-        for (int i = 0; i < n; i++) {
-            sb.append("\u00A0");
-        }
-        return sb.toString();
-    }
-
     // Method to create a button; with overloaded methods to simplify default button creation
     public static JButton createButton(String text, ActionListener action, Font font, Color foreground, Color background) {
         JButton button = new JButton(text);
@@ -53,8 +44,6 @@ public class Utils {
         button.setFont(font);
         button.setForeground(foreground);
         button.setBackground(background);
-        button.setBorderPainted(false);
-        button.setFocusPainted(false);
         return button;
     }
     public static JButton createButton(String text, ActionListener action, Font font) {

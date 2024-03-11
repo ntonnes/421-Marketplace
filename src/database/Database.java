@@ -1,4 +1,6 @@
 package database;
+import users.User;
+
 import java.sql.*;
 
 public class Database {
@@ -25,6 +27,56 @@ public class Database {
         }
     }
 
+    public static void createCustomer(User user, String name, String email, String password, String dob) {
+        try {
+            try (PreparedStatement insertStmt = db.prepareStatement("INSERT INTO Customer (userID, Name, Email, Password, DOB) VALUES (?, ?, ?, ?, ?)")) {
+                insertStmt.setInt(1, user.userID);
+                insertStmt.setString(2, dob);
+                insertStmt.setString(3, password);
+                insertStmt.setString(4, email);
+                insertStmt.setString(5, name);
+                insertStmt.executeUpdate();
+                db.commit();
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while creating customer in the database");
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean emailIsUnique(String email) {
+        try {
+            try (PreparedStatement checkStmt = db.prepareStatement("SELECT * FROM Customer WHERE Email = ?")) {
+                checkStmt.setString(1, email);
+
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next()) {
+                        System.out.println("An account with that email already exists.");
+                        return false;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while checking if email is unique");
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public static void deleteUser(User user) {
+        try {
+            try (PreparedStatement deleteStmt = db.prepareStatement("DELETE FROM User WHERE userID = ?")) {
+                deleteStmt.setInt(1, user.userID);
+                deleteStmt.executeUpdate();
+                db.commit();
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while deleting user from the database");
+            e.printStackTrace();
+        }
+    }
+
     public static int getNewUserID() {
         try {
             while (true) {
@@ -38,6 +90,7 @@ public class Database {
                             try (PreparedStatement insertStmt = db.prepareStatement("INSERT INTO User (userID) VALUES (?)")) {
                                 insertStmt.setInt(1, userID);
                                 insertStmt.executeUpdate();
+                                db.commit();
                             }
 
                             return userID;

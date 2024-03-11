@@ -1,4 +1,6 @@
 package pages;
+import main.Main;
+
 import javax.swing.*;
 
 import java.awt.*; // Import the FlowLayout class
@@ -7,6 +9,7 @@ public class Menu extends Page{
 
     public Menu() {
         super("Main Menu", new FlowLayout()); // Add this line to invoke the constructor of the superclass
+        this.previousPage = this;
     }
 
     @Override
@@ -34,7 +37,7 @@ public class Menu extends Page{
         JButton button4 = new JButton("Quit");
         button4.addActionListener(e -> {
             System.out.println("Exiting the program...");
-            System.exit(0);
+            Main.quit();
         });
 
         content.add(button1, gbc);
