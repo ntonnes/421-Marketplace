@@ -16,11 +16,12 @@ public class Login extends Page {
     private static JPasswordField passwordField;
 
     public Login() {
-        super("Login", new BoxLayout(content, BoxLayout.PAGE_AXIS));
-        showLoginPanel();
+        super("Login", new BorderLayout());
+        content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
     }
 
-    public static void showLoginPanel() {
+    @Override
+    protected void populateContent() {
         // Add text entry fields for email and password
         emailField = new JTextField(20);
         passwordField = new JPasswordField(20);
@@ -33,9 +34,7 @@ public class Login extends Page {
         JLabel signupLabel = new JLabel("<html><body>Don't have an account? <a href='' style='color: #ADD8E6;'>Create one</a>.</body></html>");
         signupLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         signupLabel.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                Signup.showSignupPanel();
-            }
+            public void mouseClicked(MouseEvent e) { Page.goPage(new Signup()); }
         });
 
         // Add the components to the panel
@@ -46,9 +45,6 @@ public class Login extends Page {
         content.add(Utils.createButton("Log In", e -> validateLogin(), Utils.arialB));
         content.add(signupLabel);
     }
-
-    @Override
-    protected void populateContent() {}
 
     private static void validateLogin() {
         // Get the typed information
@@ -74,7 +70,7 @@ public class Login extends Page {
                         password, 
                         resultSet.getString("dob")
                     )); 
-                    goPrevPage();
+                    goBack();
                     
                 } else {
                     // If the password does not match

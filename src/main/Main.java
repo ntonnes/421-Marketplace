@@ -4,27 +4,24 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import pages.Menu;
 import users.*;
 import database.*;
 import pages.*;
-import java.awt.Color;
+
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Main {
     private static JFrame frame;
     public static User user;
+    public static Banner banner = new Banner("421 Marketplace");
     public static Page currentPage = new Menu();
-    public static Banner banner = new Banner("421 Marketplace");;
 
     public static void setUser(User u) {
         user = u;
         banner.update();
-    }
-
-    private static int quit() {
-        Database.disconnect();
-        frame.dispose();
-        System.exit(0);
-        return 1;
     }
 
     public static JFrame getFrame() { return frame; }
@@ -40,15 +37,23 @@ public class Main {
         UIManager.put("Label.foreground", Color.WHITE);
 
         frame = new JFrame("421 Marketplace");
-        frame.setDefaultCloseOperation(quit());
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000,800);
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Database.disconnect();
+            }
+        });
 
         Database.connect();
         user = User.newGuest();
 
+
         currentPage.previousPage = currentPage;
-        frame.getContentPane().add(banner.panel);
-        frame.getContentPane().add(currentPage.panel);
+        frame.getContentPane().add(banner.panel, BorderLayout.NORTH);
+        frame.getContentPane().add(currentPage.panel, BorderLayout.CENTER);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }

@@ -6,48 +6,56 @@ import main.Main;
 import java.awt.*;
 
 public abstract class Page {
-    public static Page currentPage;
     public Page previousPage;
-    public Banner banner;
     public JPanel panel;
     public static JPanel content;
     public JLabel title;
 
-    private static void switchPanel(JPanel oldPanel, JPanel newPanel, JFrame frame) {
-        frame.getContentPane().remove(oldPanel);
-        frame.getContentPane().add(newPanel, BorderLayout.CENTER);
+    public static void goPage(Page newPage) {
+        JFrame frame = Main.getFrame();
+        Page cur = Main.currentPage;
+        frame.getContentPane().remove(cur.panel);
+        frame.getContentPane().add(newPage.panel, BorderLayout.CENTER);
         frame.revalidate();
         frame.repaint();
     }
 
-    public static void goPrevPage() {
-        switchPanel(currentPage.panel, currentPage.previousPage.panel, Main.getFrame());
-        Page tmp = currentPage;
-        currentPage = currentPage.previousPage;
-        tmp.previousPage = null;
+    public static void goBack() {
+        JFrame frame = Main.getFrame();
+        Page cur = Main.currentPage;
+        if (cur.previousPage == null){
+            return;
+        }
+        frame.getContentPane().remove(cur.panel);
+        frame.getContentPane().add(cur.previousPage.panel, BorderLayout.CENTER);
+        frame.revalidate();
+        frame.repaint();
+        Main.currentPage = cur.previousPage;
+        cur.previousPage = null;
     }
 
     public Page(String name, LayoutManager layout) {
-        previousPage = currentPage;
-            
+
         panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.DARK_GRAY);
 
-        banner = Main.banner;
-                
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.setBackground(Color.DARK_GRAY);
+
         title = new JLabel(name, SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 20));
+        title.setFont(new Font("Tahoma", Font.BOLD, 20));
+        title.setForeground(Color.WHITE);
         title.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
         content = new JPanel(layout);
         content.setBackground(Color.DARK_GRAY);
         populateContent();
 
-        panel.add(banner.panel, BorderLayout.NORTH);
-        panel.add(title, BorderLayout.CENTER); 
-        panel.add(content, BorderLayout.SOUTH);
+        centerPanel.add(title, BorderLayout.NORTH);
+        centerPanel.add(content, BorderLayout.CENTER);
+
+        panel.add(centerPanel, BorderLayout.CENTER);
     }
 
     protected abstract void populateContent();
-
 }

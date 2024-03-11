@@ -7,6 +7,7 @@ public class Menu extends Page{
 
     public Menu() {
         super("Main Menu", new FlowLayout()); // Add this line to invoke the constructor of the superclass
+        this.previousPage = this;
     }
 
     @Override
