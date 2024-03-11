@@ -78,7 +78,7 @@ public class Utils {
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(top, left, bottom, right);
+        gbc.ipadx = Main.getFrame().getWidth() / 3;
         return gbc;
     }
-
 }

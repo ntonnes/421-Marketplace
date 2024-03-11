@@ -42,7 +42,8 @@ public class Main {
         // Initialize the application window
         frame = new JFrame("421 Marketplace");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1000,800);
+        frame.setSize(1200,800);
+        frame.setMinimumSize(new Dimension(800, 600));
 
         // Change the default close operation
         frame.addWindowListener(new WindowAdapter() {

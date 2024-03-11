@@ -13,8 +13,8 @@ import main.Main;
 import users.*;
 
 public class Login extends Form {
-    private static JTextField emailField;
-    private static JPasswordField passwordField;
+    private static JTextField emailField = new JTextField(20);
+    private static JPasswordField passwordField = new JPasswordField(20);
 
     public Login() {
         super("Login");
@@ -33,9 +33,9 @@ public class Login extends Form {
 
         // Add the components to the panel
         addLabel("Email:", false);
-        addTextField(new JTextField(20));
+        addTextField(emailField);
         addLabel("Password:", false);
-        addTextField(new JPasswordField(20));
+        addTextField(passwordField);
         addButton("Log in", BUTTON_BLUE, e -> submit());
         content.add(signupLabel, gbcL);
     }

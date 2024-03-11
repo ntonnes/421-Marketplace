@@ -6,6 +6,9 @@ import main.Main;
 import java.awt.*;
 
 public abstract class Page {
+    protected static Color BUTTON_BLUE = new Color(0, 123, 255);
+    protected static Color BUTTON_GREEN = new Color(76, 175, 80);
+
     public Page previousPage;
     public JPanel panel;
     public static JPanel content;

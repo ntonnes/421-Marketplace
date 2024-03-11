@@ -12,7 +12,6 @@ public abstract class Form extends Page{
     protected static GridBagConstraints gbcL = Utils.makeGBC(0, 0, 0, 0);
     protected static GridBagConstraints gbcF = Utils.makeGBC(0, 0, 30, 0);
     protected static GridBagConstraints gbcB = Utils.makeGBC(0, 0, 10, 0);
-    protected static Color BUTTON_BLUE = new Color(0, 123, 255);
 
     // Constructor
     public Form(String name) {
@@ -31,15 +30,14 @@ public abstract class Form extends Page{
     }
 
     // Method to add a formatted date entry field to the form
-    protected static void addDateField() {
+    protected static JFormattedTextField addDateField() {
         try {
             MaskFormatter dateMask = new MaskFormatter("##/##/####");
             dateMask.setPlaceholderCharacter('-');
-            JFormattedTextField field = new JFormattedTextField(dateMask);
-            addTextField(field);
+            return new JFormattedTextField(dateMask);
         } catch (ParseException ex) {
             ex.printStackTrace();
-            return;
+            return null;
         }
     };
 
