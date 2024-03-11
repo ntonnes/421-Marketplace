@@ -3,16 +3,10 @@ import database.Database;
 import main.Main;
 
 import java.awt.BorderLayout;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Random;
-
 import javax.swing.BoxLayout;
-
 import javax.swing.JFormattedTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
