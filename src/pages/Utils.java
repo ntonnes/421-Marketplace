@@ -53,15 +53,15 @@ public class Utils {
         return createButton(text, action, new Font("Arial", Font.BOLD, 16));
     }
 
-    public static JButton styleButton(String name, Color backgroundColor, int x, int y, ActionListener action) {
+    public static JButton styleButton(String name, Color color, int x, int y, ActionListener action) {
         JButton button = new JButton(name);
-        button.setBackground(backgroundColor);
-        button.setForeground(Color.WHITE); // Light gray
-        button.setBorderPainted(true); // Border painted
+        button.setBackground(color);
+        button.setForeground(Color.WHITE);
+        button.setBorderPainted(true);
         button.setFocusPainted(false);
         button.setFont(new Font("Tahoma", Font.BOLD, 14));
-        button.setBorder(BorderFactory.createRaisedBevelBorder()); // Raised bevel border for 3D effect
-        button.setPreferredSize(new Dimension(x, y)); // Set preferred size
+        button.setBorder(BorderFactory.createRaisedBevelBorder());
+        button.setPreferredSize(new Dimension(x, y));
         button.addActionListener(action);
         return button;
     }
