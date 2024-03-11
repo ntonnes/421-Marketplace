@@ -4,12 +4,19 @@ import main.Main;
 import javax.swing.*;
 
 import java.awt.*; // Import the FlowLayout class
+import java.awt.event.WindowEvent;
 
 public class Menu extends Page{
 
     public Menu() {
         super("Main Menu", new FlowLayout()); // Add this line to invoke the constructor of the superclass
         this.previousPage = this;
+    }
+
+    private void quit(){
+        System.out.println("Exiting the program...");
+        JFrame frame = Main.getFrame();
+        frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
     }
 
     @Override
@@ -33,12 +40,8 @@ public class Menu extends Page{
         button3.addActionListener(e -> System.out.println("You selected task 3"));
 
         // Exits the program and prints a console message
-        // TODO: Handle the logged-in user state
         JButton button4 = new JButton("Quit");
-        button4.addActionListener(e -> {
-            System.out.println("Exiting the program...");
-            Main.quit();
-        });
+        button4.addActionListener(e -> quit());
 
         content.add(button1, gbc);
         content.add(button2, gbc);

@@ -7,18 +7,20 @@ public class Database {
     private static final String DB_URL = "jdbc:db2://winter2024-comp421.cs.mcgill.ca:50000/COMP421";
     private static final String USER = "cs421g10";
     private static final String PASS = "Cat!Dog923";
-    public static Connection db;
+    public static final Connection db = connect();
 
-    public static void connect() {
+    private static Connection connect() {
         try {
-            db = DriverManager.getConnection(DB_URL, USER, PASS);
+            Connection db = DriverManager.getConnection(DB_URL, USER, PASS);
+            return db;
         } catch (SQLException e) {
             System.out.println("Error while connecting to the database");
             e.printStackTrace();
+            return null;
         }
     }
 
-    public static void disconnect() {
+    public static void disconnect(Connection db) {
         try {
             db.close();
         } catch (SQLException e) {

@@ -18,9 +18,9 @@ public class Utils {
         field.setOpaque(false);
         field.setBorder(new MatteBorder(0, 0, 1, 0, Color.WHITE));
         field.setForeground(Color.WHITE);
-        field.setFont(font); 
-        field.setPreferredSize(new Dimension(field.getPreferredSize().width, 30)); 
-        field.setCaretColor(Color.WHITE); 
+        field.setFont(font);
+        field.setPreferredSize(new Dimension(field.getPreferredSize().width, 30));
+        field.setCaretColor(Color.WHITE);
         return field;
     }
 
@@ -53,6 +53,19 @@ public class Utils {
         return createButton(text, action, new Font("Arial", Font.BOLD, 16));
     }
 
+    public static JButton styleButton(String name, Color color, int x, int y, ActionListener action) {
+        JButton button = new JButton(name);
+        button.setBackground(color);
+        button.setForeground(Color.WHITE);
+        button.setBorderPainted(true);
+        button.setFocusPainted(false);
+        button.setFont(new Font("Tahoma", Font.BOLD, 14));
+        button.setBorder(BorderFactory.createRaisedBevelBorder());
+        button.setPreferredSize(new Dimension(x, y));
+        button.addActionListener(action);
+        return button;
+    }
+
     // Method to show an error message popup
     public static void showErr(String message) {
         UIManager.put("OptionPane.messageForeground", Color.WHITE);
@@ -60,4 +73,12 @@ public class Utils {
         JOptionPane.showMessageDialog(Main.getFrame(), htmlMessage, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
+    public static GridBagConstraints makeGBC(int top, int left, int bottom, int right) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(top, left, bottom, right);
+        gbc.ipadx = Main.getFrame().getWidth() / 3;
+        return gbc;
+    }
 }
