@@ -1,21 +1,10 @@
 package pages;
 import database.Database;
 import main.Main;
-
-import java.awt.BorderLayout;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.awt.*;
+import java.text.*;
 import java.util.Date;
-import java.util.Random;
-
-import javax.swing.BoxLayout;
-
-import javax.swing.JFormattedTextField;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.text.MaskFormatter;
 
 public class Signup extends Page {
@@ -27,12 +16,21 @@ public class Signup extends Page {
     private static JFormattedTextField dobField;
 
     public Signup() {
-        super("Signup", new BorderLayout());
-        content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
+        super("Create an Account", new GridBagLayout());
     }
 
     @Override
     protected void populateContent() {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Define the vertical space beneath each type of component
+        GridBagConstraints gbcL = Utils.makeGBC(0, 0, 0, 0);
+        GridBagConstraints gbcF = Utils.makeGBC(0, 0, 30, 0);
+        GridBagConstraints gbcB = Utils.makeGBC(0, 0, 10, 0);
+        gbcF.ipadx = 200;
+
         // Create a mask for the date of birth field
         MaskFormatter dateMask;
         try {
@@ -44,24 +42,27 @@ public class Signup extends Page {
         }
 
         // Add fields to enter first name, last name, email, password, and date of birth
-        firstNameField = (JTextField) Utils.beautifyField(new JTextField(), Utils.arial);
-        lastNameField = (JTextField) Utils.beautifyField(new JTextField(), Utils.arial);
-        emailField = (JTextField) Utils.beautifyField(new JTextField(), Utils.arial);
-        passwordField = (JPasswordField) Utils.beautifyField(new JPasswordField(), Utils.arial);
-        dobField = (JFormattedTextField) Utils.beautifyField(new JFormattedTextField(dateMask), Utils.arial);
+        firstNameField = new JTextField(20);
+        lastNameField = new JTextField(20);
+        emailField = new JTextField(20);
+        passwordField = new JPasswordField(20);
+        dobField = new JFormattedTextField(dateMask);
 
-        // Place the initialized entry fields and labels in the panel grids
-        content.add(Utils.createLabel("First Name:", Utils.arialB, true));
-        content.add(firstNameField);
-        content.add(Utils.createLabel("Last Name:", Utils.arialB, true));
-        content.add(lastNameField);
-        content.add(Utils.createLabel("Email:", Utils.arialB, true));
-        content.add(emailField);
-        content.add(Utils.createLabel("Password:", Utils.arialB, true));
-        content.add(passwordField);
-        content.add(Utils.createLabel("Date of Birth (mm/dd/yyyy):", Utils.arialB, false));
-        content.add(dobField);
-        content.add(Utils.createButton("Sign Up", e -> validateSignup()));
+        // Add an 'Sign Up' button that submits the typed information to validateSignup when clicked
+        JButton signupButton = Utils.styleButton("Sign Up", new Color(0, 123, 255), 0, 30, e -> validateSignup());
+
+        // Add the components to the panel
+        content.add(Utils.createLabel("First Name:", Utils.arialB, true), gbcL);
+        content.add(Utils.beautifyField(firstNameField, Utils.arial), gbcF);
+        content.add(Utils.createLabel("Last Name:", Utils.arialB, true), gbcL);
+        content.add(Utils.beautifyField(lastNameField, Utils.arial), gbcF);
+        content.add(Utils.createLabel("Email:", Utils.arialB, true), gbcL);
+        content.add(Utils.beautifyField(emailField, Utils.arial), gbcF);
+        content.add(Utils.createLabel("Password:", Utils.arialB, true), gbcL);
+        content.add(Utils.beautifyField(passwordField, Utils.arial), gbcF);
+        content.add(Utils.createLabel("Date of Birth (mm/dd/yyyy):", Utils.arialB, false), gbcL);
+        content.add(Utils.beautifyField(dobField, Utils.arial), gbcF);
+        content.add(signupButton, gbcB);
     }
 
 

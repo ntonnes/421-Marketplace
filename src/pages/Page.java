@@ -37,25 +37,32 @@ public abstract class Page {
 
     public Page(String name, LayoutManager layout) {
 
+        // The panel that holds the page itself (i.e. everything except the banner at the top)
         panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.DARK_GRAY);
 
-        JPanel centerPanel = new JPanel(new BorderLayout());
-        centerPanel.setBackground(Color.DARK_GRAY);
+        // The panel that holds the title and the content
+        JPanel pagePanel = new JPanel(new BorderLayout());
+        pagePanel.setBackground(Color.DARK_GRAY);
 
+        // The title of the page
         title = new JLabel(name, SwingConstants.CENTER);
-        title.setFont(new Font("Tahoma", Font.BOLD, 20));
+        title.setFont(new Font("Tahoma", Font.BOLD, 25));
         title.setForeground(Color.WHITE);
-        title.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        title.setBorder(BorderFactory.createEmptyBorder(20, 0, 50, 0));
 
+        // The content of the page
         content = new JPanel(layout);
         content.setBackground(Color.DARK_GRAY);
         populateContent();
 
-        centerPanel.add(title, BorderLayout.NORTH);
-        centerPanel.add(content, BorderLayout.CENTER);
+        // Add the title and content to the pagePanel
+        pagePanel.add(title, BorderLayout.NORTH);
+        pagePanel.add(content, BorderLayout.CENTER);
 
-        panel.add(centerPanel, BorderLayout.CENTER);
+        // Place the pagePanel in the NORTH region of the main panel
+        // This ensures excess space is placed beneath the page content to avoid weird spacing
+        panel.add(pagePanel, BorderLayout.NORTH);
     }
 
     protected abstract void populateContent();

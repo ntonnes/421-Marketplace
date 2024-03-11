@@ -22,9 +22,6 @@ public class Login extends Page {
 
     @Override
     protected void populateContent() {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Define the vertical space beneath each type of component
         GridBagConstraints gbcL = Utils.makeGBC(0, 0, 0, 0);
@@ -36,7 +33,7 @@ public class Login extends Page {
         passwordField = new JPasswordField(20);
 
         // Add an 'Log in' button that submits the typed information to validateLogin when clicked
-        JButton loginButton = Utils.styleButton("Log in", new Color(0, 123, 255), 0, 30, e -> validateLogin());
+        JButton loginButton = Utils.styleButton("Log in", new Color(0, 123, 255), 0, 35, e -> validateLogin());
 
         // Create a label with a clickable "Create one" text that takes the user to the signup panel
         JLabel signupLabel = new JLabel("<html><body>Don't have an account? <a href='' style='color: #ADD8E6;'>Create one</a>.</body></html>");
