@@ -3,7 +3,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
+//The add review task
 public class Task1 {
     //Need to change all of these to connect to our database:
     static final String DB_URL = "jdbc:mysql://localhost/TUTORIALSPOINT";
@@ -76,6 +76,7 @@ public class Task1 {
                     stmt4.executeUpdate("INSERT INTO Review (UserID, ModelID, rating) VALUES (" + userID + ", " + modelToReview + ", " + rating + ")");
                 }
             }
+            conn.close();
         }catch (SQLException e) {
             e.printStackTrace();
         }
