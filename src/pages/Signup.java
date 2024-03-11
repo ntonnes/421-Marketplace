@@ -1,72 +1,42 @@
 package pages;
 import database.Database;
 import main.Main;
-
-import java.awt.BorderLayout;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.text.*;
 import java.util.Date;
-import javax.swing.BoxLayout;
-import javax.swing.JFormattedTextField;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.text.MaskFormatter;
+import javax.swing.*;
 
-public class Signup extends Page {
+public class Signup extends Form {
 
-    private static JTextField firstNameField;
-    private static JTextField lastNameField;
-    private static JTextField emailField;
-    private static JPasswordField passwordField;
-    private static JFormattedTextField dobField;
+    private static JTextField firstNameField = new JTextField(20);
+    private static JTextField lastNameField = new JTextField(20);
+    private static JTextField emailField = new JTextField(20);
+    private static JPasswordField passwordField = new JPasswordField(20);
+    private static JFormattedTextField dobField = addDateField();
 
     public Signup() {
-        super("Signup", new BorderLayout());
-        content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
+        super("Create an Account");
     }
 
     @Override
     protected void populateContent() {
-        // Create a mask for the date of birth field
-        MaskFormatter dateMask;
-        try {
-            dateMask = new MaskFormatter("##/##/####");
-            dateMask.setPlaceholderCharacter('-');
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-            return;
-        }
 
-        // Add fields to enter first name, last name, email, password, and date of birth
-        firstNameField = (JTextField) Utils.beautifyField(new JTextField(), Utils.arial);
-        lastNameField = (JTextField) Utils.beautifyField(new JTextField(), Utils.arial);
-        emailField = (JTextField) Utils.beautifyField(new JTextField(), Utils.arial);
-        passwordField = (JPasswordField) Utils.beautifyField(new JPasswordField(), Utils.arial);
-        dobField = (JFormattedTextField) Utils.beautifyField(new JFormattedTextField(dateMask), Utils.arial);
-
-        // Place the initialized entry fields and labels in the panel grids
-        content.add(Utils.createLabel("First Name:", Utils.arialB, true));
-        content.add(firstNameField);
-        content.add(Utils.createLabel("Last Name:", Utils.arialB, true));
-        content.add(lastNameField);
-        content.add(Utils.createLabel("Email:", Utils.arialB, true));
-        content.add(emailField);
-        content.add(Utils.createLabel("Password:", Utils.arialB, true));
-        content.add(passwordField);
-        content.add(Utils.createLabel("Date of Birth (mm/dd/yyyy):", Utils.arialB, false));
-        content.add(dobField);
-        content.add(Utils.createButton("Sign Up", e -> validateSignup()));
+        // Add the components to the panel
+        addLabel("First Name:", true);
+        addTextField(firstNameField);
+        addLabel("Last Name:", true);
+        addTextField(lastNameField);
+        addLabel("Email:", true);
+        addTextField(emailField);
+        addLabel("Password:", true);
+        addTextField(passwordField);
+        addLabel("Date of Birth (mm/dd/yyyy):", false);
+        addTextField(dobField);
+        addButton("Sign Up", BUTTON_GREEN, e -> submit());
     }
 
 
-    /**
-     * void validateSignup()
-     * <p>
-     * Validates the user's signup information by checking if the email is unique and then adding the user to the database.
-     * If the email is not unique, an error message is displayed. Called when the user clicks the 'Sign Up' button in the
-     * signup panel.
-     */
-    private static void validateSignup() {
+    @Override
+    protected void submit() {
 
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
