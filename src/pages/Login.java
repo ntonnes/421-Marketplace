@@ -17,19 +17,26 @@ public class Login extends Page {
     private static JPasswordField passwordField;
 
     public Login() {
-        super("Login", new BorderLayout());
-        content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
+        super("Login", new GridBagLayout());
     }
 
     @Override
     protected void populateContent() {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Define the vertical space beneath each type of component
+        GridBagConstraints gbcL = Utils.makeGBC(0, 0, 0, 0);
+        GridBagConstraints gbcF = Utils.makeGBC(0, 0, 30, 0);
+        GridBagConstraints gbcB = Utils.makeGBC(0, 0, 10, 0);
+
         // Add text entry fields for email and password
         emailField = new JTextField(20);
         passwordField = new JPasswordField(20);
 
         // Add an 'Log in' button that submits the typed information to validateLogin when clicked
-        JButton loginButton = new JButton("Log in");
-        loginButton.addActionListener(e -> validateLogin());
+        JButton loginButton = Utils.styleButton("Log in", new Color(0, 123, 255), 0, 30, e -> validateLogin());
 
         // Create a label with a clickable "Create one" text that takes the user to the signup panel
         JLabel signupLabel = new JLabel("<html><body>Don't have an account? <a href='' style='color: #ADD8E6;'>Create one</a>.</body></html>");
@@ -39,12 +46,12 @@ public class Login extends Page {
         });
 
         // Add the components to the panel
-        content.add(Utils.createLabel("Email:", Utils.arialB, false));
-        content.add(emailField);
-        content.add(Utils.createLabel("Password:", Utils.arialB, false));
-        content.add(passwordField);
-        content.add(Utils.createButton("Log In", e -> validateLogin(), Utils.arialB));
-        content.add(signupLabel);
+        content.add(Utils.createLabel("Email:", Utils.arialB, false), gbcL);
+        content.add(Utils.beautifyField(emailField, Utils.arial), gbcF);
+        content.add(Utils.createLabel("Password:", Utils.arialB, false), gbcL);
+        content.add(Utils.beautifyField(passwordField, Utils.arial), gbcF);
+        content.add(loginButton, gbcB);
+        content.add(signupLabel, gbcL);
     }
 
     private static void validateLogin() {
@@ -67,14 +74,14 @@ public class Login extends Page {
                     Database.deleteUser(Main.user);
                     // Set the user in the Menu class and switch to the main menu
                     Main.setUser(new Customer(
-                        resultSet.getInt("userID"), 
-                        resultSet.getString("name"), 
-                        email, 
-                        password, 
-                        resultSet.getString("dob")
+                            resultSet.getInt("userID"),
+                            resultSet.getString("name"),
+                            email,
+                            password,
+                            resultSet.getString("dob")
                     ));
                     goBack();
-                    
+
                 } else {
                     // If the password does not match
                     Utils.showErr("Password is incorrect.");

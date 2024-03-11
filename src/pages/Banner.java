@@ -17,9 +17,7 @@ public class Banner {
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Padding
 
         // Create the back button with custom colors and padding
-        JButton backButton = new JButton("Back");
-        backButton.addActionListener(e -> Page.goBack());
-        styleButton(backButton, new Color(171, 178, 191),80,10); // Lighter gray
+        JButton backButton = Utils.styleButton("Back", new Color(171, 178, 191),80,10, e -> Page.goBack()); // Lighter gray
 
         // Create a buffer panel and add it to the WEST of the BorderLayout
         JPanel bufferPanel = new JPanel();
@@ -58,12 +56,7 @@ public class Banner {
             JLabel welcomeLabel = new JLabel("Welcome, " + ((Customer) user).name);
             welcomePanel.add(welcomeLabel);
 
-            JButton logoutButton = new JButton("Logout");
-            logoutButton.addActionListener(e -> {
-                Main.user = User.newGuest();
-                update();
-            });
-            styleButton(logoutButton, Color.RED, 80, 20); // Small red button
+            JButton logoutButton = Utils.styleButton("Logout", Color.RED, 80, 20, e -> Main.setUser(User.newGuest())); // Small red button
             welcomePanel.add(logoutButton);
 
             accountContent = welcomePanel;
@@ -84,8 +77,7 @@ public class Banner {
         accountContent.setLayout(new FlowLayout(FlowLayout.RIGHT));
         accountContent.setBackground(new Color(40, 44, 52)); // Set the background color to match the banner
 
-        JButton loginButton = new JButton("Log in");
-        loginButton.addActionListener(e -> {
+        JButton loginButton = Utils.styleButton("Log in", new Color(0, 123, 255),100,40, e -> {
             if (Main.currentPage instanceof Login){
                 return;
             } else if (Main.currentPage.previousPage instanceof Login){
@@ -94,10 +86,9 @@ public class Banner {
                 Page.goPage(new Login());
             }
         });
-        styleButton(loginButton, new Color(0, 123, 255),100,40); // Pleasant green
 
-        JButton signUpButton = new JButton("Sign up");
-        signUpButton.addActionListener(e -> {
+
+        JButton signUpButton = Utils.styleButton("Sign up", new Color(76, 175, 80),100,40, e -> {
             if (Main.currentPage instanceof Signup){
                 return;
             } else if (Main.currentPage.previousPage instanceof Signup){
@@ -106,7 +97,6 @@ public class Banner {
                 Page.goPage(new Signup());
             }
         });
-        styleButton(signUpButton, new Color(76, 175, 80),100,40); // White
 
         accountContent.add(loginButton);
         accountContent.add(signUpButton);
@@ -114,13 +104,4 @@ public class Banner {
         return accountContent;
     }
 
-    private void styleButton(JButton button, Color backgroundColor, int x, int y) {
-        button.setBackground(backgroundColor);
-        button.setForeground(Color.WHITE); // Light gray
-        button.setBorderPainted(true); // Border painted
-        button.setFocusPainted(false);
-        button.setFont(new Font("Tahoma", Font.BOLD, 12));
-        button.setBorder(BorderFactory.createRaisedBevelBorder()); // Raised bevel border for 3D effect
-        button.setPreferredSize(new Dimension(x, y)); // Set preferred size
-    }
 }

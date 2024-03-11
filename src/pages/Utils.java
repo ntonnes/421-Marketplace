@@ -18,9 +18,9 @@ public class Utils {
         field.setOpaque(false);
         field.setBorder(new MatteBorder(0, 0, 1, 0, Color.WHITE));
         field.setForeground(Color.WHITE);
-        field.setFont(font); 
-        field.setPreferredSize(new Dimension(field.getPreferredSize().width, 30)); 
-        field.setCaretColor(Color.WHITE); 
+        field.setFont(font);
+        field.setPreferredSize(new Dimension(field.getPreferredSize().width, 30));
+        field.setCaretColor(Color.WHITE);
         return field;
     }
 
@@ -53,11 +53,32 @@ public class Utils {
         return createButton(text, action, new Font("Arial", Font.BOLD, 16));
     }
 
+    public static JButton styleButton(String name, Color backgroundColor, int x, int y, ActionListener action) {
+        JButton button = new JButton(name);
+        button.setBackground(backgroundColor);
+        button.setForeground(Color.WHITE); // Light gray
+        button.setBorderPainted(true); // Border painted
+        button.setFocusPainted(false);
+        button.setFont(new Font("Tahoma", Font.BOLD, 14));
+        button.setBorder(BorderFactory.createRaisedBevelBorder()); // Raised bevel border for 3D effect
+        button.setPreferredSize(new Dimension(x, y)); // Set preferred size
+        button.addActionListener(action);
+        return button;
+    }
+
     // Method to show an error message popup
     public static void showErr(String message) {
         UIManager.put("OptionPane.messageForeground", Color.WHITE);
         String htmlMessage = "<html><body><p style='padding: 10px;'>" + message + "</p></body></html>";
         JOptionPane.showMessageDialog(Main.getFrame(), htmlMessage, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public static GridBagConstraints makeGBC(int top, int left, int bottom, int right) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(top, left, bottom, right);
+        return gbc;
     }
 
 }
