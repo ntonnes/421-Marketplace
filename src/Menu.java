@@ -10,7 +10,8 @@ public class Menu {
             System.out.println("1. Placeholder option 1");
             System.out.println("2. Placeholder option 2");
             System.out.println("3. Placeholder option 3");
-            System.out.println("4. Quit");
+            System.out.println("4. Placeholder option 4");
+            System.out.println("5. Quit");
 
             System.out.print("Enter your choice: ");
             option = scanner.nextInt();
@@ -29,12 +30,16 @@ public class Menu {
                     // Add your code for option 3 here
                     break;
                 case 4:
+                    System.out.println("You selected option 4");
+                    // Add your code for option 4 here
+                    break;
+                case 5:
                     System.out.println("Exiting the program...");
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");
             }
-        } while (option != 4);
+        } while (option != 5);
 
         scanner.close();
     }
