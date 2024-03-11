@@ -51,7 +51,22 @@ public class Banner {
         // Create a new accountContent based on the user's state
         User user = Main.user;
         if (user instanceof Customer) {
-            accountContent = new JLabel("Welcome, " + ((Customer) user).name);
+            JPanel welcomePanel = new JPanel();
+            welcomePanel.setLayout(new BoxLayout(welcomePanel, BoxLayout.Y_AXIS));
+            welcomePanel.setOpaque(false); // Make it invisible
+
+            JLabel welcomeLabel = new JLabel("Welcome, " + ((Customer) user).name);
+            welcomePanel.add(welcomeLabel);
+
+            JButton logoutButton = new JButton("Logout");
+            logoutButton.addActionListener(e -> {
+                Main.user = User.newGuest();
+                update();
+            });
+            styleButton(logoutButton, Color.RED, 80, 20); // Small red button
+            welcomePanel.add(logoutButton);
+
+            accountContent = welcomePanel;
         } else {
             accountContent = createAccountContent();
         }
