@@ -23,7 +23,7 @@ public class Main {
 
     public static void setUser(User u) {
         user = u;
-        banner.update();
+        banner.updateBanner();
     }
 
     public static JFrame getFrame() { return frame; }
