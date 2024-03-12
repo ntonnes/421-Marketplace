@@ -10,34 +10,19 @@ import java.sql.SQLException;
 import javax.swing.*;
 import users.Customer;
 
-public class Review extends Form {
+public class Review extends ListSelect {
     private JList<Model> modelList;
     private JPanel ratingPanel;
     private JSpinner ratingSpinner;
     private JTextArea messageArea;
+    private Customer customer;
 
     public Review() {
         super("Leave a Review");
     }
 
     @Override
-    protected void populateContent() {
-        if (!(Main.user instanceof Customer)) {
-            Utils.showErr("Please log into a customer account to leave a review");
-            goBack();
-            return;
-        } else {
-            Customer customer = (Customer) Main.user;
-            modelList = new JList<> (customer.getModelsOrdered());
-        }
-        
-        modelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        content.add(new JScrollPane(new JScrollPane(modelList)));
-
-        addButton("Review this Item", BUTTON_BLUE, e -> openReviewPanel());
-    }
-
-    private void openReviewPanel() {
+    public void populateContent() {
         Model selectedModel = modelList.getSelectedValue();
         if (selectedModel == null) {
             Utils.showErr("Please select a model.");
@@ -61,7 +46,7 @@ public class Review extends Form {
         }
     }
 
-    @Override
+    
     protected void submit() {
         int rating = (Integer) ratingSpinner.getValue();
         String message = messageArea.getText();
@@ -87,5 +72,37 @@ public class Review extends Form {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected Object[][] getData() {
+        Model[] modelsOrdered = customer.getModelsOrdered();
+        Object[][] data = new Object[modelsOrdered.length][3];
+
+        for (int i = 0; i < modelsOrdered.length; i++) {
+            Model model = modelsOrdered[i];
+            data[i][0] = model.getModelID();
+            data[i][1] = model.getPrice();
+            data[i][2] = model.getBrand();
+        }
+
+        return data;
+    }
+
+    @Override
+    protected String[] getColumnNames() {
+        return new String[] {"Model ID", "Price", "Brand"};
+    }
+
+    @Override
+    protected void select() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'select'");
+    }
+
+    @Override
+    protected void onSelection(Object[] rowData) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'onSelection'");
     }
 }

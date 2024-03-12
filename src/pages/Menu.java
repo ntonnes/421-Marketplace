@@ -1,5 +1,6 @@
 package pages;
 import main.Main;
+import users.Customer;
 
 import javax.swing.*;
 
@@ -35,9 +36,12 @@ public class Menu extends Page{
         JButton button2 = new JButton("Task 2");
         button2.addActionListener(e -> System.out.println("You selected task 2"));
 
-        // TODO: Implement Task 3
-        JButton button3 = new JButton("Task 3");
-        button3.addActionListener(e -> System.out.println("You selected task 3"));
+        JButton button3 = new JButton("Leave a Review");
+        button3.addActionListener(e -> {
+            if (!(Main.user instanceof Customer)) {
+                Utils.showErr("Please log into a customer account to leave a review");
+            } else { goPage(new Review()); }
+        });
 
         // Exits the program and prints a console message
         JButton button4 = new JButton("Quit");

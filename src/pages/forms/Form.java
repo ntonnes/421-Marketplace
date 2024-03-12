@@ -1,12 +1,14 @@
-package pages;
+package pages.forms;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
-
 import javax.swing.JFormattedTextField;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.MaskFormatter;
+
+import pages.Page;
+import pages.Utils;
 
 public abstract class Form extends Page{
     protected static GridBagConstraints gbcL = Utils.makeGBC(0, 0, 0, 0);
@@ -44,7 +46,6 @@ public abstract class Form extends Page{
     // Method to add a button to the form
     protected static void addButton(String text, Color color, ActionListener action) {
         content.add(Utils.styleButton(text, color, 0, 35, action), gbcB);
-        
     }
 
 

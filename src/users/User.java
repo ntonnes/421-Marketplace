@@ -11,4 +11,8 @@ public class User {
     public static User newGuest() {
         return new User(Database.getNewUserID());
     }
+
+    public int getUserID() {
+        return userID;
+    }
 }

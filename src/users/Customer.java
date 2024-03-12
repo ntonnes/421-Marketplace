@@ -4,7 +4,6 @@ import java.sql.*;
 import java.util.*;
 
 import database.*;
-import database.Order;
 
 public class Customer extends User {
     private String name;
@@ -21,12 +20,10 @@ public class Customer extends User {
         this.email = email;
         this.password = password;
         this.dob = dob;
+        this.modelsOrdered = new Model[0];
+        this.orderList = new Order[0];
         setModelsOrdered();
         setOrderList();
-    }
-
-    public Member makeMember() {
-        return new Member(this.userID, this.name, this.email, this.password, this.dob, 0);
     }
 
     private void setOrderList() {
@@ -42,7 +39,7 @@ public class Customer extends User {
             System.out.println("Error while retrieving orders from the database");
             e.printStackTrace();
         }
-        orderList = orders.toArray(new Order[0]);
+        orderList = orders.isEmpty() ? new Order[0] : orders.toArray(new Order[0]);
     }
 
     private void setModelsOrdered() {
@@ -57,7 +54,7 @@ public class Customer extends User {
                 }
             }
         }
-        modelsOrdered = models.toArray(new Model[0]);
+        modelsOrdered = models.isEmpty() ? new Model[0] : models.toArray(new Model[0]);
     }
     
 
@@ -80,10 +77,10 @@ public class Customer extends User {
         return dob;
     }
     public Model[] getModelsOrdered() {
-        return modelsOrdered;
+        return modelsOrdered != null ? modelsOrdered : new Model[0];
     }
     public Order[] getOrderList() {
-        return orderList;
+        return orderList != null ? orderList : new Order[0];
     }
 
     @Override

@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 
 import main.Main;
+import pages.forms.Login;
+import pages.forms.Signup;
 import users.*;
 
 public class Banner {

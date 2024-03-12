@@ -1,6 +1,9 @@
-package pages;
+package pages.forms;
 import database.Database;
 import main.Main;
+import pages.Page;
+import pages.Utils;
+
 import java.text.*;
 import java.util.Date;
 import javax.swing.*;

@@ -1,4 +1,4 @@
-package pages;
+package pages.forms;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -10,6 +10,8 @@ import javax.swing.*;
 
 import database.Database;
 import main.Main;
+import pages.Page;
+import pages.Utils;
 import users.*;
 
 public class Login extends Form {
@@ -71,6 +73,8 @@ public class Login extends Form {
                     ));
 
                     // Go back to the main menu
+                    Customer customer = (Customer) Main.user;
+                    System.out.println("Successfully logged in as user " + customer.getName() + ":\n\n" + customer.toString());
                     goBack();
 
                 } else {
