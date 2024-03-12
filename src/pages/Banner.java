@@ -63,7 +63,7 @@ public class Banner {
             accountContent.setLayout(new FlowLayout(FlowLayout.LEFT));
             accountContent.setOpaque(false); // Make it invisible
     
-            JLabel welcomeLabel = new JLabel("Welcome, " + ((Customer) user).name);
+            JLabel welcomeLabel = new JLabel("Welcome, " + ((Customer) user).getName());
             welcomeLabel.setFont(new Font("Serif", Font.BOLD, 20)); // Make the text larger
             accountContent.add(welcomeLabel);
     

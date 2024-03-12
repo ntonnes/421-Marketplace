@@ -10,11 +10,18 @@ public class Database {
     public static final Connection db = connect();
 
     private static Connection connect() {
+        try { 
+            Class.forName("com.ibm.db2.jcc.DB2Driver");
+        }
+        catch (ClassNotFoundException cnfe){ 
+            System.out.println("Error while fetching JDBC driver");
+            cnfe.printStackTrace();
+        }
         try {
             Connection db = DriverManager.getConnection(DB_URL, USER, PASS);
             return db;
         } catch (SQLException e) {
-            System.out.println("Error while connecting to the database");
+            System.out.println("Error while connecting to the database. Please set your ");
             e.printStackTrace();
             return null;
         }
