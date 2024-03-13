@@ -9,7 +9,7 @@ import javax.swing.*;
 import database.Database;
 import database.users.*;
 import main.Main;
-import pages.Page;
+import pages.Menu;
 import pages.Utils;
 
 public class Login extends Form {
@@ -17,7 +17,7 @@ public class Login extends Form {
     private static JPasswordField passwordField = new JPasswordField(20);
 
     public Login() {
-        super("Login");
+        super(new Menu(), "Login");
     }
 
     // Fills the GUI with page content
@@ -28,7 +28,7 @@ public class Login extends Form {
         JLabel signupLabel = new JLabel("<html><body>Don't have an account? <a href='' style='color: #ADD8E6;'>Create one</a>.</body></html>");
         signupLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         signupLabel.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) { Page.goPage(new Signup()); }
+            public void mouseClicked(MouseEvent e) { Main.goPage(new Signup()); }
         });
 
         // Add the components to the panel
@@ -37,7 +37,7 @@ public class Login extends Form {
         addLabel("Password:", false);
         addTextField(passwordField);
         addButton("Log in", BUTTON_BLUE, e -> submit());
-        content.add(signupLabel, gbcL);
+        addHTML("Don't have an account? ", "Create one", ".");
     }
 
     // Performs queries to validate the user's input
@@ -75,7 +75,7 @@ public class Login extends Form {
                     // Go back to the main menu
                     Customer customer = (Customer) Main.user;
                     System.out.println("\nSuccessfully logged in as user " + customer.getName() + ":\n" + customer.toString() + "\n");
-                    goBack();
+                    Main.goBack();
 
                 } else {
                     Utils.showErr("Password is incorrect.");

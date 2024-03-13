@@ -8,8 +8,8 @@ import javax.swing.table.DefaultTableModel;
 public abstract class ListSelect extends Page {
     protected JTable table;
 
-    public ListSelect(String name) {
-        super(name, new BorderLayout());
+    public ListSelect(Page lastPage, String name) {
+        super(lastPage, name, new BorderLayout());
         table = new JTable();
     }
 
@@ -20,14 +20,14 @@ public abstract class ListSelect extends Page {
     protected void displayTable() {
 
         JScrollPane scrollPane = new JScrollPane(table);
-        content.add(scrollPane, BorderLayout.CENTER);
+        this.add(scrollPane, BorderLayout.CENTER);
     }
 
     @Override
     protected void populateContent() {
         populateTable(getData(), getColumnNames());
         displayTable();
-        content.add(Utils.styleButton("Select", BUTTON_BLUE, 0, 35, e -> select()), BorderLayout.SOUTH);
+        this.add(Utils.styleButton("Select", BUTTON_BLUE, 0, 35, e -> select()), BorderLayout.SOUTH);
     }
 
     protected void select(){

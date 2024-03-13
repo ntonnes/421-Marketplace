@@ -24,6 +24,14 @@ public class Utils {
         return field;
     }
 
+    public static JLabel createTitle(String text) {
+        JLabel title = new JLabel(text, SwingConstants.CENTER);
+        title.setFont(new Font("Tahoma", Font.BOLD, 25));
+        title.setForeground(Color.WHITE);
+        title.setBorder(BorderFactory.createEmptyBorder(20, 0, 50, 0));
+        return title;
+    }
+
     // Method to create a label to accompany a text entry field
     public static JLabel createLabel(String text, Font font, Boolean required) {
         String asterisk = "";
@@ -77,6 +85,14 @@ public class Utils {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        return gbc;
+    }
+    public static GridBagConstraints makeGbc(int row, int top, int left, int bottom, int right) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.RELATIVE;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridy=row;
         gbc.insets = new Insets(top, left, bottom, right);
         gbc.ipadx = Main.getFrame().getWidth() / 3;
         return gbc;

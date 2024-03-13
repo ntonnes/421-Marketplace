@@ -11,8 +11,8 @@ import java.awt.event.WindowEvent;
 public class Menu extends Page{
 
     public Menu() {
-        super("Main Menu", new FlowLayout()); // Add this line to invoke the constructor of the superclass
-        this.previousPage = this;
+        super(null, "Main Menu", new GridBagLayout()); // Add this line to invoke the constructor of the superclass
+        this.lastPage = this;
     }
 
     private void quit(){
@@ -41,16 +41,16 @@ public class Menu extends Page{
         button3.addActionListener(e -> {
             if (!(Main.user instanceof Customer)) {
                 Utils.showErr("Please log into a customer account to leave a review");
-            } else { goPage(new Review()); }
+            } else { Main.goPage(new Review()); }
         });
 
         // Exits the program and prints a console message
         JButton button4 = new JButton("Quit");
         button4.addActionListener(e -> quit());
 
-        content.add(button1, gbc);
-        content.add(button2, gbc);
-        content.add(button3, gbc);
-        content.add(button4, gbc);
+        addContent(button1, gbc);
+        addContent(button2, gbc);
+        addContent(button3, gbc);
+        addContent(button4, gbc);
     }
 }

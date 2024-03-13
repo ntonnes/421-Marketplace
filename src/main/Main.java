@@ -15,15 +15,9 @@ import java.awt.event.WindowEvent;
 public class Main {
     private static JFrame frame;
     public static User user;
-    public static Banner banner = new Banner("421 Marketplace");
-    public static Page currentPage = new Menu();
-
-    public static void setUser(User u) {
-        user = u;
-        banner.updateBanner();
-    }
-
-    public static JFrame getFrame() { return frame; }
+    public static Banner banner;
+    public static Page mainMenu;
+    public static Page page;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Main::createAndShowGUI);
@@ -31,7 +25,7 @@ public class Main {
 
     private static void createAndShowGUI() {
         // Setting defaults for the GUI
-        UIManager.put("Panel.background", new Color(64, 64, 64));
+        UIManager.put("Panel.background", Color.DARK_GRAY);
         UIManager.put("Button.background", Color.LIGHT_GRAY);
         UIManager.put("Button.foreground", Color.BLACK);
         UIManager.put("Label.foreground", Color.WHITE);
@@ -56,12 +50,48 @@ public class Main {
         });
 
         user = new User();
-
-
-        currentPage.previousPage = currentPage;
-        frame.getContentPane().add(banner.panel, BorderLayout.NORTH);
-        frame.getContentPane().add(currentPage.panel, BorderLayout.CENTER);
+        mainMenu = new Menu();
+        page = mainMenu;
+        banner = new Banner("421 Marketplace");
+        frame.getContentPane().add(banner, BorderLayout.NORTH);
+        frame.getContentPane().add(mainMenu, BorderLayout.CENTER);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+    }
+
+    public static void setUser(User u) {
+        user = u;
+        banner.updateBanner();
+    }
+
+    public static Page getPage() { return page; }
+
+    public static JFrame getFrame() { return frame; }
+
+    public static void goPage(Page newPage) {
+        if (newPage == page) {
+            return;
+        }
+        frame.getContentPane().remove(page);
+        frame.getContentPane().add(newPage, BorderLayout.CENTER);
+        Main.page = newPage;
+        frame.revalidate();
+        frame.repaint();
+    }
+
+    public static void goBack() {
+        Page lastPage = page.getLastPage();
+        if (lastPage == null){
+            return;
+        }
+        frame.getContentPane().remove(page);
+        frame.getContentPane().add(lastPage, BorderLayout.CENTER);
+        Main.page = lastPage;
+        frame.revalidate();
+        frame.repaint();
+    }
+
+    public static Page getLastPage() {
+        return page.getLastPage();
     }
 }

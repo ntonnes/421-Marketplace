@@ -10,36 +10,30 @@ import main.Main;
 import pages.forms.Login;
 import pages.forms.Signup;
 
-public class Banner {
-    public JPanel panel;
-    private JComponent accountContent;
+public class Banner extends JPanel{
+    private JPanel navContent;
+    private JLabel titleLabel;
+    private JPanel accountContent;
+    private Color backgroundColor = new Color(40, 44, 52);
 
     public Banner(String title) {
-        this.panel = new JPanel();
-        panel.setLayout(new BorderLayout(10, 10)); // Use BorderLayout
-        panel.setBackground(new Color(40, 44, 52)); // Dark gray
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Padding
+        this.setLayout(new BorderLayout(10, 10)); 
+        this.setBackground(backgroundColor);
+        this.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Create the back button with custom colors and padding
-        JButton backButton = Utils.styleButton("Back", new Color(171, 178, 191),80,10, e -> Page.goBack()); // Lighter gray
-
-        // Create a buffer panel and add it to the WEST of the BorderLayout
-        JPanel bufferPanel = new JPanel();
-        bufferPanel.setPreferredSize(new Dimension(120, 0)); // Set preferred size
-        bufferPanel.setOpaque(false); // Make it invisible
-
-        // Create a new JPanel, add the back button and the buffer panel to it, and add it to the WEST region
-        JPanel westPanel = new JPanel(new BorderLayout());
-        westPanel.setOpaque(false); // Make it invisible
-        westPanel.add(backButton, BorderLayout.WEST);
-        westPanel.add(bufferPanel, BorderLayout.CENTER);
-        panel.add(westPanel, BorderLayout.WEST);
+        navContent = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        navContent.setPreferredSize(new Dimension(Main.getFrame().getWidth() / 4, 0));
+        navContent.setOpaque(false);
+        navContent.add(Utils.styleButton("Back", new Color(171, 178, 191),100,40, e -> Main.goBack()));
+        navContent.add(Utils.styleButton("Home", new Color(171, 178, 191),100,40, e -> Main.goPage(Main.mainMenu)));
+        this.add(navContent, BorderLayout.WEST);
 
         // Create the title label with large font and white color
-        JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
+        titleLabel = new JLabel(title, SwingConstants.CENTER);
         titleLabel.setFont(new Font("Serif", Font.BOLD, 40));
         titleLabel.setForeground(new Color(190, 199, 208)); // Light gray
-        panel.add(titleLabel, BorderLayout.CENTER); // Add to the center
+        this.add(titleLabel, BorderLayout.CENTER); // Add to the center
 
         updateBanner();
     }
@@ -47,61 +41,61 @@ public class Banner {
     public void updateBanner() {
         // Remove the old accountContent
         if (accountContent != null) {
-            panel.remove(accountContent);
+            this.remove(accountContent);
         }
 
-        // Call createAccountContent to get the new accountContent
-        accountContent = createAccountContent();
-    
-        // Add the new accountContent to the panel and refresh
-        panel.add(accountContent, BorderLayout.EAST);
-        panel.revalidate();
-        panel.repaint();
+        // Add the new accountContent
+        this.add(createAccountContent(), BorderLayout.EAST);
+        this.revalidate();
+        this.repaint();
     }
 
     private JPanel createAccountContent() {
-        User user = Main.user;
-        JPanel accountContent = new JPanel();
+        accountContent = new JPanel();
+        accountContent.setBackground(backgroundColor);
+        accountContent.setPreferredSize(new Dimension(Main.getFrame().getWidth() / 4, 0));
+        
+        if (Main.user instanceof Customer) {
+            Customer customer = (Customer) Main.user;
+            accountContent.setLayout(new GridBagLayout());
+            accountContent.setOpaque(false); 
     
-        if (user instanceof Customer) {
-            Customer customer = (Customer) user;
-            accountContent.setLayout(new FlowLayout(FlowLayout.LEFT));
-            accountContent.setOpaque(false); // Make it invisible
+            JLabel welcomeLabel = new JLabel("Welcome,");
+            JLabel nameLabel = new JLabel(customer.getName()+ "!");
+            welcomeLabel.setFont(new Font("Serif", Font.BOLD, 15));
+            nameLabel.setFont(new Font("Serif", Font.ITALIC, 15));
+            accountContent.add(welcomeLabel, Utils.makeGbc(0,0,0,0,0));
+            accountContent.add(nameLabel, Utils.makeGbc(1,0,0,0,0));
+
     
-            JLabel welcomeLabel = new JLabel("Welcome, " + customer.getName());
-            welcomeLabel.setFont(new Font("Serif", Font.BOLD, 20)); // Make the text larger
-            accountContent.add(welcomeLabel);
-    
-            JButton logoutButton = Utils.styleButton("Logout", Color.RED, 80, 30, e -> customer.logout());
-            accountContent.add(logoutButton); // Place the logout button to the right of the welcome label
+            JButton logoutButton = Utils.styleButton("Logout", Color.RED, 80, 50, e -> customer.logout());
+            GridBagConstraints logoutGBC = Utils.makeGbc(0,0,0,0,0);
+            logoutGBC.gridx = 1;
+            logoutGBC.gridheight = 1;
+            accountContent.add(logoutButton, logoutGBC); // Place the logout button to the right of the welcome label
         } else {
             accountContent.setLayout(new FlowLayout(FlowLayout.RIGHT));
-            accountContent.setBackground(new Color(40, 44, 52)); // Set the background color to match the banner
     
-            JButton loginButton = Utils.styleButton("Log in", new Color(0, 123, 255),100,40, e -> {
-                if (Main.currentPage instanceof Login){
+            accountContent.add(Utils.styleButton("Log in", new Color(0, 123, 255),100,40, e -> {
+                if (Main.getPage() instanceof Login){
                     return;
-                } else if (Main.currentPage.previousPage instanceof Login){
-                    Page.goBack();
+                } else if (Main.getLastPage() instanceof Login){
+                    Main.goBack();
                 } else {
-                    Page.goPage(new Login());
+                    Main.goPage(new Login());
                 }
-            });
+            }));
     
-            JButton signUpButton = Utils.styleButton("Sign up", new Color(76, 175, 80),100,40, e -> {
-                if (Main.currentPage instanceof Signup){
+            accountContent.add(Utils.styleButton("Sign up", new Color(76, 175, 80),100,40, e -> {
+                if (Main.getPage() instanceof Signup){
                     return;
-                } else if (Main.currentPage.previousPage instanceof Signup){
-                    Page.goBack();
+                } else if (Main.getLastPage() instanceof Signup){
+                    Main.goBack();
                 } else {
-                    Page.goPage(new Signup());
+                    Main.goPage(new Signup());
                 }
-            });
-    
-            accountContent.add(loginButton);
-            accountContent.add(signUpButton);
+            }));
         }
-    
         return accountContent;
     }
 }

@@ -18,7 +18,7 @@ public class Review extends ListSelect {
     private Customer customer;
 
     public Review() {
-        super("Leave a Review");
+        super(Main.getLastPage(), "Leave a Review");
     }
 
     @Override
@@ -65,7 +65,7 @@ public class Review extends ListSelect {
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
                 JOptionPane.showMessageDialog(null, "Review submitted successfully.");
-                goBack();
+                Main.goBack();
             } else {
                 JOptionPane.showMessageDialog(null, "Failed to submit review.");
             }

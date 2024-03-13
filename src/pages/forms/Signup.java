@@ -2,13 +2,13 @@ package pages.forms;
 import database.Database;
 import database.users.Customer;
 import main.Main;
-import pages.Page;
 import pages.Utils;
 
 import java.sql.*;
 import java.text.*;
 import java.util.Date;
 import javax.swing.*;
+import pages.Menu;
 
 public class Signup extends Form {
 
@@ -19,7 +19,7 @@ public class Signup extends Form {
     private static JFormattedTextField dobField = addDateField();
 
     public Signup() {
-        super("Create an Account");
+        super(new Menu(), "Create an Account");
     }
 
     @Override
@@ -97,7 +97,7 @@ public class Signup extends Form {
 
                 Main.setUser(new Customer(userID, name, email, password, dob));
                 System.out.println("\nSuccessfully registered user " + name + ":\n" + Main.user.toString() + "\n");
-                Page.goBack();
+                Main.goBack();
                 return;
             }
         } catch (SQLException e) {
