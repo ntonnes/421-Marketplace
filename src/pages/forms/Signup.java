@@ -35,12 +35,12 @@ public class Signup extends Page {
         JPanel dobEntry = UIUtils.createFieldPanel("Date of Birth (mm/dd/yyyy):", false, dobField);
         JButton signupButton = UIUtils.createButton("Sign Up", e -> submit());
 
-        UIUtils.addToGrid(content, fNameEntry, UIUtils.createGBC(0, 0, 1, 1, GridBagConstraints.NONE));
-        UIUtils.addToGrid(content, lNameEntry, UIUtils.createGBC(0, 1, 1, 1, GridBagConstraints.NONE));
-        UIUtils.addToGrid(content, emailEntry, UIUtils.createGBC(0, 2, 1, 1, GridBagConstraints.NONE));
-        UIUtils.addToGrid(content, passwordEntry, UIUtils.createGBC(0, 3, 1, 1, GridBagConstraints.NONE));
-        UIUtils.addToGrid(content, dobEntry, UIUtils.createGBC(0, 4, 1, 1, GridBagConstraints.NONE));
-        UIUtils.addToGrid(content, signupButton, UIUtils.createGBC(0, 5, 1, 1, GridBagConstraints.NONE));
+        UIUtils.addToGrid(content, fNameEntry, UIUtils.createGBC(0, 0, 1, 1, GridBagConstraints.HORIZONTAL));
+        UIUtils.addToGrid(content, lNameEntry, UIUtils.createGBC(0, 1, 1, 1, GridBagConstraints.HORIZONTAL));
+        UIUtils.addToGrid(content, emailEntry, UIUtils.createGBC(0, 2, 1, 1, GridBagConstraints.HORIZONTAL));
+        UIUtils.addToGrid(content, passwordEntry, UIUtils.createGBC(0, 3, 1, 1, GridBagConstraints.HORIZONTAL));
+        UIUtils.addToGrid(content, dobEntry, UIUtils.createGBC(0, 4, 1, 1, GridBagConstraints.HORIZONTAL));
+        UIUtils.addToGrid(content, signupButton, UIUtils.createGBC(0, 5, 1, 1, GridBagConstraints.HORIZONTAL));
     }
 
 

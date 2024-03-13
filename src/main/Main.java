@@ -18,6 +18,7 @@ public class Main {
     public static Banner banner;
     public static Page mainMenu;
     public static Page page;
+    private static GridBagConstraints gbc;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Main::createAndShowGUI);
@@ -33,6 +34,7 @@ public class Main {
         // Initialize the application window
         frame = new JFrame("421 Marketplace");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new GridBagLayout());
         frame.setSize(1200,800);
         frame.setMinimumSize(new Dimension(800, 600));
 
@@ -53,8 +55,17 @@ public class Main {
         mainMenu = new Menu();
         page = mainMenu;
         banner = new Banner("421 Marketplace");
-        frame.getContentPane().add(banner, BorderLayout.NORTH);
-        frame.getContentPane().add(mainMenu, BorderLayout.CENTER);
+        gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1;
+        gbc.weighty = .05;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.NORTH;
+        frame.add(banner, gbc);
+
+        gbc.weighty = .95;
+        gbc.gridy = 1;
+        frame.getContentPane().add(mainMenu, gbc);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -77,7 +88,7 @@ public class Main {
             return;
         }
         frame.getContentPane().remove(page);
-        frame.getContentPane().add(newPage, BorderLayout.CENTER);
+        frame.getContentPane().add(newPage, gbc);
         Main.page = newPage;
         frame.revalidate();
         frame.repaint();
@@ -89,7 +100,7 @@ public class Main {
             return;
         }
         frame.getContentPane().remove(page);
-        frame.getContentPane().add(lastPage, BorderLayout.CENTER);
+        frame.getContentPane().add(lastPage, gbc);
         Main.page = lastPage;
         frame.revalidate();
         frame.repaint();

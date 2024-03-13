@@ -9,27 +9,22 @@ public abstract class Page extends JPanel {
 
     protected Page lastPage;
     protected JLabel title;
-    protected int row;
-    protected JPanel banner;
     protected JPanel content;
 
     public Page(Page lastPage, String name) {
-        super(new BorderLayout());
+        super(new GridBagLayout());
         this.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        this.banner = new JPanel(new GridBagLayout());
-        this.content = new JPanel(new GridBagLayout());
-
         this.lastPage = lastPage;
-        this.row = 0;
 
-        GridBagConstraints gbc = UIUtils.createGBC(0, 0, 1, 1, GridBagConstraints.BOTH);
-        gbc.fill = GridBagConstraints.BOTH;
-        banner.add(UIUtils.createTitleLabel(name), UIUtils.createGBC(0,0,1,1, GridBagConstraints.BOTH));
+        GridBagConstraints gbc = UIUtils.createGBC(0, 0, 1, 0, GridBagConstraints.BOTH);
+        gbc.anchor = GridBagConstraints.NORTH;
+        this.add(UIUtils.createTitleLabel(name), gbc);
         
+        content = new JPanel(new GridBagLayout());
         populateContent();
-        this.add(banner, BorderLayout.NORTH);
-        this.add(content, BorderLayout.CENTER);
+        gbc.gridy = 1;
+        this.add(content, gbc);
     }
 
     public Page getLastPage() {

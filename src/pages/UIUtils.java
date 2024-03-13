@@ -49,19 +49,22 @@ public class UIUtils {
         component.setForeground(DEFAULT_FOREGROUND);
         component.setFont(FONT_FIELD);
         component.setCaretColor(DEFAULT_FOREGROUND);
+        Border paddingBorder = BorderFactory.createEmptyBorder(10, 0, 0, 0);
 
         // Modify text field depending on its type
         if (component instanceof JPasswordField || component instanceof JTextField) {
-            component.setBorder(new MatteBorder(0, 0, 1, 0, Color.WHITE));
+            Border originalBorder = new MatteBorder(0, 0, 1, 0, Color.WHITE);
+            component.setBorder(BorderFactory.createCompoundBorder(originalBorder, paddingBorder));
         } else if (component instanceof JTextPane){
-            component.setBorder(new LineBorder(DEFAULT_FOREGROUND) {
+            Border originalBorder = new LineBorder(DEFAULT_FOREGROUND) {
                 public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
                     Graphics2D g2d = (Graphics2D)g;
                     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     g2d.setColor(getLineColor());
                     g2d.drawRoundRect(x, y, width-1, height-1, 15, 15);
                 }
-            });
+            };
+            component.setBorder(BorderFactory.createCompoundBorder(originalBorder, paddingBorder));
             component.setOpaque(false);
             component.setBackground(new Color(0, 103, 235));
 
@@ -145,7 +148,7 @@ public class UIUtils {
         gbc.gridy = gridy;
         gbc.fill = fill;
         gbc.weightx = weightx;
-        gbc.weighty = weighty;
+        gbc.weighty = 0;
         gbc.insets = new Insets(10,10,10,10); // set padding
         return gbc;
     }

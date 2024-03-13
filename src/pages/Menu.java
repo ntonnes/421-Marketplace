@@ -7,11 +7,9 @@ import database.users.Customer;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.WindowEvent;
 
 public class Menu extends Page{
-    private JPanel buttonPanel;
 
     public Menu() {
         super(null, "Main Menu"); // Add this line to invoke the constructor of the superclass
@@ -27,9 +25,6 @@ public class Menu extends Page{
     @Override
     protected void populateContent() {
 
-        buttonPanel = new JPanel(new GridBagLayout());
-        buttonPanel.setPreferredSize(new Dimension(content.getWidth() / 3, 0));
-
         // Initialize buttons to execute tasks
         // TODO: Implement Task 1
         JButton button1 = UIUtils.createButton("Task 1", e -> System.out.println("You selected task 1"), UIUtils.BUTTON_GRAY, new Dimension(100, 40));
@@ -44,12 +39,12 @@ public class Menu extends Page{
         }, UIUtils.BUTTON_GRAY, new Dimension(100, 40));
 
         // Exits the program and prints a console message
-        JButton button4 = UIUtils.createButton("Task 2", e -> quit(), UIUtils.BUTTON_GRAY, new Dimension(100, 40));
+        JButton button4 = UIUtils.createButton("Quit", e -> quit(), UIUtils.BUTTON_GRAY, new Dimension(100, 40));
 
-        UIUtils.addToGrid(content, button1, UIUtils.createGBC(0, 0, 1,1, GridBagConstraints.HORIZONTAL));
-        UIUtils.addToGrid(content, button2, UIUtils.createGBC(0, 1, 1,1, GridBagConstraints.HORIZONTAL));
-        UIUtils.addToGrid(content, button3, UIUtils.createGBC(0, 2, 1,1, GridBagConstraints.HORIZONTAL));
-        UIUtils.addToGrid(content, button4, UIUtils.createGBC(0, 3, 1,1, GridBagConstraints.HORIZONTAL));
+        UIUtils.addToGrid(content, button1, UIUtils.createGBC(0, 1, 1,1, GridBagConstraints.HORIZONTAL));
+        UIUtils.addToGrid(content, button2, UIUtils.createGBC(0, GridBagConstraints.RELATIVE, 1,1, GridBagConstraints.HORIZONTAL));
+        UIUtils.addToGrid(content, button3, UIUtils.createGBC(0, GridBagConstraints.RELATIVE, 1,1, GridBagConstraints.HORIZONTAL));
+        UIUtils.addToGrid(content, button4, UIUtils.createGBC(0, GridBagConstraints.RELATIVE, 1,1, GridBagConstraints.HORIZONTAL));
     }
 
 }

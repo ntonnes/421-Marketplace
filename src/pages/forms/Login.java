@@ -30,10 +30,10 @@ public class Login extends Page {
         JLabel signupLink = UIUtils.createHyperlink("Don't have an account? ", "Create one", ".", () -> Main.goPage(new Signup()));
         JButton loginButton = UIUtils.createButton("Log in", e -> submit());
 
-        UIUtils.addToGrid(content, emailEntry, UIUtils.createGBC(0, 0, 1, 1, GridBagConstraints.NONE));
-        UIUtils.addToGrid(content, passwordEntry, UIUtils.createGBC(0, 1, 1, 1, GridBagConstraints.NONE));
-        UIUtils.addToGrid(content, signupLink, UIUtils.createGBC(0, 2, 1, 1, GridBagConstraints.NONE));
-        UIUtils.addToGrid(content, loginButton, UIUtils.createGBC(0, 3, 1, 1, GridBagConstraints.NONE));
+        UIUtils.addToGrid(content, emailEntry, UIUtils.createGBC(1, 0, 1, 0, GridBagConstraints.HORIZONTAL));
+        UIUtils.addToGrid(content, passwordEntry, UIUtils.createGBC(1, 1, 1, 0, GridBagConstraints.HORIZONTAL));
+        UIUtils.addToGrid(content, signupLink, UIUtils.createGBC(1, 2, 1, 0, GridBagConstraints.HORIZONTAL));
+        UIUtils.addToGrid(content, loginButton, UIUtils.createGBC(1, 3, 1, 0, GridBagConstraints.HORIZONTAL));
 
     }
 
