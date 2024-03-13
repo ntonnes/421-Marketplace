@@ -16,13 +16,13 @@ public class Order {
     // Array of unique model objects in this order
     private Model[] modelsOrdered;
 
-    private Connection db = Database.db;
-
     public Order(int orderID) {
-        try {
-            PreparedStatement stmt = db.prepareStatement("SELECT * FROM Order WHERE orderID = ?");
-            stmt.setInt(1, orderID);
-            ResultSet rs = stmt.executeQuery();
+        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
+            PreparedStatement stmt1 = conn.prepareStatement("SELECT * FROM Order WHERE orderID = ?");
+            PreparedStatement stmt2 = conn.prepareStatement("SELECT SerialNo, ModelID FROM Purchased WHERE OrderID = ?")) {
+
+            stmt1.setInt(1, orderID);
+            ResultSet rs = stmt1.executeQuery();
             if (rs.next()) {
                 this.orderID = rs.getInt("OrderID");
                 this.deliverAdd = rs.getString("DeliverAdd");
@@ -32,9 +32,8 @@ public class Order {
                 this.cardNum = rs.getString("CardNum");
             }
 
-            stmt = db.prepareStatement("SELECT SerialNo, ModelID FROM Purchased WHERE OrderID = ?");
-            stmt.setInt(1, orderID);
-            rs = stmt.executeQuery();
+            stmt2.setInt(1, orderID);
+            rs = stmt2.executeQuery();
             List<Product> products = new ArrayList<>();
             Set<Model> models = new HashSet<>();
             while (rs.next()) {
@@ -42,6 +41,7 @@ public class Order {
                 products.add(product);
                 models.add(new Model(product.getModelID()));
             }
+
             this.productsOrdered = products.toArray(new Product[0]);
             this.modelsOrdered = models.toArray(new Model[0]);
         } catch (SQLException e) {

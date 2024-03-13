@@ -2,13 +2,13 @@ package pages;
 
 import database.Database;
 import database.Model;
+import database.users.Customer;
 import main.Main;
 
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 import javax.swing.*;
-import users.Customer;
 
 public class Review extends ListSelect {
     private JList<Model> modelList;
@@ -51,11 +51,11 @@ public class Review extends ListSelect {
         int rating = (Integer) ratingSpinner.getValue();
         String message = messageArea.getText();
         Model selectedModel = modelList.getSelectedValue();
-        int userID = Main.user.userID;
+        int userID = Main.user.getUserID();
         int modelID = selectedModel.getModelID();
 
-        try (
-            PreparedStatement stmt = Database.db.prepareStatement("INSERT INTO Review (userID, modelID, rating, message) VALUES (?, ?, ?, ?)")) {
+        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO Review (userID, modelID, rating, message) VALUES (?, ?, ?, ?)")){
 
             stmt.setInt(1, userID);
             stmt.setInt(2, modelID);

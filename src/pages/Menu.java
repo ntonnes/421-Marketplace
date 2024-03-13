@@ -1,8 +1,9 @@
 package pages;
 import main.Main;
-import users.Customer;
 
 import javax.swing.*;
+
+import database.users.Customer;
 
 import java.awt.*; // Import the FlowLayout class
 import java.awt.event.WindowEvent;

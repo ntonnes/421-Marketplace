@@ -1,12 +1,14 @@
 package pages;
 
 import javax.swing.*;
+
+import database.users.*;
+
 import java.awt.*;
 
 import main.Main;
 import pages.forms.Login;
 import pages.forms.Signup;
-import users.*;
 
 public class Banner {
     public JPanel panel;
@@ -62,14 +64,15 @@ public class Banner {
         JPanel accountContent = new JPanel();
     
         if (user instanceof Customer) {
+            Customer customer = (Customer) user;
             accountContent.setLayout(new FlowLayout(FlowLayout.LEFT));
             accountContent.setOpaque(false); // Make it invisible
     
-            JLabel welcomeLabel = new JLabel("Welcome, " + ((Customer) user).getName());
+            JLabel welcomeLabel = new JLabel("Welcome, " + customer.getName());
             welcomeLabel.setFont(new Font("Serif", Font.BOLD, 20)); // Make the text larger
             accountContent.add(welcomeLabel);
     
-            JButton logoutButton = Utils.styleButton("Logout", Color.RED, 80, 20, e -> Main.setUser(User.newGuest())); // Small red button
+            JButton logoutButton = Utils.styleButton("Logout", Color.RED, 80, 30, e -> customer.logout());
             accountContent.add(logoutButton); // Place the logout button to the right of the welcome label
         } else {
             accountContent.setLayout(new FlowLayout(FlowLayout.RIGHT));

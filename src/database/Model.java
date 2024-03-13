@@ -1,8 +1,6 @@
 package database;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class Model {
     private int modelID;
@@ -12,8 +10,9 @@ public class Model {
     private double stars;
 
     public Model(int modelID) {
-        try {
-            PreparedStatement stmt = Database.db.prepareStatement("SELECT * FROM Model WHERE modelID = ?");
+        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Model WHERE modelID = ?")) {
+            
             stmt.setInt(1, modelID);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {

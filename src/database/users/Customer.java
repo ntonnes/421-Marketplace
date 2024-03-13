@@ -1,17 +1,18 @@
-package users;
+package database.users;
 
 import java.sql.*;
 import java.util.*;
 
 import database.*;
+import main.Main;
 
 public class Customer extends User {
-    private String name;
-    private String email;
-    private String password;
-    private String dob;
-    private Model[] modelsOrdered;
-    private Order[] orderList;
+    protected String name;
+    protected String email;
+    protected String password;
+    protected String dob;
+    protected Model[] modelsOrdered;
+    protected Order[] orderList;
 
 
     public Customer(int userID, String name, String email, String password, String dob) {
@@ -26,10 +27,10 @@ public class Customer extends User {
         setOrderList();
     }
 
-    private void setOrderList() {
+    protected void setOrderList() {
         List<Order> orders = new ArrayList<>();
-        try {
-            PreparedStatement stmt = Database.db.prepareStatement("SELECT OrderID FROM Order WHERE Email = ?");
+        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
+        PreparedStatement stmt = conn.prepareStatement("SELECT OrderID FROM Order WHERE Email = ?")) {
             stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -42,7 +43,7 @@ public class Customer extends User {
         orderList = orders.isEmpty() ? new Order[0] : orders.toArray(new Order[0]);
     }
 
-    private void setModelsOrdered() {
+    protected void setModelsOrdered() {
         Set<Model> models = new HashSet<>();
         if (this.orderList != null) {
             for (Order order : this.orderList) {
@@ -56,7 +57,11 @@ public class Customer extends User {
         }
         modelsOrdered = models.isEmpty() ? new Model[0] : models.toArray(new Model[0]);
     }
-    
+
+    public void logout() {
+        System.out.println("Successfully logged out user " + name + ":\n" + this.toString() + "\n");
+        Main.setUser(new User()); // Set the current user to a guest user
+    }
 
 
     public void refreshOrdered() {

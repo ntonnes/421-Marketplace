@@ -1,7 +1,7 @@
-package users;
+package database.users;
 
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import database.Database;
@@ -15,14 +15,14 @@ public class Member extends Customer {
         this.points = 0;
         this.expDate = LocalDate.now().plusYears(1).format(DateTimeFormatter.ISO_DATE);
 
-        try (
-             PreparedStatement stmt = Database.db.prepareStatement("INSERT INTO Member (userID, expDate, points) VALUES (?, ?, ?)")) {
+        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO Member (userID, expDate, points) VALUES (?, ?, ?)")) {
 
             stmt.setInt(1, getUserID());
             stmt.setString(2, expDate);
             stmt.setInt(3, points);
-
             stmt.executeUpdate();
+            
         } catch (SQLException e) {
             System.out.println("Error while inserting member into the database");
             e.printStackTrace();

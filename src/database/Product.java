@@ -11,8 +11,9 @@ public class Product extends Model {
     public Product(int modelID, int serialNo) {
         // inherits all methods and properties of models
         super(modelID);
-        try {
-            PreparedStatement stmt = Database.db.prepareStatement("SELECT * FROM Product WHERE serialNo = ?");
+        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Product WHERE serialNo = ?")) {
+
             stmt.setInt(1, serialNo);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {

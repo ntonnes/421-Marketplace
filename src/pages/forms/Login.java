@@ -2,17 +2,15 @@ package pages.forms;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 import javax.swing.*;
 
 import database.Database;
+import database.users.*;
 import main.Main;
 import pages.Page;
 import pages.Utils;
-import users.*;
 
 public class Login extends Form {
     private static JTextField emailField = new JTextField(20);
@@ -49,19 +47,21 @@ public class Login extends Form {
         String email = emailField.getText();
         String password = new String(passwordField.getPassword());
 
-        try {
-            String sql = "SELECT * FROM Customer WHERE email = ?";
-            PreparedStatement statement = Main.db.prepareStatement(sql);
-            statement.setString(1, email);
+        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
+        PreparedStatement getstmt = conn.prepareStatement("SELECT * FROM Customer WHERE email = ?");
+        PreparedStatement deleteStmt = conn.prepareStatement("DELETE FROM User WHERE userID = ?")) {
+            getstmt.setString(1, email);
 
-            ResultSet resultSet = statement.executeQuery();
+            ResultSet resultSet = getstmt.executeQuery();
 
             if (resultSet.next()) {
                 // If the (email, password) pair exists in the db
                 if (resultSet.getString("password").equals(password)) {
 
                     // Delete the temporary guest
-                    Database.deleteUser(Main.user);
+                    deleteStmt.setInt(1, Main.user.getUserID());
+                    deleteStmt.executeUpdate();
+                    System.out.println("Deleted temporary guest with userID: " + Main.user.getUserID());
 
                     // Set the user in the Menu class and switch to the main menu
                     Main.setUser(new Customer(
@@ -74,7 +74,7 @@ public class Login extends Form {
 
                     // Go back to the main menu
                     Customer customer = (Customer) Main.user;
-                    System.out.println("Successfully logged in as user " + customer.getName() + ":\n\n" + customer.toString());
+                    System.out.println("\nSuccessfully logged in as user " + customer.getName() + ":\n" + customer.toString() + "\n");
                     goBack();
 
                 } else {

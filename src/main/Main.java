@@ -5,18 +5,15 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import pages.Menu;
-import users.*;
-import database.*;
+import database.users.*;
 import pages.*;
 
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.Connection;
 
 public class Main {
     private static JFrame frame;
-    public static Connection db = Database.db;
     public static User user;
     public static Banner banner = new Banner("421 Marketplace");
     public static Page currentPage = new Menu();
@@ -51,15 +48,14 @@ public class Main {
             public void windowClosing(WindowEvent e) {
                 // Delete the user from the database if they are a guest
                 if (!(user instanceof Customer)){
-                    Database.deleteUser(user);
+                    user.delete();
                 }
                 // Disconnect from the database and exit the application
-                Database.disconnect(db);
                 System.exit(0);
             }
         });
 
-        user = User.newGuest();
+        user = new User();
 
 
         currentPage.previousPage = currentPage;
