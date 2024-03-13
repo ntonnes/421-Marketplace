@@ -19,12 +19,12 @@ public class Task1 {
         String message;
         String Choice;
 
-        userID = scanner.nextInt();
         System.out.print("Please enter your userID:");
+        userID = scanner.nextInt();
         System.out.println();
 
-        userEmail = scanner.next();
         System.out.print("Please enter your Email:");
+        userEmail = scanner.next();
         System.out.println();
 
 
@@ -53,19 +53,19 @@ public class Task1 {
             for (int modelId : modelIDs) {
                 System.out.println(modelId);
             }
-            modelToReview = scanner.nextInt();
             System.out.print("On which model would you like to leave a review?");
+            modelToReview = scanner.nextInt();
             System.out.println();
-            rating = scanner.nextInt();
             System.out.print("What rating do you want to give to model " + modelToReview);
+            rating = scanner.nextInt();
             System.out.println();
-            Choice = scanner.next();
             System.out.print("Would you like to leave a message with your review? (yes or no)");
+            Choice = scanner.next();
             System.out.println();
             //If the user wants to leave a message
             if (Choice.equals("yes")) {
-                message = scanner.next();
                 System.out.print("What is the message: ");
+                message = scanner.next();
                 System.out.println();
                 try(Statement stmt3 = conn.createStatement()) {
                     stmt3.executeUpdate("INSERT INTO Review (UserID, ModelID, rating, message) VALUES (" + userID + ", " + modelToReview + ", " + rating + ", '" + message + "')");
@@ -77,6 +77,7 @@ public class Task1 {
                 }
             }
             conn.close();
+            scanner.close();
         }catch (SQLException e) {
             e.printStackTrace();
         }

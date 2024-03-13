@@ -18,13 +18,13 @@ public class Task2 {
         int Amount = 0;
         String confirmation;
 
-        userID = scanner.nextInt();
         System.out.print("Please enter your userID:");
+        userID = scanner.nextInt();
         System.out.println();
 
         while(!good) {
-            ModelID = scanner.nextInt();
             System.out.print("What model do you want to add to your cart?");
+            ModelID = scanner.nextInt();
 
             try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
                 Statement stmt = conn.createStatement();
@@ -42,8 +42,8 @@ public class Task2 {
                     System.out.println("URL: " + url);
                     System.out.println("Stars: " + stars);
 
-                    goodModel = scanner.next();
                     System.out.print("Is this the right model? (yes or no)");
+                    goodModel = scanner.next();
                     System.out.println();
                     if (goodModel.equals("yes")) {
                         //Now, we get the number of available products for wanted model
@@ -54,16 +54,16 @@ public class Task2 {
                             Boolean goodAmount = false;
                             while(!goodAmount) {
                                 System.out.println("For the desired model, there are " + numberForModel + " products available");
-                                Amount = scanner.nextInt();
                                 System.out.print("How many do you want?");
+                                Amount = scanner.nextInt();
                                 System.out.println();
                                 if (0 < Amount && Amount <= amountAvailable) {
                                     goodAmount = true;
                                 }
                             }
                             System.out.println("Adding to cart: " + Amount + " copies of the Model " + ModelID + " for a total of " + Amount*price);
-                            confirmation = scanner.next();
                             System.out.print("Do you confirm? (yes or no)");
+                            confirmation = scanner.next();
                             System.out.println();
                             if (confirmation.equals("yes")) {
                                 try (Statement stmt3 = conn.createStatement()) {
@@ -75,14 +75,19 @@ public class Task2 {
                                         int newCopies = currentCopies + Amount;
                                         stmt3.executeUpdate("UPDATE InCart SET Copies = " + newCopies + " WHERE UserID = " + userID + " AND ModelID = " + ModelID);
                                         System.out.println("Updated cart: " + newCopies + " copies of Model " + ModelID + " in the cart.");
+                                        good = true;
                                     } else {
                                         // User does not have the model in their cart, insert a new tuple
                                         stmt3.executeUpdate("INSERT INTO InCart (UserID, ModelID, Copies) VALUES (" + userID + ", " + ModelID + ", " + Amount + ")");
                                         System.out.println("Added to cart: " + Amount + " copies of Model " + ModelID + ".");
+                                        good = true;
                                     }
                                 } catch (SQLException e) {
                                     e.printStackTrace();
                                 }
+                            } else {
+                                good = true;
+                                break;
                             }
                         }
                     }
@@ -93,8 +98,11 @@ public class Task2 {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            }
         }
+        scanner.close();
     }
+
+}
+
 
 
