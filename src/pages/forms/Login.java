@@ -1,7 +1,6 @@
 package pages.forms;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.GridBagConstraints;
 import java.sql.*;
 
 import javax.swing.*;
@@ -10,9 +9,10 @@ import database.Database;
 import database.users.*;
 import main.Main;
 import pages.Menu;
-import pages.Utils;
+import pages.Page;
+import pages.UIUtils;
 
-public class Login extends Form {
+public class Login extends Page {
     private static JTextField emailField = new JTextField(20);
     private static JPasswordField passwordField = new JPasswordField(20);
 
@@ -24,25 +24,21 @@ public class Login extends Form {
     @Override
     protected void populateContent() {
 
-        // Create a custom label with a clickable "Create one" text that takes the user to the signup panel
-        JLabel signupLabel = new JLabel("<html><body>Don't have an account? <a href='' style='color: #ADD8E6;'>Create one</a>.</body></html>");
-        signupLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        signupLabel.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) { Main.goPage(new Signup()); }
-        });
+        // Add components to the panel
+        JPanel emailEntry = UIUtils.createFieldPanel("Email:", false, emailField);
+        JPanel passwordEntry = UIUtils.createFieldPanel("Password:", false, passwordField);
+        JLabel signupLink = UIUtils.createHyperlink("Don't have an account? ", "Create one", ".", () -> Main.goPage(new Signup()));
+        JButton loginButton = UIUtils.createButton("Log in", e -> submit());
 
-        // Add the components to the panel
-        addLabel("Email:", false);
-        addTextField(emailField);
-        addLabel("Password:", false);
-        addTextField(passwordField);
-        addButton("Log in", BUTTON_BLUE, e -> submit());
-        addHTML("Don't have an account? ", "Create one", ".");
+        UIUtils.addToGrid(content, emailEntry, UIUtils.createGBC(0, 0, 1, 1, GridBagConstraints.NONE));
+        UIUtils.addToGrid(content, passwordEntry, UIUtils.createGBC(0, 1, 1, 1, GridBagConstraints.NONE));
+        UIUtils.addToGrid(content, signupLink, UIUtils.createGBC(0, 2, 1, 1, GridBagConstraints.NONE));
+        UIUtils.addToGrid(content, loginButton, UIUtils.createGBC(0, 3, 1, 1, GridBagConstraints.NONE));
+
     }
 
     // Performs queries to validate the user's input
-    @Override
-    protected void submit() {
+    private void submit() {
         // Get the typed information
         String email = emailField.getText();
         String password = new String(passwordField.getPassword());
@@ -78,14 +74,15 @@ public class Login extends Form {
                     Main.goBack();
 
                 } else {
-                    Utils.showErr("Password is incorrect.");
+                    UIUtils.showErr("Password is incorrect.");
                 }
             } else {
-                Utils.showErr("An account with that email does not exist.");
+                UIUtils.showErr("An account with that email does not exist.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            Utils.showErr("An error occurred while executing an SQL statement.");
+            UIUtils.showErr("An error occurred while executing an SQL statement.");
         }
     }
+
 }

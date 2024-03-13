@@ -9,17 +9,26 @@ public abstract class Page extends JPanel {
 
     protected Page lastPage;
     protected JLabel title;
+    protected int row;
+    protected JPanel banner;
     protected JPanel content;
 
-    public Page(Page lastPage, String name, LayoutManager layout) {
+    public Page(Page lastPage, String name) {
         super(new BorderLayout());
         this.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        this.lastPage = lastPage;
-        this.content = new JPanel(layout);
+        this.banner = new JPanel(new GridBagLayout());
+        this.content = new JPanel(new GridBagLayout());
 
-        this.add(Utils.createTitle(name), BorderLayout.NORTH);
+        this.lastPage = lastPage;
+        this.row = 0;
+
+        GridBagConstraints gbc = UIUtils.createGBC(0, 0, 1, 1, GridBagConstraints.BOTH);
+        gbc.fill = GridBagConstraints.BOTH;
+        banner.add(UIUtils.createTitleLabel(name), UIUtils.createGBC(0,0,1,1, GridBagConstraints.BOTH));
+        
         populateContent();
+        this.add(banner, BorderLayout.NORTH);
         this.add(content, BorderLayout.CENTER);
     }
 
@@ -29,7 +38,7 @@ public abstract class Page extends JPanel {
 
     protected abstract void populateContent();
 
-    protected void addContent(JComponent component, Object constraints) {
-        content.add(component, constraints);
+    public boolean isInstance(Page page) {
+        return this.getClass().equals(page.getClass());
     }
 }

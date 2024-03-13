@@ -5,13 +5,16 @@ import javax.swing.*;
 
 import database.users.Customer;
 
-import java.awt.*; // Import the FlowLayout class
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.WindowEvent;
 
 public class Menu extends Page{
+    private JPanel buttonPanel;
 
     public Menu() {
-        super(null, "Main Menu", new GridBagLayout()); // Add this line to invoke the constructor of the superclass
+        super(null, "Main Menu"); // Add this line to invoke the constructor of the superclass
         this.lastPage = this;
     }
 
@@ -23,34 +26,30 @@ public class Menu extends Page{
 
     @Override
     protected void populateContent() {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(10, 0, 10, 0);
+
+        buttonPanel = new JPanel(new GridBagLayout());
+        buttonPanel.setPreferredSize(new Dimension(content.getWidth() / 3, 0));
 
         // Initialize buttons to execute tasks
         // TODO: Implement Task 1
-        JButton button1 = new JButton("Task 1");
-        button1.addActionListener(e -> System.out.println("You selected task 1"));
+        JButton button1 = UIUtils.createButton("Task 1", e -> System.out.println("You selected task 1"), UIUtils.BUTTON_GRAY, new Dimension(100, 40));
 
         // TODO: Implement Task 2
-        JButton button2 = new JButton("Task 2");
-        button2.addActionListener(e -> System.out.println("You selected task 2"));
+        JButton button2 = UIUtils.createButton("Task 2", e -> System.out.println("You selected task 2"), UIUtils.BUTTON_GRAY, new Dimension(100, 40));
 
-        JButton button3 = new JButton("Leave a Review");
-        button3.addActionListener(e -> {
+        JButton button3 = UIUtils.createButton("Leave a Review", e -> {
             if (!(Main.user instanceof Customer)) {
-                Utils.showErr("Please log into a customer account to leave a review");
+                UIUtils.showErr("Please log into a customer account to leave a review");
             } else { Main.goPage(new Review()); }
-        });
+        }, UIUtils.BUTTON_GRAY, new Dimension(100, 40));
 
         // Exits the program and prints a console message
-        JButton button4 = new JButton("Quit");
-        button4.addActionListener(e -> quit());
+        JButton button4 = UIUtils.createButton("Task 2", e -> quit(), UIUtils.BUTTON_GRAY, new Dimension(100, 40));
 
-        addContent(button1, gbc);
-        addContent(button2, gbc);
-        addContent(button3, gbc);
-        addContent(button4, gbc);
+        UIUtils.addToGrid(content, button1, UIUtils.createGBC(0, 0, 1,1, GridBagConstraints.HORIZONTAL));
+        UIUtils.addToGrid(content, button2, UIUtils.createGBC(0, 1, 1,1, GridBagConstraints.HORIZONTAL));
+        UIUtils.addToGrid(content, button3, UIUtils.createGBC(0, 2, 1,1, GridBagConstraints.HORIZONTAL));
+        UIUtils.addToGrid(content, button4, UIUtils.createGBC(0, 3, 1,1, GridBagConstraints.HORIZONTAL));
     }
+
 }

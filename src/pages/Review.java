@@ -25,7 +25,7 @@ public class Review extends ListSelect {
     public void populateContent() {
         Model selectedModel = modelList.getSelectedValue();
         if (selectedModel == null) {
-            Utils.showErr("Please select a model.");
+            UIUtils.showErr("Please select a model.");
             return;
         }
 

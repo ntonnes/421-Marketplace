@@ -72,6 +72,10 @@ public class Main {
         if (newPage == page) {
             return;
         }
+        if (newPage.isInstance(getLastPage())) {
+            goBack();
+            return;
+        }
         frame.getContentPane().remove(page);
         frame.getContentPane().add(newPage, BorderLayout.CENTER);
         Main.page = newPage;

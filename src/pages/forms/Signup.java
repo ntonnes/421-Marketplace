@@ -2,21 +2,23 @@ package pages.forms;
 import database.Database;
 import database.users.Customer;
 import main.Main;
-import pages.Utils;
+import pages.UIUtils;
 
+import java.awt.GridBagConstraints;
 import java.sql.*;
 import java.text.*;
 import java.util.Date;
 import javax.swing.*;
 import pages.Menu;
+import pages.Page;
 
-public class Signup extends Form {
+public class Signup extends Page {
 
     private static JTextField firstNameField = new JTextField(20);
     private static JTextField lastNameField = new JTextField(20);
     private static JTextField emailField = new JTextField(20);
     private static JPasswordField passwordField = new JPasswordField(20);
-    private static JFormattedTextField dobField = addDateField();
+    private static JFormattedTextField dobField = UIUtils.createDateField();
 
     public Signup() {
         super(new Menu(), "Create an Account");
@@ -26,22 +28,23 @@ public class Signup extends Form {
     protected void populateContent() {
 
         // Add the components to the panel
-        addLabel("First Name:", true);
-        addTextField(firstNameField);
-        addLabel("Last Name:", true);
-        addTextField(lastNameField);
-        addLabel("Email:", true);
-        addTextField(emailField);
-        addLabel("Password:", true);
-        addTextField(passwordField);
-        addLabel("Date of Birth (mm/dd/yyyy):", false);
-        addTextField(dobField);
-        addButton("Sign Up", BUTTON_GREEN, e -> submit());
+        JPanel fNameEntry = UIUtils.createFieldPanel("First Name:", true, firstNameField);
+        JPanel lNameEntry = UIUtils.createFieldPanel("Last Name:", true, lastNameField);
+        JPanel emailEntry = UIUtils.createFieldPanel("Email:", true, emailField);
+        JPanel passwordEntry = UIUtils.createFieldPanel("Password:", true, passwordField);
+        JPanel dobEntry = UIUtils.createFieldPanel("Date of Birth (mm/dd/yyyy):", false, dobField);
+        JButton signupButton = UIUtils.createButton("Sign Up", e -> submit());
+
+        UIUtils.addToGrid(content, fNameEntry, UIUtils.createGBC(0, 0, 1, 1, GridBagConstraints.NONE));
+        UIUtils.addToGrid(content, lNameEntry, UIUtils.createGBC(0, 1, 1, 1, GridBagConstraints.NONE));
+        UIUtils.addToGrid(content, emailEntry, UIUtils.createGBC(0, 2, 1, 1, GridBagConstraints.NONE));
+        UIUtils.addToGrid(content, passwordEntry, UIUtils.createGBC(0, 3, 1, 1, GridBagConstraints.NONE));
+        UIUtils.addToGrid(content, dobEntry, UIUtils.createGBC(0, 4, 1, 1, GridBagConstraints.NONE));
+        UIUtils.addToGrid(content, signupButton, UIUtils.createGBC(0, 5, 1, 1, GridBagConstraints.NONE));
     }
 
 
-    @Override
-    protected void submit() {
+    private void submit() {
 
         Integer userID = Main.user.getUserID();
         String name = firstNameField.getText() + " " + lastNameField.getText();
@@ -59,18 +62,18 @@ public class Signup extends Form {
                 date = sdf.parse(dob);
                 // Check if the date is in the future
                 if (date.after(new Date())) {
-                    Utils.showErr("Date of Birth cannot be in the future.");
+                    UIUtils.showErr("Date of Birth cannot be in the future.");
                     return;
                 }
             }
         } catch (ParseException e) {
-            Utils.showErr("Invalid Date of Birth.");
+            UIUtils.showErr("Invalid Date of Birth.");
             return;
         }
 
         // Validate non-null fields
         if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            Utils.showErr("All fields must be filled out.");
+            UIUtils.showErr("All fields must be filled out.");
             return;
         }
 
@@ -83,7 +86,7 @@ public class Signup extends Form {
 
             // Check if email already exists
             if (resultSet.next()) {
-                Utils.showErr("An account with that email already exists.");
+                UIUtils.showErr("An account with that email already exists.");
                 return;
             
             // If email is unique, create the customer
@@ -102,7 +105,7 @@ public class Signup extends Form {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            Utils.showErr("An error occurred while executing an SQL statement.");
+            UIUtils.showErr("An error occurred while executing an SQL statement.");
             return;
         }
     }

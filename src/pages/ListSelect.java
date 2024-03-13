@@ -1,6 +1,7 @@
 package pages;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -9,7 +10,7 @@ public abstract class ListSelect extends Page {
     protected JTable table;
 
     public ListSelect(Page lastPage, String name) {
-        super(lastPage, name, new BorderLayout());
+        super(lastPage, name);
         table = new JTable();
     }
 
@@ -27,13 +28,14 @@ public abstract class ListSelect extends Page {
     protected void populateContent() {
         populateTable(getData(), getColumnNames());
         displayTable();
-        this.add(Utils.styleButton("Select", BUTTON_BLUE, 0, 35, e -> select()), BorderLayout.SOUTH);
+        JButton selectButton = UIUtils.createButton("Select", e -> select(), BUTTON_BLUE, new Dimension(0, 35));
+        UIUtils.addToGrid(content, selectButton, null);
     }
 
     protected void select(){
         int row = table.getSelectedRow();
         if (row == -1) {
-            Utils.showErr("Please select a row.");
+            UIUtils.showErr("Please select a row.");
             return;
         }
         Object[] rowData = new Object[table.getColumnCount()];
