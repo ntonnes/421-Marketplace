@@ -1,6 +1,7 @@
 package main;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -11,14 +12,15 @@ import pages.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Stack;
 
 public class Main {
     private static JFrame frame;
     public static User user;
     public static Banner banner;
-    public static Page mainMenu;
-    public static Page page;
-    private static GridBagConstraints gbc;
+    public static JPanel contentArea;
+    public static CardLayout pages;
+    public static Stack<String> pageHistory = new Stack<>();
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Main::createAndShowGUI);
@@ -34,7 +36,7 @@ public class Main {
         // Initialize the application window
         frame = new JFrame("421 Marketplace");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new GridBagLayout());
+        frame.setLayout(new BorderLayout());
         frame.setSize(1200,800);
         frame.setMinimumSize(new Dimension(800, 600));
 
@@ -52,61 +54,57 @@ public class Main {
         });
 
         user = new User();
-        mainMenu = new Menu();
-        page = mainMenu;
-        banner = new Banner("421 Marketplace");
-        gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1;
-        gbc.weighty = .05;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.NORTH;
-        frame.add(banner, gbc);
 
-        gbc.weighty = .95;
-        gbc.gridy = 1;
-        frame.getContentPane().add(mainMenu, gbc);
+        pages = new CardLayout();
+        contentArea = new JPanel(pages);
+        frame.add(contentArea, BorderLayout.CENTER);
+        
+        contentArea.add(new Menu(), "Menu");
+        contentArea.add(new Login(), "Login");
+        contentArea.add(new Signup(), "Signup");
+
+        banner = new Banner("421 Marketplace");
+        frame.add(banner, BorderLayout.NORTH);
+
+        pages.show(contentArea, "Menu");
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
     public static void setUser(User u) {
         user = u;
-        banner.updateBanner();
+        banner.updateBanner(u);
+    }
+    public static User getUser() {
+        return user;
     }
 
-    public static Page getPage() { return page; }
+    public static Page getPage() {
+        Page currentPage = null;
+        for (Component component : contentArea.getComponents()) {
+            if (component.isVisible()) {
+                currentPage = (Page) (component);
+                return currentPage;
+            }
+        }
+        return null;
+    }
 
     public static JFrame getFrame() { return frame; }
 
-    public static void goPage(Page newPage) {
-        if (newPage == page) {
-            return;
-        }
-        if (newPage.isInstance(getLastPage())) {
-            goBack();
-            return;
-        }
-        frame.getContentPane().remove(page);
-        frame.getContentPane().add(newPage, gbc);
-        Main.page = newPage;
-        frame.revalidate();
-        frame.repaint();
-    }
-
     public static void goBack() {
-        Page lastPage = page.getLastPage();
-        if (lastPage == null){
-            return;
+        if (pageHistory.size() > 1) {
+            pageHistory.pop();
+            pages.show(contentArea, pageHistory.peek());
         }
-        frame.getContentPane().remove(page);
-        frame.getContentPane().add(lastPage, gbc);
-        Main.page = lastPage;
-        frame.revalidate();
-        frame.repaint();
     }
 
-    public static Page getLastPage() {
-        return page.getLastPage();
+    public static void go(String page){
+        if (!pageHistory.isEmpty() && pageHistory.peek().equals(page)) {
+            goBack();
+        } else {
+            pageHistory.push(page);
+            pages.show(contentArea, page);
+        }
     }
 }

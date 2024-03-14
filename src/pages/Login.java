@@ -1,4 +1,4 @@
-package pages.forms;
+package pages;
 
 import java.awt.GridBagConstraints;
 import java.sql.*;
@@ -8,9 +8,6 @@ import javax.swing.*;
 import database.Database;
 import database.users.*;
 import main.Main;
-import pages.Menu;
-import pages.Page;
-import pages.UIUtils;
 
 public class Login extends Page {
     private static JTextField emailField = new JTextField(20);
@@ -27,7 +24,7 @@ public class Login extends Page {
         // Add components to the panel
         JPanel emailEntry = UIUtils.createFieldPanel("Email:", false, emailField);
         JPanel passwordEntry = UIUtils.createFieldPanel("Password:", false, passwordField);
-        JLabel signupLink = UIUtils.createHyperlink("Don't have an account? ", "Create one", ".", () -> Main.goPage(new Signup()));
+        JLabel signupLink = UIUtils.createHyperlink("Don't have an account? ", "Create one", ".", () -> Main.go("Login"));
         JButton loginButton = UIUtils.createButton("Log in", e -> submit());
 
         UIUtils.addToGrid(content, emailEntry, UIUtils.createGBC(1, 0, 1, 0, GridBagConstraints.HORIZONTAL));

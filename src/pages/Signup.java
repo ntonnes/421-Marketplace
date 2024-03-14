@@ -1,16 +1,13 @@
-package pages.forms;
+package pages;
 import database.Database;
 import database.users.Customer;
 import main.Main;
-import pages.UIUtils;
 
 import java.awt.GridBagConstraints;
 import java.sql.*;
 import java.text.*;
 import java.util.Date;
 import javax.swing.*;
-import pages.Menu;
-import pages.Page;
 
 public class Signup extends Page {
 

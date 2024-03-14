@@ -14,16 +14,16 @@ import main.Main;
 public class UIUtils {
 
     // Fonts
-    private static final Font FONT_LABEL = new Font("Arial", Font.BOLD, 16);
-    private static final Font FONT_FIELD = new Font ("Arial", Font.PLAIN, 14);
+    static final Font FONT_LABEL = new Font("Arial", Font.BOLD, 16);
+    static final Font FONT_FIELD = new Font ("Arial", Font.PLAIN, 14);
     private static final Font FONT_BUTTON = new Font("Tahoma", Font.BOLD, 14);
-    private static final Font FONT_TITLE = new Font("Tahoma", Font.BOLD, 25);
+    static final Font FONT_TITLE = new Font("Tahoma", Font.BOLD, 25);
 
     // Colors
     public static Color BUTTON_BLUE = new Color(0, 123, 255);
     public static Color BUTTON_GREEN = new Color(76, 175, 80);
     public static Color BUTTON_GRAY =new Color(171, 178, 191);
-    private static final Color DEFAULT_FOREGROUND = Color.WHITE;
+    static final Color DEFAULT_FOREGROUND = Color.WHITE;
 
     // Borders
     protected static Border BUTTON_RAISED =BorderFactory.createRaisedBevelBorder();
