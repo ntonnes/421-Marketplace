@@ -73,7 +73,11 @@ public class Main {
 
     public static void setUser(User u) {
         user = u;
-        banner.updateBanner(u);
+        frame.remove(banner);
+        banner = new Banner("421 Marketplace");
+        frame.add(banner, BorderLayout.NORTH);
+        frame.revalidate();
+        frame.repaint();
     }
     public static User getUser() {
         return user;
