@@ -18,7 +18,7 @@ public class Review extends ListSelect {
     private Customer customer;
 
     public Review() {
-        super(Main.getLastPage(), "Leave a Review");
+        super(new Review(), "Leave a Review");
     }
 
     @Override

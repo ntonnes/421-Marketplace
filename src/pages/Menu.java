@@ -35,7 +35,7 @@ public class Menu extends Page{
         JButton button3 = UIUtils.createButton("Leave a Review", e -> {
             if (!(Main.user instanceof Customer)) {
                 UIUtils.showErr("Please log into a customer account to leave a review");
-            } else { Main.goPage(new Review()); }
+            } else { Main.go("Review"); }
         }, UIUtils.BUTTON_GRAY, new Dimension(100, 40));
 
         // Exits the program and prints a console message
