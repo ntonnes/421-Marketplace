@@ -23,8 +23,8 @@ public class Customer extends User {
         this.dob = dob;
         this.modelsOrdered = new Model[0];
         this.orderList = new Order[0];
-        setModelsOrdered();
         setOrderList();
+        setModelsOrdered();
     }
 
     protected void setOrderList() {
@@ -90,14 +90,26 @@ public class Customer extends User {
 
     @Override
     public String toString() {
-        return "Customer{" +
-            "userID=" + userID +
-            ", name='" + name + '\'' +
-            ", email='" + email + '\'' +
-            ", password='" + password + '\'' +
-            ", dob='" + dob + '\'' +
-            ", modelsOrdered=" + Arrays.toString(modelsOrdered) +
-            ", orderList=" + Arrays.toString(orderList) +
-            '}';
+        StringBuilder modelsOrderedStr = new StringBuilder("\nUnique Models Ordered:\n");
+        for (Model model : modelsOrdered) {
+            modelsOrderedStr.append("    ModelID: ").append(model.getModelID()).append(";\n");
+        }
+        modelsOrderedStr.append("\n");
+
+        StringBuilder orderListStr = new StringBuilder("Orders Placed:\n");
+        for (Order order : orderList) {
+            String orderStr = "    " + order.toString().replace("\n", "\n    ");
+            orderListStr.append(orderStr).append(";\n");
+        }
+        orderListStr.append("}\n");
+
+        return "\nCustomer:\n" +
+            "    UserID: " + userID + '\n' +
+            "    Name: " + name + '\n' +
+            "    Email: " + email + '\n' +
+            "    Password: " + password + '\n' +
+            "    Date of Birth: " + dob + '\n' +
+            modelsOrderedStr +
+            orderListStr;
     }
 }

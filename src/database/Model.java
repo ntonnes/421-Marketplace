@@ -1,6 +1,7 @@
 package database;
 
 import java.sql.*;
+import java.util.Objects;
 
 public class Model {
     private int modelID;
@@ -11,7 +12,12 @@ public class Model {
 
     public Model(int modelID) {
         try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Model WHERE modelID = ?")) {
+        PreparedStatement stmt = conn.prepareStatement(
+            "SELECT Model.*, BrandPage.name AS brand " +
+            "FROM Model " +
+            "LEFT JOIN BrandPage ON Model.url = BrandPage.url " +
+            "WHERE Model.modelID = ?"
+        )) {
             
             stmt.setInt(1, modelID);
             ResultSet rs = stmt.executeQuery();
@@ -56,4 +62,18 @@ public class Model {
                 ", stars=" + stars +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Model model = (Model) o;
+        return modelID == model.modelID;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(modelID);
+    }
+
 }

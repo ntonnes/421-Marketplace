@@ -79,15 +79,27 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Order{" +
-            "orderID=" + orderID +
-            ", deliverAdd='" + deliverAdd + '\'' +
-            ", total=" + total +
-            ", date=" + date +
-            ", email='" + email + '\'' +
-            ", cardNum='" + cardNum + '\'' +
-            ", productsOrdered=" + Arrays.toString(productsOrdered) +
-            ", modelsOrdered=" + Arrays.toString(modelsOrdered) +
+        StringBuilder productsOrderedStr = new StringBuilder("    Products Ordered: {\n");
+        for (Product product : productsOrdered) {
+            productsOrderedStr.append("        (ModelID: ").append(product.getModelID())
+                              .append(", SerialNo: ").append(product.getSerialNo()).append(");\n");
+        }
+        productsOrderedStr.append("    }\n");
+    
+        StringBuilder modelsOrderedStr = new StringBuilder("    Unique Models Ordered {\n");
+        for (Model model : modelsOrdered) {
+            modelsOrderedStr.append("        ModelID: ").append(model.getModelID()).append(";\n");
+        }
+        modelsOrderedStr.append("    }\n");
+
+        return "Order " + orderID + " {\n" +
+            "    Delivery Address: " + deliverAdd + '\n' +
+            "    Total: $" + total + '\n' +
+            "    Order Date: " + date + '\n' +
+            "    Email: " + email + '\n' +
+            "    Card Number: " + cardNum + '\n' +
+            productsOrderedStr +
+            modelsOrderedStr +
             '}';
     }
 }
