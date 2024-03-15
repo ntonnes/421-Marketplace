@@ -1,12 +1,11 @@
 package pages;
 
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.*;
 
 import database.Database;
 import database.users.Customer;
 import database.users.Member;
+
 
 public class Account extends Page{
     public Account(String name) {

@@ -1,8 +1,6 @@
 package pages;
 
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.*;
 
 import database.Model;
 import database.users.*;
@@ -44,7 +42,7 @@ public class ReviewSelect extends ColumnPage{
     private void select() {
         int row = table.getSelectedRow();
         if (row == -1) {
-            UIUtils.showErr("Please select a model to review");
+            Popup.showErr("Please select a model to review");
         } else {
             modelID = (int) table.getValueAt(row, 0);
             Main.goNew(new ReviewForm(), "Review Form");
