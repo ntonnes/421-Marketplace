@@ -2,42 +2,47 @@ package pages;
 import database.Database;
 import database.users.Customer;
 import main.Main;
-
-import java.awt.GridBagConstraints;
 import java.sql.*;
 import java.text.*;
 import java.util.Date;
 import javax.swing.*;
 
-public class Signup extends Page {
+public class Signup extends ColumnPage {
 
     private static JTextField firstNameField = new JTextField(20);
     private static JTextField lastNameField = new JTextField(20);
     private static JTextField emailField = new JTextField(20);
     private static JPasswordField passwordField = new JPasswordField(20);
-    private static JFormattedTextField dobField = UIUtils.createDateField();
+    private static JFormattedTextField dobField = createDateField();
 
     public Signup() {
-        super(new Menu(), "Create an Account");
+        super("Create an Account");
     }
 
     @Override
     protected void populateContent() {
 
         // Add the components to the panel
-        JPanel fNameEntry = UIUtils.createFieldPanel("First Name:", true, firstNameField);
-        JPanel lNameEntry = UIUtils.createFieldPanel("Last Name:", true, lastNameField);
-        JPanel emailEntry = UIUtils.createFieldPanel("Email:", true, emailField);
-        JPanel passwordEntry = UIUtils.createFieldPanel("Password:", true, passwordField);
-        JPanel dobEntry = UIUtils.createFieldPanel("Date of Birth (mm/dd/yyyy):", false, dobField);
-        JButton signupButton = UIUtils.createButton("Sign Up", e -> submit());
+        JPanel fNameEntry = createFieldPanel("First Name:", true, firstNameField);
+        JPanel lNameEntry = createFieldPanel("Last Name:", true, lastNameField);
+        JPanel emailEntry = createFieldPanel("Email:", true, emailField);
+        JPanel passwordEntry = createFieldPanel("Password:", true, passwordField);
+        JPanel dobEntry = createFieldPanel("Date of Birth (mm/dd/yyyy):", false, dobField);
+        JButton signupButton = createButton("Sign Up",BUTTON_GREEN, e -> submit());
 
-        UIUtils.addToGrid(content, fNameEntry, UIUtils.createGBC(0, 0, 1, 1, GridBagConstraints.HORIZONTAL));
-        UIUtils.addToGrid(content, lNameEntry, UIUtils.createGBC(0, 1, 1, 1, GridBagConstraints.HORIZONTAL));
-        UIUtils.addToGrid(content, emailEntry, UIUtils.createGBC(0, 2, 1, 1, GridBagConstraints.HORIZONTAL));
-        UIUtils.addToGrid(content, passwordEntry, UIUtils.createGBC(0, 3, 1, 1, GridBagConstraints.HORIZONTAL));
-        UIUtils.addToGrid(content, dobEntry, UIUtils.createGBC(0, 4, 1, 1, GridBagConstraints.HORIZONTAL));
-        UIUtils.addToGrid(content, signupButton, UIUtils.createGBC(0, 5, 1, 1, GridBagConstraints.HORIZONTAL));
+        addBuffer(0.05);
+        addComponent(fNameEntry, 0.01);
+        addBuffer(0.02);
+        addComponent(lNameEntry, 0.01);
+        addBuffer(0.02);
+        addComponent(emailEntry, 0.01);
+        addBuffer(0.02);
+        addComponent(passwordEntry, 0.01);
+        addBuffer(0.02);
+        addComponent(dobEntry, 0.01);
+        addBuffer(0.02);
+        addComponent(signupButton, 0.1);
+        addBuffer();
     }
 
 
@@ -106,4 +111,5 @@ public class Signup extends Page {
             return;
         }
     }
+
 }

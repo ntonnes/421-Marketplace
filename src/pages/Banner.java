@@ -28,7 +28,7 @@ public class Banner extends JPanel{
             new Insets(10, 30, 10, 0));
         this.add(navPanel, navGBC);
 
-        backButton = createButton("Back", UIUtils.BUTTON_GRAY, e -> Main.goBack());
+        backButton = createButton("Back", Page.BUTTON_GRAY, e -> Main.goBack());
         GridBagConstraints backGBC = createGBC(
             0, 0, 
             GridBagConstraints.BOTH, 
@@ -36,7 +36,7 @@ public class Banner extends JPanel{
             new Insets(10, 0, 10, 5));
         navPanel.add(backButton, backGBC);
 
-        homeButton = createButton("Home", UIUtils.BUTTON_GRAY, e -> Main.go("Menu"));
+        homeButton = createButton("Home", Page.BUTTON_GRAY, e -> Main.go("Menu"));
         GridBagConstraints homeGBC = createGBC(1, 0, 
         GridBagConstraints.BOTH, 
         0.5, 1.0, 
@@ -71,7 +71,7 @@ public class Banner extends JPanel{
 
         if (!(Main.user instanceof Customer)){
             
-            loginButton = createButton("Log In", UIUtils.BUTTON_BLUE, e -> Main.go("Login"));
+            loginButton = createButton("Log In", Page.BUTTON_BLUE, e -> Main.go("Login"));
             GridBagConstraints loginGBC = createGBC(
                 0, 0, 
                 GridBagConstraints.BOTH, 
@@ -79,7 +79,7 @@ public class Banner extends JPanel{
                 new Insets(10, 0, 10, 5));
             variablePanel.add(loginButton, loginGBC);
             
-            signupButton = createButton("Sign Up", UIUtils.BUTTON_GREEN, e -> Main.go("Signup"));
+            signupButton = createButton("Sign Up", Page.BUTTON_GREEN, e -> Main.go("Signup"));
             GridBagConstraints signupGBC = createGBC(
                 1, 0, 
                 GridBagConstraints.BOTH, 
@@ -90,7 +90,7 @@ public class Banner extends JPanel{
                 Customer customer = (Customer) Main.user;
                 String firstName = customer.getName().split(" ")[0]; // Get the first name
                 JLabel messageLabel = new JLabel("Welcome, "+ firstName + "!", SwingConstants.CENTER);
-                messageLabel.setFont(UIUtils.FONT_LABEL);
+                messageLabel.setFont(Page.FONT_LABEL);
                 GridBagConstraints messageGBC = createGBC(
                     0, 0, 
                     GridBagConstraints.BOTH, 
@@ -101,7 +101,7 @@ public class Banner extends JPanel{
                 messageGBC.anchor = GridBagConstraints.PAGE_END;
             variablePanel.add(messageLabel, messageGBC);
     
-            accountButton = createButton("Account", UIUtils.BUTTON_BLUE, e -> Main.go("Account"));
+            accountButton = createButton("Account", Page.BUTTON_BLUE, e -> Main.go("Account"));
             GridBagConstraints accountGBC = createGBC(
                 0, 1, 
                 GridBagConstraints.BOTH, 
@@ -131,10 +131,10 @@ public class Banner extends JPanel{
     private JButton createButton(String text, Color color, ActionListener action){
         JButton btn = new JButton(text);
         btn.addActionListener(action);
-        btn.setFont(UIUtils.FONT_LABEL);
-        btn.setForeground(UIUtils.DEFAULT_FOREGROUND);
+        btn.setFont(Page.FONT_LABEL);
+        btn.setForeground(Page.DEFAULT_FOREGROUND);
         btn.setBackground(color);
-        btn.setBorder(UIUtils.BUTTON_RAISED);
+        btn.setBorder(Page.BUTTON_RAISED);
         btn.setBorderPainted(true);
         btn.setFocusPainted(false);
         return btn;

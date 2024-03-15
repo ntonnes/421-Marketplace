@@ -1,6 +1,5 @@
 package pages;
 
-import java.awt.GridBagConstraints;
 import java.sql.*;
 
 import javax.swing.*;
@@ -9,12 +8,12 @@ import database.Database;
 import database.users.*;
 import main.Main;
 
-public class Login extends Page {
+public class Login extends ColumnPage {
     private static JTextField emailField = new JTextField(20);
     private static JPasswordField passwordField = new JPasswordField(20);
 
     public Login() {
-        super(new Menu(), "Login");
+        super("Login");
     }
 
     // Fills the GUI with page content
@@ -22,16 +21,19 @@ public class Login extends Page {
     protected void populateContent() {
 
         // Add components to the panel
-        JPanel emailEntry = UIUtils.createFieldPanel("Email:", false, emailField);
-        JPanel passwordEntry = UIUtils.createFieldPanel("Password:", false, passwordField);
-        JLabel signupLink = UIUtils.createHyperlink("Don't have an account? ", "Create one", ".", () -> Main.go("Login"));
-        JButton loginButton = UIUtils.createButton("Log in", e -> submit());
+        JPanel emailEntry = createFieldPanel("Email:", false, emailField);
+        JPanel passwordEntry = createFieldPanel("Password:", false, passwordField);
+        JLabel signupLink = createHyperlink("Don't have an account? ", "Create one", ".", () -> Main.go("Login"));
+        JButton loginButton = createButton("Log in", BUTTON_BLUE, e -> submit());
 
-        UIUtils.addToGrid(content, emailEntry, UIUtils.createGBC(1, 0, 1, 0, GridBagConstraints.HORIZONTAL));
-        UIUtils.addToGrid(content, passwordEntry, UIUtils.createGBC(1, 1, 1, 0, GridBagConstraints.HORIZONTAL));
-        UIUtils.addToGrid(content, signupLink, UIUtils.createGBC(1, 2, 1, 0, GridBagConstraints.HORIZONTAL));
-        UIUtils.addToGrid(content, loginButton, UIUtils.createGBC(1, 3, 1, 0, GridBagConstraints.HORIZONTAL));
-
+        addBuffer(0.05);
+        addComponent(emailEntry, 0.01);
+        addBuffer(0.02);
+        addComponent(passwordEntry, 0.01);
+        addBuffer(0.02);
+        addComponent(loginButton, 0.1);
+        addComponent(signupLink, 0.0);
+        addBuffer();
     }
 
     // Performs queries to validate the user's input

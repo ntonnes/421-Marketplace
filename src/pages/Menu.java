@@ -1,19 +1,17 @@
 package pages;
-import main.Main;
 
 import javax.swing.*;
-
-import database.users.Customer;
-
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
+import java.awt.*;
 import java.awt.event.WindowEvent;
 
-public class Menu extends Page{
+import main.Main;
+import database.users.Customer;
+
+public class Menu extends ColumnPage{
+    private JButton b1, b2, b3, b4;
 
     public Menu() {
-        super(null, "Main Menu"); // Add this line to invoke the constructor of the superclass
-        this.lastPage = this;
+        super("Main Menu"); // Add this line to invoke the constructor of the superclass
     }
 
     private void quit(){
@@ -27,24 +25,40 @@ public class Menu extends Page{
 
         // Initialize buttons to execute tasks
         // TODO: Implement Task 1
-        JButton button1 = UIUtils.createButton("Task 1", e -> System.out.println("You selected task 1"), UIUtils.BUTTON_GRAY, new Dimension(100, 40));
+        b1 = createButton("Task 1", BUTTON_GRAY, e -> System.out.println("You selected task 1"));
+        addComponent(b1, 0.05);
 
         // TODO: Implement Task 2
-        JButton button2 = UIUtils.createButton("Task 2", e -> System.out.println("You selected task 2"), UIUtils.BUTTON_GRAY, new Dimension(100, 40));
+        b2 = createButton("Task 2", BUTTON_GRAY, e -> System.out.println("You selected task 2"));
+        addComponent(b2, 0.05);
 
-        JButton button3 = UIUtils.createButton("Leave a Review", e -> {
+        b3 = createButton("Leave a Review", BUTTON_GRAY, e -> {
             if (!(Main.user instanceof Customer)) {
                 UIUtils.showErr("Please log into a customer account to leave a review");
             } else { Main.go("Review"); }
-        }, UIUtils.BUTTON_GRAY, new Dimension(100, 40));
+        });
+        addComponent(b3, 0.05);
 
         // Exits the program and prints a console message
-        JButton button4 = UIUtils.createButton("Quit", e -> quit(), UIUtils.BUTTON_GRAY, new Dimension(100, 40));
+        b4 = createButton("Quit", BUTTON_GRAY, e -> quit());
+        addComponent(b4, 0.05);
 
-        UIUtils.addToGrid(content, button1, UIUtils.createGBC(0, 1, 1,1, GridBagConstraints.HORIZONTAL));
-        UIUtils.addToGrid(content, button2, UIUtils.createGBC(0, GridBagConstraints.RELATIVE, 1,1, GridBagConstraints.HORIZONTAL));
-        UIUtils.addToGrid(content, button3, UIUtils.createGBC(0, GridBagConstraints.RELATIVE, 1,1, GridBagConstraints.HORIZONTAL));
-        UIUtils.addToGrid(content, button4, UIUtils.createGBC(0, GridBagConstraints.RELATIVE, 1,1, GridBagConstraints.HORIZONTAL));
+        GridBagConstraints verticalGBC = createGBC(
+            1, 4, 
+            GridBagConstraints.BOTH, 
+            .3, .8, 
+            new Insets(0, 0, 0, 0));
+        content.add(new JPanel(), verticalGBC);
+
+        GridBagConstraints horizontalGBC = createGBC(
+            0, 5, 
+            GridBagConstraints.VERTICAL, 
+            .35, 1, 
+            new Insets(0, 0, 0, 0));
+        content.add(new JPanel(), horizontalGBC);
+        
+        horizontalGBC.gridx = 2;
+        content.add(new JPanel(), horizontalGBC);
     }
 
 }

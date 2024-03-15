@@ -9,8 +9,8 @@ import database.users.Customer;
 import database.users.Member;
 
 public class Account extends Page{
-    public Account(Page lastPage, String name) {
-        super(lastPage, name);
+    public Account(String name) {
+        super(name);
         //TODO Auto-generated constructor stub
     }
 
@@ -40,4 +40,5 @@ public class Account extends Page{
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'populateContent'");
     }
+
 }
