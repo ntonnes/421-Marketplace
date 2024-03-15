@@ -35,7 +35,7 @@ public class Menu extends ColumnPage{
         b3 = createButton("Leave a Review", BUTTON_GRAY, e -> {
             if (!(Main.user instanceof Customer)) {
                 UIUtils.showErr("Please log into a customer account to leave a review");
-            } else { Main.go("Review"); }
+            } else { Main.goNew(new ReviewSelect(), "Review Select"); }
         });
         addComponent(b3, 0.05);
 

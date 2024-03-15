@@ -1,11 +1,10 @@
 package pages;
+
 import java.awt.*;
-
 import javax.swing.*;
-import javax.swing.text.*;
-
 
 import main.Main;
+
 
 public class UIUtils {
 

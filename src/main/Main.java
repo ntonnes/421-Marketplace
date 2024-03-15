@@ -66,7 +66,7 @@ public class Main {
         banner = new Banner("421 Marketplace");
         frame.add(banner, BorderLayout.NORTH);
 
-        pages.show(contentArea, "Menu");
+        go("Menu");
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
@@ -78,20 +78,6 @@ public class Main {
         frame.add(banner, BorderLayout.NORTH);
         frame.revalidate();
         frame.repaint();
-    }
-    public static User getUser() {
-        return user;
-    }
-
-    public static Page getPage() {
-        Page currentPage = null;
-        for (Component component : contentArea.getComponents()) {
-            if (component.isVisible()) {
-                currentPage = (Page) (component);
-                return currentPage;
-            }
-        }
-        return null;
     }
 
     public static JFrame getFrame() { return frame; }
@@ -107,8 +93,23 @@ public class Main {
         if (!pageHistory.isEmpty() && pageHistory.peek().equals(page)) {
             goBack();
         } else {
+            if ("Home".equals(page)) {
+                pageHistory.clear();
+            }
             pageHistory.push(page);
             pages.show(contentArea, page);
+            frame.revalidate();
+            frame.repaint();
         }
+    }
+    public static void goNew(Page page, String title){
+        for (Component comp : contentArea.getComponents()) {
+            if (title.equals(comp.getName())) {
+                contentArea.remove(comp);
+            }
+        }
+
+        contentArea.add(page, title);
+        go(title);
     }
 }

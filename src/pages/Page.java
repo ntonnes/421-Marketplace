@@ -1,34 +1,27 @@
 package pages;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
-import javax.swing.border.MatteBorder;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.MaskFormatter;
+import javax.swing.border.*;
+import javax.swing.text.*;
 
-import com.ibm.db2.jcc.am.t;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.text.ParseException;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public abstract class Page extends JPanel {
 
     // Fonts
-    static final Font FONT_LABEL = new Font("Arial", Font.BOLD, 16);
-    static final Font FONT_FIELD = new Font ("Arial", Font.PLAIN, 14);
-    static final Font FONT_BUTTON = new Font("Tahoma", Font.BOLD, 14);
-    static final Font FONT_TITLE = new Font("Tahoma", Font.BOLD, 25);
+    protected static final Font FONT_LABEL = new Font("Arial", Font.BOLD, 16);
+    protected static final Font FONT_FIELD = new Font ("Arial", Font.PLAIN, 14);
+    protected static final Font FONT_BUTTON = new Font("Tahoma", Font.BOLD, 14);
+    protected static final Font FONT_TITLE = new Font("Tahoma", Font.BOLD, 25);
 
     // Colors
-    public static Color BUTTON_BLUE = new Color(0, 123, 255);
-    public static Color BUTTON_GREEN = new Color(76, 175, 80);
-    public static Color BUTTON_GRAY =new Color(121, 128, 141);
-    static final Color DEFAULT_FOREGROUND = Color.WHITE;
+    protected static final Color BUTTON_BLUE = new Color(0, 123, 255);
+    protected static final Color BUTTON_GREEN = new Color(76, 175, 80);
+    protected static final Color BUTTON_GRAY =new Color(121, 128, 141);
+    protected static final Color DEFAULT_FOREGROUND = Color.WHITE;
 
     // Borders
     protected static Border BUTTON_RAISED =BorderFactory.createRaisedBevelBorder();

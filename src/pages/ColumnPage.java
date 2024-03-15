@@ -1,9 +1,8 @@
 package pages;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
-
 import java.awt.*;
+
 
 public abstract class ColumnPage extends Page {
     private int gridy = 0;
@@ -26,7 +25,7 @@ public abstract class ColumnPage extends Page {
         content.add(component, gbc);
         gridy++;
         YBUFFER-=weightY;
-    }
+    } 
 
     protected void addBuffer(double weighty){
         GridBagConstraints gbc = createGBC(

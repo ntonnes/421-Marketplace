@@ -11,7 +11,6 @@ import database.users.Member;
 public class Account extends Page{
     public Account(String name) {
         super(name);
-        //TODO Auto-generated constructor stub
     }
 
     public Member makeMember(Customer customer) {
