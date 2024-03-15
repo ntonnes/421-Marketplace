@@ -68,19 +68,26 @@ public class Order {
 
     public static Order getOrder(int orderID, Connection conn) {
         if (orders.containsKey(orderID)) {
+            System.out.println("Order " + orderID + " was found in the cache. Returning order.");
             return orders.get(orderID);
         } else {
-            return new Order(orderID, conn);
+            Order order = new Order(orderID, conn);
+            System.out.println("Order " + orderID + " was found in the 'Order' table and added to the cache. Returning order.");
+            return order;
         }
     }
 
-    public static Order[] getOrders(String email, Connection conn) {
+    public static Order[] getCustomerOrders(String email, Connection conn) {
         List<Order> orders = new ArrayList<>();
         try (PreparedStatement stmt = conn.prepareStatement("SELECT OrderID FROM Order WHERE Email = ?")) {
             stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                orders.add(getOrder(rs.getInt("OrderID"), conn));
+                try {
+                    orders.add(getOrder(rs.getInt("OrderID"), conn));
+                } catch (Exception e) {
+                    System.out.println("Error while retrieving order: " + e.getMessage());
+                }
             }
         } catch (SQLException e) {
             System.out.println("Error while retrieving orders from the database");
@@ -89,7 +96,7 @@ public class Order {
         return orders.isEmpty() ? new Order[0] : orders.toArray(new Order[0]);
     }
 
-    
+
 
     public int getOrderID() {
         return orderID;

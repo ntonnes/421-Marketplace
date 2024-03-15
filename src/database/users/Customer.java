@@ -24,7 +24,7 @@ public class Customer extends User {
         this.orderList = new Order[0];
 
         try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS)) {
-            orderList = Order.getOrders(email, conn);
+            orderList = Order.getCustomerOrders(email, conn);
             setModelsOrdered();
         } catch (SQLException e) {
             System.out.println("Error while accessing the database");
@@ -49,8 +49,8 @@ public class Customer extends User {
     }
 
 
-    public void refreshOrders(Connection conn) {
-        orderList = Order.getOrders(email, conn);
+    public void refreshCustomerOrders(Connection conn) {
+        orderList = Order.getCustomerOrders(email, conn);
         setModelsOrdered();
     }
 

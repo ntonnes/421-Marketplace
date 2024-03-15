@@ -18,7 +18,7 @@ public class Product extends Model {
     }
 
     // Constructor for retrieving product from the database
-    private Product(int modelID, int serialNo, Connection conn) throws ProductError {
+    private Product(int modelID, int serialNo, Connection conn) throws Exception {
         super(modelID, conn);
         try (PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Product WHERE serialNo = ?")) {
             stmt.setInt(1, serialNo);
@@ -38,7 +38,7 @@ public class Product extends Model {
     }
 
     // Constructor for adding product to the database
-    private Product (int modelID, int serialNo, Boolean returned, String supplierName, int restockNo, Connection conn) throws ProductError {
+    private Product(int modelID, int serialNo, Boolean returned, String supplierName, int restockNo, Connection conn) throws Exception {
         super(modelID, conn);
         this.serialNo = serialNo;
         this.returned = returned;
@@ -69,10 +69,10 @@ public class Product extends Model {
         } else {
             try {
                 Product product = new Product(modelID, serialNo, returned, supplierName, restockNo, conn);
-                System.out.println("Added product with modelID " + modelID + " and serialNo " + serialNo + " to the 'Product' table.");
+                System.out.println("Added product with modelID " + modelID + " and serialNo " + serialNo + " to the 'Product' table. Returning product.");
                 return product;
 
-            } catch (ProductError e) {
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
                 return null;
             }
@@ -84,19 +84,20 @@ public class Product extends Model {
         ProductKey key = new ProductKey(modelID, serialNo);
 
         if (products.containsKey(key)) {
-            System.out.println("Product with modelID " + modelID + " and serialNo " + serialNo + " found. Returning existing product.");
+            System.out.println("Product with modelID " + modelID + " and serialNo " + serialNo + " found in the cache. Returning product.");
             return products.get(key);
         } else {
             try {
                 Product product = new Product(modelID, serialNo, conn);
-                System.out.println("Retrieved product with modelID " + modelID + " and serialNo " + serialNo + " from the 'Product' table.");
+                System.out.println("Retrieved product with modelID " + modelID + " and serialNo " + serialNo + " from the 'Product' table and added to the cache. Returning product.");
                 return product;
-            } catch (ProductError e) {
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
                 return null;
             }
         }
     }
+
 
     public int getSerialNo() {
         return serialNo;
