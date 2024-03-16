@@ -20,7 +20,6 @@
 # Logs and databases #
 ######################
 *.log
-*.sql
 *.sqlite
 
 # OS generated files #
@@ -59,5 +58,5 @@ obj/
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
-.vscode# Ignore all CSV files in ./CSV_files
+.vscode
 *.csv
