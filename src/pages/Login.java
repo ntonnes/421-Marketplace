@@ -1,7 +1,6 @@
 package pages;
 
 import java.sql.*;
-
 import javax.swing.*;
 
 import database.Database;
@@ -73,14 +72,14 @@ public class Login extends ColumnPage {
                     Main.goBack();
 
                 } else {
-                    UIUtils.showErr("Password is incorrect.");
+                    Popup.showErr("Password is incorrect.");
                 }
             } else {
-                UIUtils.showErr("An account with that email does not exist.");
+                Popup.showErr("An account with that email does not exist.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            UIUtils.showErr("An error occurred while executing an SQL statement.");
+            Popup.showErr("An error occurred while executing an SQL statement.");
         }
     }
 

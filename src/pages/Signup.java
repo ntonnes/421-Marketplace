@@ -1,11 +1,14 @@
 package pages;
-import database.Database;
-import database.users.Customer;
+
 import main.Main;
 import java.sql.*;
 import java.text.*;
 import java.util.Date;
 import javax.swing.*;
+
+import database.Database;
+import database.users.Customer;
+
 
 public class Signup extends ColumnPage {
 
@@ -64,18 +67,18 @@ public class Signup extends ColumnPage {
                 date = sdf.parse(dob);
                 // Check if the date is in the future
                 if (date.after(new Date())) {
-                    UIUtils.showErr("Date of Birth cannot be in the future.");
+                    Popup.showErr("Date of Birth cannot be in the future.");
                     return;
                 }
             }
         } catch (ParseException e) {
-            UIUtils.showErr("Invalid Date of Birth.");
+            Popup.showErr("Invalid Date of Birth.");
             return;
         }
 
         // Validate non-null fields
         if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            UIUtils.showErr("All fields must be filled out.");
+            Popup.showErr("All fields must be filled out.");
             return;
         }
 
@@ -88,7 +91,7 @@ public class Signup extends ColumnPage {
 
             // Check if email already exists
             if (resultSet.next()) {
-                UIUtils.showErr("An account with that email already exists.");
+                Popup.showErr("An account with that email already exists.");
                 return;
             
             // If email is unique, create the customer
@@ -107,7 +110,7 @@ public class Signup extends ColumnPage {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            UIUtils.showErr("An error occurred while executing an SQL statement.");
+            Popup.showErr("An error occurred while executing an SQL statement.");
             return;
         }
     }

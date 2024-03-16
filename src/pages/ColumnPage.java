@@ -58,4 +58,14 @@ public abstract class ColumnPage extends Page {
         horizontalGBC.gridx = 2;
         content.add(new JPanel(), horizontalGBC);
     }
+
+    protected void setWeights(double content, double buffer){
+        XBUFFER = buffer;
+        XCONTENT = content;
+    }
+
+    protected void resetWeights(){
+        XBUFFER = 0.35;
+        XCONTENT = 0.3;
+    }
 }

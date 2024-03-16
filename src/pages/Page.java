@@ -21,6 +21,7 @@ public abstract class Page extends JPanel {
     protected static final Color BUTTON_BLUE = new Color(0, 123, 255);
     protected static final Color BUTTON_GREEN = new Color(76, 175, 80);
     protected static final Color BUTTON_GRAY =new Color(121, 128, 141);
+    protected static final Color BUTTON_RED = new Color(220, 53, 69);
     protected static final Color DEFAULT_FOREGROUND = Color.WHITE;
 
     // Borders

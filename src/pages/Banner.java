@@ -101,22 +101,22 @@ public class Banner extends JPanel{
                 messageGBC.anchor = GridBagConstraints.PAGE_END;
             variablePanel.add(messageLabel, messageGBC);
     
-            accountButton = createButton("Account", Page.BUTTON_BLUE, e -> Main.go("Account"));
+            accountButton = createButton("My Cart", Page.BUTTON_BLUE, e -> Main.goNew(new CartSelect(), "Cart"));
             GridBagConstraints accountGBC = createGBC(
                 0, 1, 
                 GridBagConstraints.BOTH, 
                 0.5, 0.5, 
-                new Insets(10, 0, 0, 5)
+                new Insets(10, 10, 0, 5)
             );
             accountGBC.anchor = GridBagConstraints.NORTHEAST;
             variablePanel.add(accountButton, accountGBC);
         
-            logoutButton = createButton("Logout", Color.RED, e -> customer.logout());
+            logoutButton = createButton("Logout", Page.BUTTON_RED, e -> {customer.logout(); Main.go("Menu"); });
             GridBagConstraints logoutGBC = createGBC(
                 1, 1, 
                 GridBagConstraints.BOTH, 
                 0.5, 0.5, 
-                new Insets(10, 5, 0, 0)
+                new Insets(10, 5, 0, 10)
             );
                 logoutGBC.anchor = GridBagConstraints.NORTHWEST;
             variablePanel.add(logoutButton, logoutGBC);

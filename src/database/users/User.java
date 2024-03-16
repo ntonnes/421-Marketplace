@@ -2,6 +2,7 @@ package database.users;
 import java.sql.*;
 
 import database.Database;
+import main.Main;
 
 public class User {
     protected int userID;
@@ -43,11 +44,12 @@ public class User {
     }
 
     public void delete() {
+        int userID = Main.user.getUserID();
         try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
         PreparedStatement stmt = conn.prepareStatement("DELETE FROM User WHERE userID = ?")) {
             stmt.setInt(1, userID);
             stmt.executeUpdate();
-            System.out.println("User deleted from the database");
+            System.out.println("User " + userID + " deleted from the database");
         } catch (SQLException e) {
             System.out.println("Error while deleting user from the database");
             e.printStackTrace();

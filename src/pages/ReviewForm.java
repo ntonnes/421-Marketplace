@@ -1,17 +1,16 @@
 package pages;
 
 import java.sql.*;
-
-import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import database.Database;
 import main.Main;
+import database.Model;
 
 public class ReviewForm extends ColumnPage{
-    private static JTextArea messageField;
-    private static JTextField ratingField;
+    private static JTextPane messageField = new JTextPane();
+    private static JTextField ratingField = new JTextField(20);
+    private static JButton submitButton;
 
     public ReviewForm() {
         super("Submit your review");
@@ -20,13 +19,14 @@ public class ReviewForm extends ColumnPage{
     @Override
     protected void populateContent() {
 
-        createFieldPanel("Message:", false, ratingField);
-        createFieldPanel("Rating:", true, messageField );
-        addComponent(ratingField, 0.01);
+        JPanel ratingEntry = createFieldPanel("Rating:", true, ratingField);
+        JPanel messageEntry = createFieldPanel("Message:", false, messageField);
+        addComponent(ratingEntry, 0.01);
         addBuffer(0.02);
-        addComponent(messageField, 0.1);
+        addComponent(messageEntry, 0.1);
         addBuffer(0.02);
-        createButton("Submit", BUTTON_GREEN, e -> submit());
+        submitButton = createButton("Submit", BUTTON_GREEN, e -> submit());
+        addComponent(submitButton, 0.1);
         addBuffer();
     }
 
@@ -45,6 +45,8 @@ public class ReviewForm extends ColumnPage{
             stmt.setString(4, message);
             stmt.executeUpdate();
 
+            updateRating(modelID, conn);
+
             JOptionPane.showMessageDialog(null, "Review submitted successfully!");
 
         } catch (SQLException e) {
@@ -52,6 +54,23 @@ public class ReviewForm extends ColumnPage{
             e.printStackTrace();
         }
         Main.go("Home");
+    }
+
+    private void updateRating(int modelID, Connection conn) throws SQLException {
+        double oldRating = Model.getModel(modelID, conn).getStars();
+        try (PreparedStatement stmt = conn.prepareStatement("SELECT AVG(rating) FROM Review WHERE modelID = ?")) {
+            stmt.setInt(1, modelID);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+            double newRating = rs.getDouble(1);
+
+            try (PreparedStatement updateStmt = conn.prepareStatement("UPDATE Model SET stars = ? WHERE modelID = ?")) {
+                updateStmt.setDouble(1, newRating);
+                updateStmt.setInt(2, modelID);
+                updateStmt.executeUpdate();
+                System.out.println("Rating for model " + modelID + " updated from " + oldRating + " to " + newRating);
+            }
+        }
     }
     
 }
