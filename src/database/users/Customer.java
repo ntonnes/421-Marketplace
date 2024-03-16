@@ -43,11 +43,11 @@ public class Customer extends User {
         }
     }
 
+
     public void logout() {
         System.out.println("Successfully logged out user " + name + ":\n" + this.toString() + "\n");
         Main.setUser(new User()); // Set the current user to a guest user
     }
-
 
     public void refreshCustomerOrders(Connection conn) {
         orderList = Order.getCustomerOrders(email, conn);

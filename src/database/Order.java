@@ -17,6 +17,7 @@ public class Order {
     // Array of unique model objects in this order
     private Model[] modelsOrdered;
 
+    // Constructor for retrieving order from the database
     private Order(int orderID, Connection conn) {
         if (orders.containsKey(orderID)) {
             Order order = orders.get(orderID);
@@ -32,6 +33,7 @@ public class Order {
             try (PreparedStatement stmt1 = conn.prepareStatement("SELECT * FROM Order WHERE orderID = ?");
                  PreparedStatement stmt2 = conn.prepareStatement("SELECT SerialNo, ModelID FROM Purchased WHERE OrderID = ?")) {
 
+                // Retrieve order details from the 'Order' table
                 stmt1.setInt(1, orderID);
                 ResultSet rs = stmt1.executeQuery();
                 if (rs.next()) {
@@ -43,6 +45,7 @@ public class Order {
                     this.cardNum = rs.getString("CardNum");
                 }
 
+                // Retrieve products ordered in this order from the 'Purchased' table
                 stmt2.setInt(1, orderID);
                 rs = stmt2.executeQuery();
                 List<Product> products = new ArrayList<>();

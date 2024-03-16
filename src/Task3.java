@@ -1,7 +1,5 @@
 import java.util.Scanner;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Task3 {
     //Need to change all of these to connect to our database:

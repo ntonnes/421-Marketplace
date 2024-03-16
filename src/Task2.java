@@ -1,7 +1,5 @@
 import java.util.Scanner;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 //The add to Cart task
 public class Task2 {

@@ -79,7 +79,7 @@ public class Product extends Model {
         }
     }
 
-    // Method to retrieve a product from the hashset or the database if it doesn't exist
+    // Method to retrieve a product from the cache or the database if it doesn't exist
     public static Product getProduct(int modelID, int serialNo, Connection conn) {
         ProductKey key = new ProductKey(modelID, serialNo);
 

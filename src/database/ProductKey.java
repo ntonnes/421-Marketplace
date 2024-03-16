@@ -1,5 +1,6 @@
 package database;
 
+// A class to represent a product key
 public class ProductKey {
     private final int modelID;
     private final int serialNo;

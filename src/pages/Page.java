@@ -21,6 +21,7 @@ public abstract class Page extends JPanel {
     protected static final Color BUTTON_BLUE = new Color(0, 123, 255);
     protected static final Color BUTTON_GREEN = new Color(76, 175, 80);
     protected static final Color BUTTON_GRAY =new Color(121, 128, 141);
+    protected static final Color BUTTON_RED = new Color(200, 30, 30);
     protected static final Color DEFAULT_FOREGROUND = Color.WHITE;
 
     // Borders
@@ -32,6 +33,8 @@ public abstract class Page extends JPanel {
     public Page(String name) {
         super(new GridBagLayout());
         this.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        UIManager.put("OptionPane.messageForeground", Color.WHITE);
+        UIManager.put("TextField.foreground", Color.BLACK);
 
         title = new JLabel(name, SwingConstants.CENTER);
         title.setFont(FONT_TITLE);
