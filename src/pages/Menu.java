@@ -25,7 +25,9 @@ public class Menu extends ColumnPage{
 
         // Initialize buttons to execute tasks
         // TODO: Implement Task 1
-        b1 = createButton("Task 1", BUTTON_GRAY, e -> System.out.println("You selected task 1"));
+        b1 = createButton("Search for an Item", BUTTON_GRAY, e -> {
+            Main.goNew(new SearchForm(), "Search");
+        });
         addComponent(b1, 0.05);
 
         // TODO: Implement Task 2

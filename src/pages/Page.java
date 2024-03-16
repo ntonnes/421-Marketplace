@@ -83,6 +83,20 @@ public abstract class Page extends JPanel {
         return btn;
     }
 
+    protected JLabel createInfoLabel(String text) {
+        JLabel infoLabel = new JLabel(text);
+        infoLabel.setFont(FONT_LABEL);
+        infoLabel.setForeground(DEFAULT_FOREGROUND);
+        GridBagConstraints infoLabelGBC = createGBC(
+            0, 2, 
+            GridBagConstraints.BOTH,
+            1, 0,
+            new Insets(0, 0, 10, 0));
+        infoLabelGBC.anchor = GridBagConstraints.WEST;
+        this.add(infoLabel, infoLabelGBC);
+        return infoLabel;
+    }
+
     // Method to create a text entry panel
     public static JPanel createFieldPanel(String name, Boolean required, JTextComponent component) throws IllegalComponentStateException{
 
@@ -125,6 +139,41 @@ public abstract class Page extends JPanel {
         } else {
             throw new IllegalArgumentException("UIUtils.beautifyField does not support component type: " + component.getClass().getName());
         }
+        return panel;
+    }
+
+    public JPanel createTempFieldPanel(String placeholder, JTextField textField) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(textField, BorderLayout.CENTER);
+
+        textField.setOpaque(false);
+        textField.setFont(FONT_FIELD);
+        textField.setCaretColor(DEFAULT_FOREGROUND);
+        Border paddingBorder = BorderFactory.createEmptyBorder(10, 10, 1, 10);
+        Border originalBorder = new MatteBorder(0, 0, 1, 0, Color.WHITE);
+        textField.setBorder(BorderFactory.createCompoundBorder(originalBorder, paddingBorder));
+
+        textField.setForeground(Color.LIGHT_GRAY);
+        textField.setText(placeholder);
+        textField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (textField.getText().equals(placeholder)) {
+                    textField.setText("");
+                    textField.setForeground(DEFAULT_FOREGROUND);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (textField.getText().isEmpty()) {
+                    textField.setForeground(Color.LIGHT_GRAY);
+                    textField.setText(placeholder);
+                }
+            }
+        });
+
         return panel;
     }
 
