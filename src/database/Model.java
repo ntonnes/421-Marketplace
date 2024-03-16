@@ -1,7 +1,9 @@
 package database;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -51,7 +53,7 @@ public class Model {
         this.url = url;
         this.brand = brand;
         this.stars = stars;
-    
+
         try (PreparedStatement stmt = conn.prepareStatement("INSERT INTO Model (modelID, price, url, brand, stars) VALUES (?, ?, ?, ?, ?)")) {
             stmt.setInt(1, modelID);
             stmt.setDouble(2, price);
@@ -64,7 +66,7 @@ public class Model {
             throw new ModelError("Error while adding model to the database: " + e.getMessage());
         }
     }
-    
+
     // Constructor for a new model
     public static Model addModel(int modelID, double price, String url, String brand, double stars, Connection conn) {
         if (models.containsKey(modelID)) {
@@ -81,7 +83,7 @@ public class Model {
             }
         }
     }
-    
+
     public static Model getModel(int modelID, Connection conn) {
         if (models.containsKey(modelID)) {
             System.out.println("Model with modelID " + modelID + " found in the cache. Returning model.");
@@ -96,6 +98,47 @@ public class Model {
                 return null;
             }
         }
+    }
+
+    public static String[][] getModelSearch(Connection conn, Double minStars, Double maxStars, String brand, Double minPrice, Double maxPrice, Integer modelID) {
+        List<String[]> data = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder(
+            "SELECT Model.modelID, Model.price, BrandPage.name AS brandName, Model.stars " +
+            "FROM Model " +
+            "JOIN BrandPage ON Model.url = BrandPage.url WHERE 1=1");
+
+        if (minStars != null) sql.append(" AND Model.stars >= ?");
+        if (maxStars != null) sql.append(" AND Model.stars <= ?");
+        if (brand != null) sql.append(" AND BrandPage.name = ?");
+        if (minPrice != null) sql.append(" AND Model.price >= ?");
+        if (maxPrice != null) sql.append(" AND Model.price <= ?");
+        if (modelID != null) sql.append(" AND Model.modelID = ?");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            int paramIndex = 1;
+            if (minStars != null) stmt.setDouble(paramIndex++, minStars);
+            if (maxStars != null) stmt.setDouble(paramIndex++, maxStars);
+            if (brand != null) stmt.setString(paramIndex++, brand);
+            if (minPrice != null) stmt.setDouble(paramIndex++, minPrice);
+            if (maxPrice != null) stmt.setDouble(paramIndex++, maxPrice);
+            if (modelID != null) stmt.setInt(paramIndex++, modelID);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                String[] row = {
+                    rs.getString("modelID"),
+                    rs.getString("price"),
+                    rs.getString("brandName"),
+                    rs.getString("stars")
+                };
+                data.add(row);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while retrieving models from the database: " + e.getMessage());
+        }
+
+        return data.toArray(new String[0][]);
     }
     
     public int getModelID() {

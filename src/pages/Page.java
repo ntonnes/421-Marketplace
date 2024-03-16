@@ -21,7 +21,7 @@ public abstract class Page extends JPanel {
     protected static final Color BUTTON_BLUE = new Color(0, 123, 255);
     protected static final Color BUTTON_GREEN = new Color(76, 175, 80);
     protected static final Color BUTTON_GRAY =new Color(121, 128, 141);
-    protected static final Color BUTTON_RED = new Color(200, 30, 30);
+    protected static final Color BUTTON_RED = new Color(220, 53, 69);
     protected static final Color DEFAULT_FOREGROUND = Color.WHITE;
 
     // Borders
@@ -33,8 +33,6 @@ public abstract class Page extends JPanel {
     public Page(String name) {
         super(new GridBagLayout());
         this.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        UIManager.put("OptionPane.messageForeground", Color.WHITE);
-        UIManager.put("TextField.foreground", Color.BLACK);
 
         title = new JLabel(name, SwingConstants.CENTER);
         title.setFont(FONT_TITLE);
@@ -86,6 +84,20 @@ public abstract class Page extends JPanel {
         return btn;
     }
 
+    protected JLabel createInfoLabel(String text) {
+        JLabel infoLabel = new JLabel(text);
+        infoLabel.setFont(FONT_LABEL);
+        infoLabel.setForeground(DEFAULT_FOREGROUND);
+        GridBagConstraints infoLabelGBC = createGBC(
+            0, 2, 
+            GridBagConstraints.BOTH,
+            1, 0,
+            new Insets(0, 0, 10, 0));
+        infoLabelGBC.anchor = GridBagConstraints.WEST;
+        this.add(infoLabel, infoLabelGBC);
+        return infoLabel;
+    }
+
     // Method to create a text entry panel
     public static JPanel createFieldPanel(String name, Boolean required, JTextComponent component) throws IllegalComponentStateException{
 
@@ -128,6 +140,41 @@ public abstract class Page extends JPanel {
         } else {
             throw new IllegalArgumentException("UIUtils.beautifyField does not support component type: " + component.getClass().getName());
         }
+        return panel;
+    }
+
+    public JPanel createTempFieldPanel(String placeholder, JTextField textField) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(textField, BorderLayout.CENTER);
+
+        textField.setOpaque(false);
+        textField.setFont(FONT_FIELD);
+        textField.setCaretColor(DEFAULT_FOREGROUND);
+        Border paddingBorder = BorderFactory.createEmptyBorder(10, 10, 1, 10);
+        Border originalBorder = new MatteBorder(0, 0, 1, 0, Color.WHITE);
+        textField.setBorder(BorderFactory.createCompoundBorder(originalBorder, paddingBorder));
+
+        textField.setForeground(Color.LIGHT_GRAY);
+        textField.setText(placeholder);
+        textField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (textField.getText().equals(placeholder)) {
+                    textField.setText("");
+                    textField.setForeground(DEFAULT_FOREGROUND);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (textField.getText().isEmpty()) {
+                    textField.setForeground(Color.LIGHT_GRAY);
+                    textField.setText(placeholder);
+                }
+            }
+        });
+
         return panel;
     }
 
