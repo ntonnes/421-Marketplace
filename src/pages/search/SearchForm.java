@@ -8,6 +8,8 @@ import pages.utils.slider.Slider;
 
 import javax.swing.*;
 
+import com.ibm.db2.jcc.am.ad;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -67,10 +69,11 @@ public class SearchForm extends ColumnPage {
         addBuffer(0.02);
         addComponent(starsEntry, 0.01);
         addBuffer(0.02);
-        addComponent(searchButton, 0.1);
+        addComponent(categoryEntry, 0.8);
         addBuffer(0.02);
-        addComponent(categoryEntry, 0.1);
-        addBuffer();
+        addComponent(searchButton, 0.1);
+        setPreferredSizeToBuffer(categoryEntry);
+        addSideBuffers();
     }
 
     private JPanel createBoxPanel(String label, boolean required) {

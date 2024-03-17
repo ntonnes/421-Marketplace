@@ -68,13 +68,12 @@ public class SelectBox extends JPanel {
         gbc.gridy = 0;
         gbc.gridx = 1;
         gbc.weightx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.fill = GridBagConstraints.BOTH;
         return comboBox;
     }
 
     private JPanel createBufferPanel() {
         JPanel buffer = new JPanel();
-        buffer.setOpaque(false);
         buffer.setPreferredSize(new Dimension(getPreferredSize().width, 20));
         return buffer;
     }
@@ -83,16 +82,23 @@ public class SelectBox extends JPanel {
         GridBagConstraints bufferGBC = new GridBagConstraints();
         bufferGBC.gridy = 1;
         bufferGBC.gridx = 0;
-        bufferGBC.weightx = 1;
+        bufferGBC.weightx = 0;
         bufferGBC.fill = GridBagConstraints.HORIZONTAL;
         return bufferGBC;
     }
 
     private JPanel createSelectedPanel() {
-        JPanel selectedPanel = new JPanel(new GridBagLayout());
+        JPanel selectedPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         selectedPanel.setOpaque(false);
         selectedPanel.setBorder(BorderFactory.createLineBorder(BUTTON_RED));
         return selectedPanel;
+    }
+
+    private JPanel createGroupedPanel() {
+        JPanel groupedPanel = new JPanel();
+        groupedPanel.setLayout(new BoxLayout(groupedPanel, BoxLayout.Y_AXIS));
+        groupedPanel.setOpaque(false);
+        return groupedPanel;
     }
 
     private GridBagConstraints createSelectedPanelGridBagConstraints() {
@@ -102,16 +108,28 @@ public class SelectBox extends JPanel {
         gbc.gridwidth = 2;
         gbc.weightx = 1;
         gbc.weighty = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.fill = GridBagConstraints.BOTH;
         return gbc;
     }
 
     private void addToSelected(String option, GridBagConstraints parentGBC) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(createLabel(option), BorderLayout.CENTER);
-        panel.add(createRemoveLabel(panel, option), BorderLayout.LINE_END);
-        panel.setBorder(createCustomBorder());
+        JPanel panel = createGroupedPanel();  // Use createGroupedPanel to create the container panel
         panel.setOpaque(false);
+
+        JPanel groupedPanel = new JPanel();
+        groupedPanel.setLayout(new BoxLayout(groupedPanel, BoxLayout.X_AXIS));
+        groupedPanel.setBorder(BorderFactory.createCompoundBorder(
+            createCustomBorder(),
+            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        ));  // Add padding and custom border
+
+        JLabel label = createLabel(option);
+        groupedPanel.add(label);
+        groupedPanel.add(Box.createRigidArea(new Dimension(10, 0)));  // Add space between label and removeLabel
+        JLabel removeLabel = createRemoveLabel(panel, option);
+        groupedPanel.add(removeLabel);
+
+        panel.add(groupedPanel, BorderLayout.CENTER);
 
         parentGBC.gridx++;
         selectedPanel.add(panel, parentGBC);
@@ -125,7 +143,7 @@ public class SelectBox extends JPanel {
         label.setForeground(DEFAULT_FOREGROUND);
         label.setBackground(new Color (0,0,0,0));
         label.setOpaque(true);
-        label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));  // Add padding to the JLabel
+        label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         return label;
     }
 
@@ -134,7 +152,7 @@ public class SelectBox extends JPanel {
         removeLabel.setOpaque(true);
         removeLabel.setForeground(DEFAULT_BACKGROUND.darker());
         removeLabel.setOpaque(false);
-        removeLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
+        removeLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
         removeLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -160,14 +178,16 @@ public class SelectBox extends JPanel {
         return new AbstractBorder() {
             @Override
             public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+                int borderThickness = 5;
+                int halfThickness = 3;
                 Graphics2D g2d = (Graphics2D) g.create();
-                g2d.setStroke(new BasicStroke(5));  // Decrease the thickness of the border
-                g2d.setColor(DEFAULT_FOREGROUND.darker());  // Dark color for the shadow
-                g2d.drawRoundRect(3, 3, width - 6, height - 6, height, height);  // Decrease the height of the raise
-                g2d.setColor(DEFAULT_FOREGROUND);  // Original color for the border
-                g2d.drawRoundRect(0, 0, width - 6, height - 6, height, height);  // Decrease the height of the raise
+                g2d.setStroke(new BasicStroke(borderThickness));
+                g2d.setColor(DEFAULT_FOREGROUND.darker());
+                g2d.drawRoundRect(borderThickness + halfThickness, borderThickness + halfThickness, width - 2 * borderThickness, height - 2 * borderThickness, height - 2 * borderThickness, height - 2 * borderThickness);
                 g2d.setColor(BUTTON_BLUE.darker());
-                g2d.fillRoundRect(3, 3, width - 12, height - 12, height-6, height-6);
+                g2d.fillRoundRect(borderThickness, borderThickness, width - 2 * borderThickness, height - 2 * borderThickness, height - 2 * borderThickness, height - 2 * borderThickness);
+                g2d.setColor(DEFAULT_FOREGROUND);
+                g2d.drawRoundRect(borderThickness, borderThickness, width - 2 * borderThickness, height - 2 * borderThickness, height - 2 * borderThickness, height - 2 * borderThickness);
                 g2d.dispose();
             }
         };

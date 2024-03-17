@@ -59,6 +59,26 @@ public abstract class ColumnPage extends Page {
         content.add(new JPanel(), horizontalGBC);
     }
 
+    protected void addSideBuffers() {
+        GridBagConstraints horizontalGBC = createGBC(
+            0, gridy,
+            GridBagConstraints.VERTICAL,
+            XBUFFER, 1,
+            new Insets(0, 0, 0, 0)
+        );
+        content.add(new JPanel(), horizontalGBC);
+
+        horizontalGBC.gridx = 2;
+        content.add(new JPanel(), horizontalGBC);
+    }
+    
+
+    protected void setPreferredSizeToBuffer(JComponent component) {
+        int bufferHeight = (int) (YBUFFER * content.getHeight());
+        Dimension preferredSize = new Dimension(component.getPreferredSize().width, bufferHeight);
+        component.setPreferredSize(preferredSize);
+    }
+
     protected void setWeights(double content, double buffer){
         XBUFFER = buffer;
         XCONTENT = content;

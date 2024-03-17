@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import database.users.Customer;
 import main.Main;
 import pages.cart.CartSelect;
-import pages.utils.Page;
 import static pages.utils.UISettings.*;
 
 
