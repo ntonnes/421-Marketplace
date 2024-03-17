@@ -11,7 +11,7 @@ import pages.utils.Page;
 
 public class Banner extends JPanel{
     private JPanel navPanel, titlePanel, variablePanel;
-    private JButton backButton, homeButton, loginButton, signupButton, logoutButton, accountButton;
+    private JButton backButton, homeButton, loginButton, signupButton, logoutButton;
     private Color COLOR_BACKGROUND = new Color(40, 44, 52);
 
 
@@ -71,6 +71,14 @@ public class Banner extends JPanel{
             new Insets(10, 0, 10, 30));
         this.add(variablePanel, variableGBC);
 
+        JButton cartButton = createButton("Cart", Page.BUTTON_GRAY, e -> Main.goNew(new CartSelect(), "Cart"));
+        GridBagConstraints cartGBC = createGBC(
+            2, 0, 
+            GridBagConstraints.BOTH, 
+            0.5, 1.0, 
+            new Insets(10, 5, 10, 0));
+        variablePanel.add(cartButton, cartGBC);
+
         if (!(Main.user instanceof Customer)){
             
             loginButton = createButton("Log In", Page.BUTTON_BLUE, e -> Main.go("Login"));
@@ -86,33 +94,23 @@ public class Banner extends JPanel{
                 1, 0, 
                 GridBagConstraints.BOTH, 
                 0.5, 1.0, 
-                new Insets(10, 5, 10, 0));
+                new Insets(10, 5, 10, 5));
             variablePanel.add(signupButton, signupGBC);
-            } else {
-                Customer customer = (Customer) Main.user;
-                String firstName = customer.getName().split(" ")[0]; // Get the first name
-                JLabel messageLabel = new JLabel("Welcome, "+ firstName + "!", SwingConstants.CENTER);
-                messageLabel.setFont(Page.FONT_LABEL);
-                GridBagConstraints messageGBC = createGBC(
-                    0, 0, 
-                    GridBagConstraints.BOTH, 
-                    1.0, 0.5, 
-                    new Insets(0, 0, 0, 0)
-                );
-                messageGBC.gridwidth = 2;
-                messageGBC.anchor = GridBagConstraints.PAGE_END;
+        } else {
+            Customer customer = (Customer) Main.user;
+            String firstName = customer.getName().split(" ")[0]; // Get the first name
+            JLabel messageLabel = new JLabel("Welcome, "+ firstName + "!", SwingConstants.CENTER);
+            messageLabel.setFont(Page.FONT_LABEL);
+            GridBagConstraints messageGBC = createGBC(
+                0, 0, 
+                GridBagConstraints.BOTH, 
+                1.0, 0.5, 
+                new Insets(0, 0, 0, 0)
+            );
+            messageGBC.gridwidth = 2;
+            messageGBC.anchor = GridBagConstraints.PAGE_END;
             variablePanel.add(messageLabel, messageGBC);
     
-            accountButton = createButton("My Cart", Page.BUTTON_BLUE, e -> Main.goNew(new CartSelect(), "Cart"));
-            GridBagConstraints accountGBC = createGBC(
-                0, 1, 
-                GridBagConstraints.BOTH, 
-                0.5, 0.5, 
-                new Insets(10, 10, 0, 5)
-            );
-            accountGBC.anchor = GridBagConstraints.NORTHEAST;
-            variablePanel.add(accountButton, accountGBC);
-        
             logoutButton = createButton("Logout", Page.BUTTON_RED, e -> {customer.logout(); Main.go("Menu"); });
             GridBagConstraints logoutGBC = createGBC(
                 1, 1, 
@@ -121,6 +119,7 @@ public class Banner extends JPanel{
                 new Insets(10, 5, 0, 10)
             );
                 logoutGBC.anchor = GridBagConstraints.NORTHWEST;
+
             variablePanel.add(logoutButton, logoutGBC);
         }
 

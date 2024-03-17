@@ -5,9 +5,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import pages.banner.Banner;
-import pages.banner.Login;
-import pages.banner.Signup;
+import pages.banner.*;
 import pages.utils.Page;
 import database.users.*;
 
@@ -95,7 +93,7 @@ public class Main {
         if (!pageHistory.isEmpty() && pageHistory.peek().equals(page)) {
             goBack();
         } else {
-            if ("Home".equals(page)) {
+            if ("Menu".equals(page)) {
                 pageHistory.clear();
             }
             pageHistory.push(page);

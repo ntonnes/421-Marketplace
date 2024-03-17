@@ -1,17 +1,13 @@
 package pages.cart;
 
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.border.EmptyBorder;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
 
 import database.Database;
 import main.Main;
@@ -65,22 +61,9 @@ public class CartSelect extends ColumnPage {
 
         table = new JTable(model);
         table.setRowHeight(30);
-        table.setShowGrid(true);
-        table.setGridColor(Color.WHITE);
-        table.setRowMargin(5);
-        table.setIntercellSpacing(new Dimension(0, 1));
-        table.setForeground(Color.WHITE);
-        table.setBackground(Color.DARK_GRAY);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        JTableHeader header = table.getTableHeader();
-        header.setBackground(Color.DARK_GRAY);
-        header.setForeground(Color.WHITE);
-
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false); 
-        scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         addComponent(scrollPane, 0.7);
 
         totalCostLabel = new JLabel("Total Cost: $" + String.format("%.2f", totalCost));

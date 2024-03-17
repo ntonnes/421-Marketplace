@@ -5,14 +5,11 @@ import java.sql.*;
 import java.util.ArrayList;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
 
 import database.Database;
 import database.Model;
 import database.users.*;
-import java.awt.*;
 import main.Main;
 import pages.utils.ColumnPage;
 import pages.utils.Popup;
@@ -60,14 +57,7 @@ public class ReviewSelect extends ColumnPage{
         table.setRowHeight(30);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        JTableHeader header = table.getTableHeader();
-        header.setBackground(Color.DARK_GRAY);
-        header.setForeground(Color.WHITE);
-
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false); 
-        scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         addComponent(scrollPane, 0.7);
 
         addBuffer(0.05);

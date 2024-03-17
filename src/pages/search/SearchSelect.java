@@ -1,10 +1,18 @@
 package pages.search;
 
+import java.awt.Component;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Comparator;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+
+import database.Database;
 
 import main.Main;
 import pages.utils.ColumnPage;
@@ -24,6 +32,54 @@ public class SearchSelect extends ColumnPage {
 
     public SearchSelect() {
         super("Search and Select");
+    }
+
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setText((value == null) ? "" : value.toString());
+            return this;
+        }
+    }
+
+    class ButtonEditor extends DefaultCellEditor {
+        protected JButton button;
+        private String label;
+        private boolean isPushed;
+        private int row;
+
+        public ButtonEditor(JCheckBox checkBox) {
+            super(checkBox);
+            button = new JButton();
+            button.setOpaque(true);
+            button.addActionListener(e -> fireEditingStopped());
+        }
+
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            label = (value == null) ? "" : value.toString();
+            button.setText(label);
+            isPushed = true;
+            this.row = row;
+            return button;
+        }
+
+        public Object getCellEditorValue() {
+            if (isPushed) {
+                int modelID = (int) table.getModel().getValueAt(row, 0);
+                if (label.equals("Add to Cart")) {
+                    addToCart(modelID);
+                } else if (label.equals("View")) {
+                    Main.goNew(new ModelPage(modelID), "Model");
+                }
+            }
+            isPushed = false;
+            return label;
+        }
+    
+
+        public boolean stopCellEditing() {
+            isPushed = false;
+            return super.stopCellEditing();
+        }
     }
 
     @Override
@@ -58,14 +114,16 @@ public class SearchSelect extends ColumnPage {
         setWeights(.8,.1);
         String[] columnNames = {"Model ID", "Price", "Brand", "Rating"};
 
-        DefaultTableModel model = new DefaultTableModel(data, columnNames) {
+        table = new JTable(data, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
+            @Override
+            public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
+            }
         };
 
-        table = new JTable(model);
         table.setRowHeight(30);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -141,5 +199,48 @@ public class SearchSelect extends ColumnPage {
         // Update the table with the sorted data
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setDataVector(data, new String[] {"Model ID", "Price", "Brand", "Rating"});
+    }
+
+    private void addToCart(int modelID) {
+        try (Connection conn = Database.connect();) {
+            String sql = "SELECT * FROM Product WHERE modelID = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, modelID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int userID = Main.user.getUserID();
+
+                // Check if the user and model ID pair exists in the InCart table
+                sql = "SELECT copies FROM InCart WHERE userID = ? AND modelID = ?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, userID);
+                stmt.setInt(2, modelID);
+                rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    // If the pair exists, increment the copies column
+                    int copies = rs.getInt("copies") + 1;
+                    sql = "UPDATE InCart SET copies = ? WHERE userID = ? AND modelID = ?";
+                    stmt = conn.prepareStatement(sql);
+                    stmt.setInt(1, copies);
+                    stmt.setInt(2, userID);
+                    stmt.setInt(3, modelID);
+                    stmt.executeUpdate();
+                    Popup.showMsg("Successfully added model " + modelID + " to your cart. You now have " + copies + " copies in your cart.");
+                } else {
+                    // If the pair doesn't exist, add a new row with copies = 1
+                    sql = "INSERT INTO InCart (userID, modelID, copies) VALUES (?, ?, 1)";
+                    stmt = conn.prepareStatement(sql);
+                    stmt.setInt(1, userID);
+                    stmt.setInt(2, modelID);
+                    stmt.executeUpdate();
+                    Popup.showMsg("Successfully added model " + modelID + " to your cart. You now have 1 copy in your cart.");
+                }
+            } else {
+                Popup.showErr("This model is out of stock. Try again later." + modelID);
+            }
+        } catch (SQLException e) {
+            Popup.showErr("Error finding product: " + e.getMessage());
+        }
     }
 }
