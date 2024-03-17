@@ -8,6 +8,7 @@ import database.users.*;
 import main.Main;
 import pages.utils.ColumnPage;
 import pages.utils.Popup;
+import static pages.utils.UISettings.*;
 
 public class Login extends ColumnPage {
     private static JTextField emailField = new JTextField(20);

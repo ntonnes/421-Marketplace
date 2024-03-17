@@ -11,6 +11,7 @@ import javax.swing.*;
 
 import database.Database;
 import database.users.Customer;
+import static pages.utils.UISettings.*;
 
 
 public class Signup extends ColumnPage {

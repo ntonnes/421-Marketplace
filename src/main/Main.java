@@ -7,6 +7,7 @@ import javax.swing.UIManager;
 
 import pages.banner.*;
 import pages.utils.Page;
+import pages.utils.UISettings;
 import database.users.*;
 
 import java.awt.*;
@@ -25,8 +26,12 @@ public class Main {
     // Debugging variables; set a"debug" system property to "true" to enable
     public static int DEBUG_USERID = 816278546;
     private static boolean DEBUG_MODE = Boolean.parseBoolean(System.getProperty("debug", "false"));
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(Main::createAndShowGUI);
+        SwingUtilities.invokeLater(() -> {
+            UISettings.installDefaults();
+            createAndShowGUI();
+        });
     }
 
     public static void quit(){

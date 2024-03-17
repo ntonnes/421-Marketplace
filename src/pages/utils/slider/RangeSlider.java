@@ -1,4 +1,4 @@
-package pages.slider;
+package pages.utils.slider;
 
 import javax.swing.JSlider;
 

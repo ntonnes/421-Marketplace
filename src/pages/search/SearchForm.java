@@ -1,25 +1,32 @@
 package pages.search;
 
 import main.Main;
-import pages.slider.RangeSlider;
 import pages.utils.ColumnPage;
 import pages.utils.Popup;
+import pages.utils.slider.RangeSlider;
+import pages.utils.slider.Slider;
 
 import javax.swing.*;
+
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.List;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import static pages.utils.UISettings.*;
 
 import database.Database;
+import pages.utils.SelectBox;
 
 public class SearchForm extends ColumnPage {
 
-    private static JTextField modelIDField = new JTextField(20);
+    private static JTextField modelIDField = new JTextField();
     private static JComboBox<String> brandBox;
     private static RangeSlider priceSlider;
     private static RangeSlider starsSlider;
@@ -38,101 +45,73 @@ public class SearchForm extends ColumnPage {
     @Override
     protected void populateContent() {
         brandBox = new JComboBox<String>();
-        populateBrandBox();
+        brandBox.setRenderer(new MyComboBoxRenderer());
+        SelectBox.populateComboBox(brandBox, "-Select-", "SELECT name FROM BrandPage ORDER BY name", "name");
 
-        priceSlider = new RangeSlider(0, 5000);
+        priceSlider = new RangeSlider(0, 500);
         starsSlider = new RangeSlider(0, 10);
 
-        JPanel modelIDEntry = createTempFieldPanel("Enter a Model ID...", modelIDField);
+        JPanel modelIDEntry = createTempFieldPanel("Model ID:","Enter a Model ID...", modelIDField);
         JPanel brandEntry = createBoxPanel("Brand:", false);
-        JPanel priceEntry = createRangeSliderPanel(priceSlider, "Price:", 0, 5000);
-        JPanel starsEntry = createRangeSliderPanel(starsSlider, "Stars:", 0, 10);
+        JPanel modelBrandEntry = doubleItemPanel(modelIDEntry, brandEntry);
+        JPanel priceEntry = new Slider(priceSlider, "Price:", "$", 0, 5000);
+        JPanel starsEntry = new Slider(starsSlider, "Stars:","", 0, 10);
         JButton searchButton = createButton("Search", BUTTON_GREEN, e -> submit());
+        JPanel categoryEntry = new SelectBox("Category:", "Select categories...", "SELECT DISTINCT Cname FROM Belongs", "Cname");
+        categoryEntry.setPreferredSize(new Dimension(categoryEntry.getPreferredSize().width, 50));
 
         addBuffer(0.05);
-        addComponent(modelIDEntry, 0.01);
-        addBuffer(0.02);
-        addComponent(brandEntry, 0.01);
+        addComponent(modelBrandEntry, 0.01);
         addBuffer(0.02);
         addComponent(priceEntry, 0.01);
         addBuffer(0.02);
         addComponent(starsEntry, 0.01);
         addBuffer(0.02);
         addComponent(searchButton, 0.1);
+        addBuffer(0.02);
+        addComponent(categoryEntry, 0.1);
         addBuffer();
     }
 
     private JPanel createBoxPanel(String label, boolean required) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
 
         JLabel lbl = new JLabel(label + (required ? "*" : ""));
         lbl.setFont(new Font ("Arial", Font.BOLD, 20));
-        panel.add(lbl);
-        panel.add(Box.createRigidArea(new Dimension(10, 0)));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(0, 0, 0, 10);
+        gbc.anchor = GridBagConstraints.WEST;
+        panel.add(lbl, gbc);
 
         brandBox.setFont(new Font("Arial", Font.PLAIN, 16));
-        JLabel sampleLabel = new JLabel("Sample Text");
-        sampleLabel.setFont(brandBox.getFont());
-        Dimension preferredSize = sampleLabel.getPreferredSize();
-        brandBox.setPreferredSize(preferredSize);
-        panel.add(brandBox);
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(brandBox, gbc);
 
         return panel;
     }
 
-    private void populateBrandBox() {
-        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
-             PreparedStatement stmt = conn.prepareStatement("SELECT name FROM BrandPage ORDER BY name")) {
-            ResultSet rs = stmt.executeQuery();
-            brandBox.addItem("-Select-");
-            while (rs.next()) {
-                brandBox.addItem(rs.getString("name"));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error while retrieving brands from the database: " + e.getMessage());
-        }
-    }
+    private JPanel doubleItemPanel(JPanel item1, JPanel item2) {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+    
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.5;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 0, 0, 20);
+        panel.add(item1, gbc);
 
-
-    private JPanel createRangeSliderPanel(RangeSlider rangeSlider, String label, int min, int max) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-
-        JLabel lbl = new JLabel(label);
-        lbl.setFont(new Font ("Arial", Font.BOLD, 20));
-        lbl.setBorder(BorderFactory.createEmptyBorder(18, 0, 0, 0));
-        panel.add(lbl);
-        panel.add(Box.createRigidArea(new Dimension(20, 10)));
-
-        JPanel labelsPanel = new JPanel(new BorderLayout());
-
-        rangeSlider.setValue(min);
-        rangeSlider.setUpperValue(max);
-
-        JLabel minLabel = new JLabel("Min: " + rangeSlider.getValue());
-        minLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
-        minLabel.setFont(new Font ("Arial", Font.PLAIN, 16));
-        labelsPanel.add(minLabel, BorderLayout.WEST);
-
-        JLabel maxLabel = new JLabel("Max: " + rangeSlider.getUpperValue());
-        maxLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
-        maxLabel.setFont(new Font ("Arial", Font.PLAIN, 16));
-        labelsPanel.add(maxLabel, BorderLayout.EAST);
-
-        rangeSlider.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-
-        JPanel sliderPanel = new JPanel(new BorderLayout());
-        sliderPanel.add(labelsPanel, BorderLayout.NORTH);
-        sliderPanel.add(rangeSlider, BorderLayout.CENTER);
-
-        rangeSlider.addChangeListener(e -> {
-            minLabel.setText("Min: " + rangeSlider.getValue());
-            maxLabel.setText("Max: " + rangeSlider.getUpperValue());
-        });
-
-        panel.add(sliderPanel);
-
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weightx = 0.5;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 20, 0, 0);
+        panel.add(item2, gbc);
+    
         return panel;
     }
 
@@ -214,19 +193,19 @@ public class SearchForm extends ColumnPage {
         }
     }
     public static Integer getMinPrice() {
-        return priceSlider.getValue() == priceSlider.getMinimum() ? null : priceSlider.getValue();
+        return priceSlider.getValue();
     }
 
     public static Integer getMaxPrice() {
-        return priceSlider.getUpperValue() == priceSlider.getMaximum() ? null : priceSlider.getUpperValue();
+        return  priceSlider.getUpperValue();
     }
 
     public static Integer getMinStars() {
-        return starsSlider.getValue() == starsSlider.getMinimum() ? null : starsSlider.getValue();
+        return starsSlider.getValue();
     }
 
     public static Integer getMaxStars() {
-        return starsSlider.getUpperValue() == starsSlider.getMaximum() ? null : starsSlider.getUpperValue();
+        return starsSlider.getUpperValue();
     }
 
     public static String getBrand() {
@@ -248,5 +227,16 @@ public class SearchForm extends ColumnPage {
         for (String[] row : data) {
             System.out.println("    " + Arrays.toString(row));
         }
-    }   
+    }  
+    
+    class MyComboBoxRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            if (isSelected) {
+                setBackground(list.isSelectionEmpty() ? DEFAULT_BACKGROUND : DEFAULT_BACKGROUND.darker());
+            }
+            return this;
+        }
+    }
 }

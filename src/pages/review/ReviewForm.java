@@ -7,6 +7,7 @@ import database.Database;
 import main.Main;
 import pages.utils.ColumnPage;
 import database.Model;
+import static pages.utils.UISettings.*;
 
 public class ReviewForm extends ColumnPage{
     private static JTextPane messageField = new JTextPane();

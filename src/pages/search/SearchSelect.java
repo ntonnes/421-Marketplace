@@ -1,6 +1,10 @@
 package pages.search;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.GridBagLayout;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,6 +17,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import database.Database;
+import static pages.utils.UISettings.*;
 
 import main.Main;
 import pages.utils.ColumnPage;
@@ -28,10 +33,12 @@ public class SearchSelect extends ColumnPage {
     private Integer minPrice;
     private Integer maxPrice;
     private Integer modelID;
+    private String categories;
     private String[][] data;
+    private int paramCol = 0;
 
     public SearchSelect() {
-        super("Search and Select");
+        super("Search Results");
     }
 
     class ButtonRenderer extends JButton implements TableCellRenderer {
@@ -84,6 +91,7 @@ public class SearchSelect extends ColumnPage {
 
     @Override
     protected void populateContent() {
+        setWeights(1,.3);
 
         // Create the "sort by" dropdown menu
         String[] sortByOptions = {
@@ -100,6 +108,7 @@ public class SearchSelect extends ColumnPage {
         JPanel sortByPanel = new JPanel();
         sortByPanel.add(new JLabel("Sort by:"));
         sortByPanel.add(sortByBox);
+
         addComponent(sortByPanel, 0.1);
 
                 
@@ -111,7 +120,6 @@ public class SearchSelect extends ColumnPage {
         maxPrice = SearchForm.getMaxPrice();
         modelID = SearchForm.getModelID();
 
-        setWeights(.8,.1);
         String[] columnNames = {"Model ID", "Price", "Brand", "Rating"};
 
         table = new JTable(data, columnNames) {
@@ -130,38 +138,41 @@ public class SearchSelect extends ColumnPage {
         JScrollPane scrollPane = new JScrollPane(table);
         addComponent(scrollPane, 0.7);
 
-        // Display the search parameters
-        StringBuilder searchParameters = new StringBuilder();
-        if (minStars != null) searchParameters.append("Min Stars: ").append(minStars).append(", ");
-        if (maxStars != null) searchParameters.append("Max Stars: ").append(maxStars).append(", ");
-        if (brand != null) searchParameters.append("Brand: ").append(brand).append(", ");
-        if (minPrice != null) searchParameters.append("Min Price: ").append(minPrice).append(", ");
-        if (maxPrice != null) searchParameters.append("Max Price: ").append(maxPrice).append(", ");
-        if (modelID != null) searchParameters.append("Model ID: ").append(modelID);
-    
-        JLabel searchParametersLabel = new JLabel(searchParameters.toString());
-        addComponent(searchParametersLabel, 0.1);
+        JPanel paramFrame = new JPanel(new BorderLayout());
+        addComponent(paramFrame, 0.1);
+        JPanel searchParametersPanel = new JPanel(new GridBagLayout());
+        paramFrame.add(searchParametersPanel, BorderLayout.WEST);
 
-        addBuffer(0.05);
-        JButton selectButton = createButton("Select", BUTTON_GREEN, e -> select());
-        addComponent(selectButton, 0.1);
+        addParameter(searchParametersPanel, "Minimum Rating: ", minStars, minStars != 0);
+        addParameter(searchParametersPanel, "Maximum Rating: ", maxStars, maxStars != 10);
+        addParameter(searchParametersPanel, "Brand", brand, brand != null);
+        addParameter(searchParametersPanel, "Minimum Price: $", minPrice, minPrice != 0);
+        addParameter(searchParametersPanel, "Maximum Price: $", maxPrice, maxPrice != 500);
+        addParameter(searchParametersPanel, "Model ID: ", modelID, modelID != null);
+
         addBuffer();
 
         resetWeights();
     }
 
-    private void select() {
-        int row = table.getSelectedRow();
-        if (row == -1) {
-            Popup.showErr("Please select a model");
-        } else {
-            String modelIDStr = (String) table.getValueAt(row, 0);
-            try {
-                modelID = Integer.parseInt(modelIDStr);
-                Main.goNew(new ModelPage(modelID), "Model Page");
-            } catch (NumberFormatException e) {
-                Popup.showErr("Invalid model ID: " + modelIDStr);
-            }
+    private void addParameter(JPanel panel, String name, Object value, boolean condition) {
+        if (condition) {
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = paramCol;
+            gbc.gridy = 0;
+            gbc.weightx = 0;
+
+            JLabel nameLabel = new JLabel(name);
+            nameLabel.setForeground(DEFAULT_FOREGROUND);
+            panel.add(nameLabel, gbc);
+
+            paramCol++;
+            gbc.gridx = paramCol;
+            gbc.insets = new Insets(0, 0, 0, 10);
+            JLabel valueLabel = new JLabel(value.toString());
+            valueLabel.setForeground(BUTTON_GREEN);
+            panel.add(valueLabel, gbc);
+            paramCol++;
         }
     }
 

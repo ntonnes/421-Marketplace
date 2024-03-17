@@ -1,4 +1,4 @@
-package pages.slider;
+package pages.utils.slider;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -19,7 +19,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicSliderUI;
 
-import pages.utils.Page;
+import static pages.utils.UISettings.*;
 
 /**
  * UI delegate for the RangeSlider component.  RangeSliderUI paints two thumbs,
@@ -28,12 +28,12 @@ import pages.utils.Page;
 class RangeSliderUI extends BasicSliderUI {
 
     /** Color of selected range. */
-    private Color rangeColor = Page.BUTTON_BLUE;
-    private Color THUMB_OUTLINE = Page.BUTTON_GRAY;
+    private Color rangeColor = BUTTON_BLUE;
+    private Color THUMB_OUTLINE = BUTTON_GRAY;
     private Color THUMB_FILL = new Color(0, 0, 0, 0);
-    private int thumbWidth = 30;
-    private int thumbHeight = 30;
-    private int trackWidth = 12;
+    private int thumbWidth = 25;
+    private int thumbHeight = 25;
+    private int trackWidth = 10;
     
     /** Location and size of thumb for upper value. */
     private Rectangle upperThumbRect;

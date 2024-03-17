@@ -8,6 +8,7 @@ import pages.search.SearchForm;
 import pages.utils.ColumnPage;
 import pages.utils.Popup;
 import database.users.Customer;
+import static pages.utils.UISettings.*;
 
 public class Menu extends ColumnPage{
     private JButton b1, b2, b3, b4;
@@ -20,7 +21,7 @@ public class Menu extends ColumnPage{
     protected void populateContent() {
 
         // Initialize buttons to execute tasks
-        // TODO: Implement Task 1
+        // Opens the search form
         b1 = createButton("Search for an Item", BUTTON_GRAY, e -> {
             Main.goNew(new SearchForm(), "Search");
         });

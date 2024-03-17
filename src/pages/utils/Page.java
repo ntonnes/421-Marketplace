@@ -8,107 +8,15 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.ParseException;
+import static pages.utils.UISettings.*;
 
-public abstract class Page extends JPanel {
-
-    // Fonts
-    public static final Font FONT_LABEL = new Font("Arial", Font.BOLD, 16);
-    protected static final Font FONT_FIELD = new Font ("Arial", Font.PLAIN, 16);
-    protected static final Font FONT_BUTTON = new Font("Tahoma", Font.BOLD, 14);
-    protected static final Font FONT_TITLE = new Font("Tahoma", Font.BOLD, 25);
-
-    // Colors
-    public static final Color BUTTON_BLUE = new Color(0, 123, 255);
-    public static final Color BUTTON_GREEN = new Color(76, 175, 80);
-    public static final Color BUTTON_GRAY =new Color(101, 108, 121);
-    public static final Color BUTTON_RED = new Color(220, 53, 69);
-    public static final Color DEFAULT_FOREGROUND = Color.WHITE;
-    protected static final Color DEFAULT_BACKGROUND = Color.DARK_GRAY;
-
-    // Borders
-    public static Border BUTTON_RAISED =BorderFactory.createRaisedBevelBorder();
-    
+public abstract class Page extends JPanel {  
 
     protected JLabel title;
     protected JPanel content;
 
     public Page(String name) {
         super(new GridBagLayout());
-
-
-        UIManager.put("Label.font", FONT_LABEL);
-        UIManager.put("Label.foreground", DEFAULT_FOREGROUND);
-        UIManager.put("Label.border", BorderFactory.createEmptyBorder());
-        UIManager.put("Label.font", FONT_LABEL);
-
-        UIManager.put("Button.font", FONT_LABEL);
-        UIManager.put("Button.foreground", DEFAULT_FOREGROUND);
-        UIManager.put("Button.border", BUTTON_RAISED);
-        UIManager.put("Button.focusPainted", false);
-        UIManager.put("Button.borderPainted", true);
-
-        UIManager.put("TextComponent.font", FONT_FIELD);
-        UIManager.put("TextComponent.foreground", DEFAULT_FOREGROUND);
-        UIManager.put("TextComponent.caretForeground", DEFAULT_FOREGROUND);
-        UIManager.put("TextComponent.opaque", false);
-
-        UIManager.put("TextField.background", DEFAULT_BACKGROUND);
-        UIManager.put("TextField.foreground", DEFAULT_FOREGROUND);
-        UIManager.put("TextField.caretForeground", DEFAULT_FOREGROUND);
-        UIManager.put("TextField.font", FONT_FIELD);
-
-        UIManager.put("FormattedTextField.background", DEFAULT_BACKGROUND);
-        UIManager.put("FormattedTextField.foreground", DEFAULT_FOREGROUND);
-        UIManager.put("FormattedTextField.font", FONT_FIELD);
-        UIManager.put("FormattedTextField.caretForeground", DEFAULT_FOREGROUND);
-
-        UIManager.put("PasswordField.background", DEFAULT_BACKGROUND);
-        UIManager.put("PasswordField.foreground", DEFAULT_FOREGROUND);
-        UIManager.put("PasswordField.caretForeground", DEFAULT_FOREGROUND);
-        UIManager.put("PasswordField.font", FONT_FIELD);
-
-        UIManager.put("Panel.background", DEFAULT_BACKGROUND);
-        UIManager.put("Panel.foreground", DEFAULT_FOREGROUND);
-
-        UIManager.put("ComboBox.focus", BorderFactory.createEmptyBorder());
-        UIManager.put("ComboBox.background", DEFAULT_BACKGROUND);
-        UIManager.put("ComboBox.foreground", DEFAULT_FOREGROUND);
-        UIManager.put("ComboBox.selectionBackground", DEFAULT_BACKGROUND.darker());
-        UIManager.put("ComboBox.selectionForeground", DEFAULT_FOREGROUND);
-        UIManager.put("ComboBox.font", FONT_FIELD);
-        UIManager.put("ComboBox.border", BorderFactory.createEmptyBorder());
-        UIManager.put("ComboBox.buttonBackground", DEFAULT_BACKGROUND);
-        UIManager.put("ComboBox.buttonShadow", DEFAULT_BACKGROUND.darker());
-        UIManager.put("ComboBox.buttonDarkShadow", DEFAULT_BACKGROUND.darker().darker());
-        UIManager.put("ComboBox.buttonHighlight", DEFAULT_BACKGROUND);
-
-        UIManager.put("Slider.background", DEFAULT_BACKGROUND);
-        UIManager.put("Slider.foreground", DEFAULT_FOREGROUND);
-        UIManager.put("Slider.trackWidth", Integer.valueOf(7));
-
-        UIManager.put("Table.font", FONT_FIELD);
-        UIManager.put("Table.foreground", DEFAULT_FOREGROUND);
-        UIManager.put("Table.background", DEFAULT_BACKGROUND);
-        UIManager.put("Table.gridColor", DEFAULT_FOREGROUND);
-        UIManager.put("Table.selectionBackground", BUTTON_BLUE);
-        UIManager.put("Table.selectionForeground", DEFAULT_FOREGROUND);
-        UIManager.put("TableHeader.font", new Font("Arial", Font.BOLD, 18));
-        UIManager.put("TableHeader.foreground", DEFAULT_FOREGROUND);
-        UIManager.put("TableHeader.background", DEFAULT_BACKGROUND);
-        UIManager.put("Viewport.background", DEFAULT_BACKGROUND);
-        UIManager.put("Viewport.foreground", DEFAULT_FOREGROUND);
-
-        UIManager.put("ScrollPane.background", DEFAULT_BACKGROUND);
-        UIManager.put("ScrollPane.foreground", DEFAULT_FOREGROUND);
-        UIManager.put("ScrollPane.border", BorderFactory.createEmptyBorder());
-        UIManager.put("ScrollPane.viewportBorder", BorderFactory.createEmptyBorder());
-        UIManager.put("ScrollBar.thumb", BUTTON_GRAY);
-        UIManager.put("ScrollBar.track", DEFAULT_BACKGROUND);
-        UIManager.put("ScrollBar.thumbDarkShadow", DEFAULT_BACKGROUND);
-        UIManager.put("ScrollBar.thumbHighlight", DEFAULT_BACKGROUND);
-        UIManager.put("ScrollBar.thumbShadow", DEFAULT_BACKGROUND);
-        UIManager.put("ScrollBar.width", Integer.valueOf(18));
-
 
         this.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
@@ -153,6 +61,8 @@ public abstract class Page extends JPanel {
         JButton btn = new JButton(text);
         btn.addActionListener(action);
         btn.setBackground(color);
+        btn.setForeground(DEFAULT_FOREGROUND);  // Set the foreground color to white
+
         return btn;
     }
 
@@ -207,11 +117,27 @@ public abstract class Page extends JPanel {
         return panel;
     }
 
-    public JPanel createTempFieldPanel(String placeholder, JTextField textField) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(textField, BorderLayout.CENTER);
+    public JPanel createTempFieldPanel(String name, String placeholder, JTextField textField) {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
 
-        Border paddingBorder = BorderFactory.createEmptyBorder(10, 10, 1, 10);
+        JLabel label = new JLabel(name);
+        label.setFont(new Font ("Arial", Font.BOLD, 20));
+        label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.PAGE_END;
+        panel.add(label, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.CENTER;
+        panel.add(textField, gbc);
+
+        Border paddingBorder = BorderFactory.createEmptyBorder(5, 10, 1, 0);
         Border originalBorder = new MatteBorder(0, 0, 1, 0, Color.WHITE);
         textField.setBorder(BorderFactory.createCompoundBorder(originalBorder, paddingBorder));
 

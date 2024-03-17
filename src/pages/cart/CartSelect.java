@@ -12,6 +12,7 @@ import javax.swing.table.DefaultTableModel;
 import database.Database;
 import main.Main;
 import pages.utils.ColumnPage;
+import static pages.utils.UISettings.*;
 
 public class CartSelect extends ColumnPage {
     private JTable table;
