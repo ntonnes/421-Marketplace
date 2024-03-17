@@ -1,4 +1,4 @@
-package pages;
+package pages.review;
 
 import java.util.List;
 import java.sql.*;
@@ -14,6 +14,8 @@ import database.Model;
 import database.users.*;
 import java.awt.*;
 import main.Main;
+import pages.utils.ColumnPage;
+import pages.utils.Popup;
 
 public class ReviewSelect extends ColumnPage{
     private JTable table;
@@ -56,12 +58,6 @@ public class ReviewSelect extends ColumnPage{
 
         table = new JTable(model);
         table.setRowHeight(30);
-        table.setShowGrid(true);
-        table.setGridColor(Color.WHITE);
-        table.setRowMargin(5);
-        table.setIntercellSpacing(new Dimension(0, 1));
-        table.setForeground(Color.WHITE);
-        table.setBackground(Color.DARK_GRAY);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         JTableHeader header = table.getTableHeader();

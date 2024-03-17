@@ -5,9 +5,11 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import pages.Menu;
+import pages.banner.Banner;
+import pages.banner.Login;
+import pages.banner.Signup;
+import pages.utils.Page;
 import database.users.*;
-import pages.*;
 
 import java.awt.*;
 import java.awt.event.WindowAdapter;

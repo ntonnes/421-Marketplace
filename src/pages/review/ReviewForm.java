@@ -1,10 +1,11 @@
-package pages;
+package pages.review;
 
 import java.sql.*;
 import javax.swing.*;
 
 import database.Database;
 import main.Main;
+import pages.utils.ColumnPage;
 import database.Model;
 
 public class ReviewForm extends ColumnPage{

@@ -1,4 +1,4 @@
-package pages;
+package pages.banner;
 
 import java.sql.*;
 import javax.swing.*;
@@ -6,13 +6,19 @@ import javax.swing.*;
 import database.Database;
 import database.users.*;
 import main.Main;
+import pages.utils.ColumnPage;
+import pages.utils.Popup;
 
 public class Login extends ColumnPage {
     private static JTextField emailField = new JTextField(20);
     private static JPasswordField passwordField = new JPasswordField(20);
+    private JButton loginButton;
 
     public Login() {
         super("Login");
+
+        emailField.addActionListener(e -> passwordField.requestFocus());
+        passwordField.addActionListener(e -> loginButton.doClick());
     }
 
     // Fills the GUI with page content
@@ -22,8 +28,8 @@ public class Login extends ColumnPage {
         // Add components to the panel
         JPanel emailEntry = createFieldPanel("Email:", false, emailField);
         JPanel passwordEntry = createFieldPanel("Password:", false, passwordField);
-        JLabel signupLink = createHyperlink("Don't have an account? ", "Create one", ".", () -> Main.go("Login"));
-        JButton loginButton = createButton("Log in", BUTTON_BLUE, e -> submit());
+        JLabel signupLink = createHyperlink("Don't have an account? ", "Create one", ".", () -> Main.goNew(new Signup(), "SignUp"));
+       loginButton = createButton("Log in", BUTTON_BLUE, e -> submit());
 
         addBuffer(0.05);
         addComponent(emailEntry, 0.01);

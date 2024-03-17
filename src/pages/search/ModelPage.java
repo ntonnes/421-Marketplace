@@ -1,24 +1,17 @@
-package pages;
+package pages.search;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
 import database.Database;
+import pages.utils.ColumnPage;
 
 
 public class ModelPage extends ColumnPage {
@@ -63,12 +56,6 @@ public class ModelPage extends ColumnPage {
 
         JTable table = new JTable(model);
         table.setRowHeight(30);
-        table.setShowGrid(true);
-        table.setGridColor(java.awt.Color.WHITE); // Fix: Change the argument type to java.awt.Color
-        table.setRowMargin(5);
-        table.setIntercellSpacing(new Dimension(0, 1));
-        table.setForeground(Color.WHITE);
-        table.setBackground(Color.DARK_GRAY);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         JTableHeader header = table.getTableHeader();

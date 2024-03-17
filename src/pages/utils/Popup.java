@@ -1,4 +1,4 @@
-package pages;
+package pages.utils;
 
 import javax.swing.*;
 

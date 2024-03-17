@@ -1,6 +1,9 @@
-package pages;
+package pages.banner;
 
 import main.Main;
+import pages.utils.ColumnPage;
+import pages.utils.Popup;
+
 import java.sql.*;
 import java.text.*;
 import java.util.Date;
@@ -17,9 +20,16 @@ public class Signup extends ColumnPage {
     private static JTextField emailField = new JTextField(20);
     private static JPasswordField passwordField = new JPasswordField(20);
     private static JFormattedTextField dobField = createDateField();
+    private JButton signupButton;
 
     public Signup() {
         super("Create an Account");
+
+        firstNameField.addActionListener(e -> lastNameField.requestFocus());
+        lastNameField.addActionListener(e -> emailField.requestFocus());
+        emailField.addActionListener(e -> passwordField.requestFocus());
+        passwordField.addActionListener(e -> dobField.requestFocus());
+        dobField.addActionListener(e -> signupButton.doClick());
     }
 
     @Override
@@ -31,7 +41,7 @@ public class Signup extends ColumnPage {
         JPanel emailEntry = createFieldPanel("Email:", true, emailField);
         JPanel passwordEntry = createFieldPanel("Password:", true, passwordField);
         JPanel dobEntry = createFieldPanel("Date of Birth (mm/dd/yyyy):", false, dobField);
-        JButton signupButton = createButton("Sign Up",BUTTON_GREEN, e -> submit());
+        signupButton = createButton("Sign Up", BUTTON_BLUE, e -> submit());
 
         addBuffer(0.05);
         addComponent(fNameEntry, 0.01);

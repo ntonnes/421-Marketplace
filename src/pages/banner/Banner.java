@@ -1,10 +1,12 @@
-package pages;
+package pages.banner;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import database.users.Customer;
 import main.Main;
+import pages.cart.CartSelect;
+import pages.utils.Page;
 
 
 public class Banner extends JPanel{

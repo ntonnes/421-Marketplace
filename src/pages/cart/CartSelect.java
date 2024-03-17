@@ -1,4 +1,4 @@
-package pages;
+package pages.cart;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,6 +15,7 @@ import javax.swing.table.JTableHeader;
 
 import database.Database;
 import main.Main;
+import pages.utils.ColumnPage;
 
 public class CartSelect extends ColumnPage {
     private JTable table;

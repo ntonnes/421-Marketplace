@@ -100,7 +100,7 @@ public class Model {
         }
     }
 
-    public static String[][] getModelSearch(Connection conn, Double minStars, Double maxStars, String brand, Double minPrice, Double maxPrice, Integer modelID) {
+    public static String[][] getModelSearch(Connection conn, int minStars, int maxStars, String brand, int minPrice, int maxPrice, Integer modelID) {
         List<String[]> data = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder(
@@ -108,20 +108,21 @@ public class Model {
             "FROM Model " +
             "JOIN BrandPage ON Model.url = BrandPage.url WHERE 1=1");
 
-        if (minStars != null) sql.append(" AND Model.stars >= ?");
-        if (maxStars != null) sql.append(" AND Model.stars <= ?");
-        if (brand != null) sql.append(" AND BrandPage.name = ?");
-        if (minPrice != null) sql.append(" AND Model.price >= ?");
-        if (maxPrice != null) sql.append(" AND Model.price <= ?");
+        sql.append(" AND Model.stars >= ?");
+        sql.append(" AND Model.stars <= ?");
+        if (brand != null && !brand.isEmpty()) sql.append(" AND BrandPage.name = ?");
+        sql.append(" AND Model.price >= ?");
+        sql.append(" AND Model.price <= ?");
         if (modelID != null) sql.append(" AND Model.modelID = ?");
+        System.out.println(sql.toString());
 
         try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             int paramIndex = 1;
-            if (minStars != null) stmt.setDouble(paramIndex++, minStars);
-            if (maxStars != null) stmt.setDouble(paramIndex++, maxStars);
-            if (brand != null) stmt.setString(paramIndex++, brand);
-            if (minPrice != null) stmt.setDouble(paramIndex++, minPrice);
-            if (maxPrice != null) stmt.setDouble(paramIndex++, maxPrice);
+            stmt.setDouble(paramIndex++, minStars);
+            stmt.setDouble(paramIndex++, maxStars);
+            if (brand != null && !brand.isEmpty()) stmt.setString(paramIndex++, brand);
+            stmt.setDouble(paramIndex++, minPrice);
+            stmt.setDouble(paramIndex++, maxPrice);
             if (modelID != null) stmt.setInt(paramIndex++, modelID);
 
             ResultSet rs = stmt.executeQuery();

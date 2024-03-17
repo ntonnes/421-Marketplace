@@ -1,6 +1,7 @@
-package pages;
+package pages.utils;
 
 import javax.swing.*;
+
 import java.awt.*;
 
 
@@ -9,7 +10,6 @@ public abstract class ColumnPage extends Page {
     protected static double YBUFFER = 1.0;
     protected static double XBUFFER = 0.35;
     protected static double XCONTENT = 0.3;
-    protected static boolean showBorders = true;
 
     public ColumnPage(String title) {
         super(title);

@@ -1,10 +1,13 @@
-package pages;
+package main;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 
-import main.Main;
+import pages.review.ReviewSelect;
+import pages.search.SearchForm;
+import pages.utils.ColumnPage;
+import pages.utils.Popup;
 import database.users.Customer;
 
 public class Menu extends ColumnPage{
