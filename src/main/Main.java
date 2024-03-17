@@ -22,8 +22,16 @@ public class Main {
     public static CardLayout pages;
     public static Stack<String> pageHistory = new Stack<>();
 
+    // Debugging variables; set a"debug" system property to "true" to enable
+    public static int DEBUG_USERID = 816278546;
+    private static boolean DEBUG_MODE = Boolean.parseBoolean(System.getProperty("debug", "false"));
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Main::createAndShowGUI);
+    }
+
+    public static void quit(){
+        System.out.println("Exiting the program...");
+        frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
     }
 
     private static void createAndShowGUI() {
@@ -53,8 +61,14 @@ public class Main {
             }
         });
 
-        user = new User();
+        // Initialize the user
+        if (DEBUG_MODE) {
+            user = new User(DEBUG_USERID);
+        } else {
+            user = new User();
+        }
 
+        // Initialize the content area
         pages = new CardLayout();
         contentArea = new JPanel(pages);
         frame.add(contentArea, BorderLayout.CENTER);
@@ -63,9 +77,11 @@ public class Main {
         contentArea.add(new Login(), "Login");
         contentArea.add(new Signup(), "Signup");
 
+        // Initialize the banner   
         banner = new Banner("421 Marketplace");
         frame.add(banner, BorderLayout.NORTH);
 
+        // Show the application window
         go("Menu");
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);

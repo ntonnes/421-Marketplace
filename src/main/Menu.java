@@ -2,7 +2,6 @@ package main;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowEvent;
 
 import pages.review.ReviewSelect;
 import pages.search.SearchForm;
@@ -15,12 +14,6 @@ public class Menu extends ColumnPage{
 
     public Menu() {
         super("Main Menu"); // Add this line to invoke the constructor of the superclass
-    }
-
-    private void quit(){
-        System.out.println("Exiting the program...");
-        JFrame frame = Main.getFrame();
-        frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
     }
 
     @Override
@@ -45,7 +38,7 @@ public class Menu extends ColumnPage{
         addComponent(b3, 0.05);
 
         // Exits the program and prints a console message
-        b4 = createButton("Quit", BUTTON_GRAY, e -> quit());
+        b4 = createButton("Quit", BUTTON_GRAY, e -> Main.quit());
         addComponent(b4, 0.05);
 
         GridBagConstraints verticalGBC = createGBC(

@@ -20,13 +20,14 @@ public abstract class Page extends JPanel {
     // Colors
     public static final Color BUTTON_BLUE = new Color(0, 123, 255);
     public static final Color BUTTON_GREEN = new Color(76, 175, 80);
-    public static final Color BUTTON_GRAY =new Color(121, 128, 141);
+    public static final Color BUTTON_GRAY =new Color(101, 108, 121);
     public static final Color BUTTON_RED = new Color(220, 53, 69);
     public static final Color DEFAULT_FOREGROUND = Color.WHITE;
     protected static final Color DEFAULT_BACKGROUND = Color.DARK_GRAY;
 
     // Borders
     public static Border BUTTON_RAISED =BorderFactory.createRaisedBevelBorder();
+    
 
     protected JLabel title;
     protected JPanel content;
