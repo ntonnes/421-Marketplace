@@ -15,31 +15,47 @@ import java.util.Vector;
 import static pages.utils.UISettings.*;
 
 public class SelectBox extends JPanel {
+    // Inputs to the constructor
     private final String label;
-    private final String placeholder;
     private final String query;
     private final String column;
+    private final Boolean multi;
 
-    private JComboBox<String> comboBox;
-    private Vector<String> options;
-    private JPanel selectedPanel;
-    private Vector<String> selectedOptions;
+    // Represents an option in the comboBox
+    private class Option {
+        private final String name;
+        private boolean selected;
+        public Option(String option) {
+            this.name = option;
+            this.selected = false;
+        }
+        public String getName() {
+            return this.name;
+        }
+        public boolean isSelected() {
+            return this.selected;
+        }
+        public void select() {
+            this.selected = true;
+        }
+        public void deselect() {
+            this.selected = false;
+        }
+    }
 
-    private GridBagConstraints selectedGBC = 
-        new GridBagConstraints(
-            0, 0, 1, 1, 1, 1, 
-            GridBagConstraints.CENTER, 
-            GridBagConstraints.BOTH, 
-            new Insets(0, 0, 0, 0), 0, 0);
+    // The comboBox to hold the options
+    private final JComboBox<Option> comboBox = new JComboBox<Option>();
+    private final Vector<Option> optionList = new Vector<Option>();
+    private final Option placeholderOption;
+    private final JPanel selectedPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); 
 
-
-    public SelectBox(String lbl, String placehldr, String qry, String col) {
+    public SelectBox(Boolean multiSelect, String lbl, String placehldr, String qry, String col) {
         super(new GridBagLayout());
         this.label = lbl;
-        this.placeholder = placehldr;
+        this.placeholderOption = new Option(placehldr);
         this.query = qry;
         this.column = col;
-        this.selectedOptions = new Vector<String>();
+        this.multi = multiSelect;
 
         // Set the options for the comboBox
         setOptions();
@@ -51,10 +67,11 @@ public class SelectBox extends JPanel {
         createComboBox();
         
         // Add a buffer panel to create space between the comboBox and the selectedPanel
-        createBufferPanel();
-
         // Add the panel to holding the selected options
-        createSelectedPanel();
+        if (multi) {
+            createBufferPanel();
+            createSelectedPanel();
+        }
     }
 
     // Create a label and add it to the SelectBox
@@ -70,16 +87,47 @@ public class SelectBox extends JPanel {
             gbc.fill = GridBagConstraints.BOTH;
             gbc.anchor = GridBagConstraints.LINE_START;
             gbc.insets = new Insets(0, 0, 0, 10);
-        
         add(nameLabel, gbc);
+    }
+
+    private void refreshComboBox() {
+        comboBox.removeAllItems();
+        for (Option option : optionList) {
+            if (!option.isSelected()){
+                comboBox.addItem(option);
+            }
+        }
     }
 
     // Create the comboBox and add it to the SelectBox
     private void createComboBox() {
-        this.comboBox = new JComboBox<>(options);
+        // Set the comboBox properties
         comboBox.setFont(new Font("Arial", Font.PLAIN, 16));
-        comboBox.insertItemAt(this.placeholder, 0);
-        comboBox.setSelectedItem(this.placeholder);
+        comboBox.setRenderer(new CustomRenderer());
+
+        // Add the placeholder option to the comboBox
+        comboBox.insertItemAt(placeholderOption, 0);
+        comboBox.setSelectedItem(placeholderOption);
+
+        // Add an action listener to the comboBox
+        comboBox.addActionListener(e -> {
+            Option selectedOption = (Option) comboBox.getSelectedItem();
+            if (selectedOption != null && !(selectedOption.getName()).equals(placeholderOption.getName())) {
+                if (multi) {
+                    selectedOption.select();
+                    refreshComboBox();
+                    addToPanel(selectedOption);
+                } else {
+                    for (Option option : optionList) {
+                        option.deselect();
+                    }
+                    selectedOption.select();
+                    refreshComboBox();
+                }
+            }
+        });
+
+        // Add the comboBox to the SelectBox
         GridBagConstraints gbc = new GridBagConstraints();
             gbc.gridy = 0;
             gbc.gridx = 1;
@@ -87,15 +135,19 @@ public class SelectBox extends JPanel {
             gbc.fill = GridBagConstraints.BOTH;
             gbc.anchor = GridBagConstraints.LINE_START;
             gbc.insets = new Insets(0, 0, 0, 0);
-        comboBox.addActionListener(e -> {
-            String selectedOption = (String) comboBox.getSelectedItem();
-            if (selectedOption != null && !selectedOption.equals(this.placeholder)) {
-                options.remove(selectedOption);
-                comboBox.removeItem(selectedOption);
-                addToSelected(selectedOption, gbc);
-            }
-        });
         add(comboBox, gbc);
+    }
+
+    private class CustomRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            if (value instanceof Option) {
+                Option option = (Option) value;
+                setText(option.getName());
+            }
+            return this;
+        }
     }
 
     // Create a buffer panel to add space between the comboBox and the selectedPanel
@@ -126,34 +178,29 @@ public class SelectBox extends JPanel {
 
     // Fills a comboBox with the results of a query
     public void setOptions() {
-        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
-             
+        try (Connection conn = Database.connect();
              PreparedStatement stmt = conn.prepareStatement(this.query)) {
+
             ResultSet rs = stmt.executeQuery();
-            options = new Vector<>();
             while (rs.next()) {
+                Option option = new Option(rs.getString(this.column));
                 // Add options to both the list and the comboBox
-                options.add(rs.getString(this.column));
+                optionList.add(option);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error while accessing database: " + e.getMessage());
         }
     }
 
-    private void addToSelected(String option) {
-        GroupedIcon groupedIcon = new GroupedIcon(option, parentGBC);
-        selectedPanel.add(groupedIcon, parentGBC);
-        selectedOptions.add(option); 
-        revalidate();
-        repaint();
+    private void addToPanel(Option option) {
+        GroupedIcon groupedIcon = new GroupedIcon(option);
+        selectedPanel.add(groupedIcon); 
+        this.revalidate();
+        this.repaint();
     }
 
-    private void removeFromSelected(GroupedIcon groupedIcon) {
-        selectedPanel.remove(groupedIcon.getPanel());
-        String option = groupedIcon.getOption();
-        selectedOptions.remove(option);
-        options.add(option);
-        comboBox.addItem(option);
+    private void removeFromPanel(GroupedIcon groupedIcon) {
+        selectedPanel.remove(groupedIcon);
         comboBox.revalidate();
         comboBox.repaint();
     }
@@ -161,47 +208,37 @@ public class SelectBox extends JPanel {
 
     // A private class representing the grouped icon
     private class GroupedIcon extends JPanel {
-        private String option;
-        private JPanel panel;
+        private Option option;
 
-        public GroupedIcon(String selected, GridBagConstraints parentGBC) {
-            this.option = selected;
+        public GroupedIcon(Option opt) {
+            super();
             this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
             this.setBorder(BorderFactory.createCompoundBorder(
                 createCustomBorder(),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)
             ));
+            this.option = opt;
 
-            JLabel label = createLabel(option);
-            this.add(label);
-            this.add(Box.createRigidArea(new Dimension(10, 0)));  // Add space between label and removeLabel
-            JLabel removeLabel = createRemoveLabel();
-            this.add(removeLabel);
-
-            panel = createGroupedPanel();  // Use createGroupedPanel to create the container panel
-            panel.setOpaque(false);
-            panel.add(this, BorderLayout.CENTER);
-
-            parentGBC.gridx++;
+            createLabel();
+            addSpacer();
+            createRemoveLabel();
+            
         }
 
-        private JPanel createGroupedPanel() {
-            JPanel groupedPanel = new JPanel();
-            groupedPanel.setLayout(new BoxLayout(groupedPanel, BoxLayout.Y_AXIS));
-            groupedPanel.setOpaque(false);
-            return groupedPanel;
+        private void addSpacer() {
+            this.add(Box.createRigidArea(new Dimension(10, 0)));
         }
 
-        private JLabel createLabel(String option) {
-            JLabel label = new JLabel(option);
+        private void createLabel() {
+            JLabel label = new JLabel(option.getName());
             label.setForeground(DEFAULT_FOREGROUND);
             label.setBackground(new Color (0,0,0,0));
             label.setOpaque(true);
             label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-            return label;
+            this.add(label);
         }
 
-        private JLabel createRemoveLabel() {
+        private void createRemoveLabel() {
             JLabel removeLabel = new JLabel("X");
             removeLabel.setOpaque(true);
             removeLabel.setForeground(DEFAULT_BACKGROUND.darker());
@@ -218,10 +255,12 @@ public class SelectBox extends JPanel {
                 }
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    removeFromSelected(GroupedIcon.this);
+                    option.deselect();
+                    refreshComboBox();
+                    removeFromPanel(GroupedIcon.this);
                 }
             });
-            return removeLabel;
+            this.add(removeLabel);
         }
 
         private Border createCustomBorder() {
@@ -242,14 +281,12 @@ public class SelectBox extends JPanel {
                 }
             };
         }
-
-        public JPanel getPanel() {
-            return panel;
-        }
-
-        public String getOption() {
-            return option;
-        }
     }
-
+    
+    public String[] getSelected() {
+        return optionList.stream()
+            .filter(Option::isSelected)
+            .map(Option::getName)
+            .toArray(String[]::new);
+    }
 }

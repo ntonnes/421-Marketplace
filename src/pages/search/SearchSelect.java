@@ -29,10 +29,11 @@ public class SearchSelect extends ColumnPage {
 
     private Integer minStars;
     private Integer maxStars;
-    private String brand;
+    private String[] brands;
     private Integer minPrice;
     private Integer maxPrice;
     private Integer modelID;
+    private String[] categories;
     private String[][] data;
     private int paramCol = 0;
 
@@ -114,10 +115,11 @@ public class SearchSelect extends ColumnPage {
         data = SearchForm.getData();
         minStars = SearchForm.getMinStars();
         maxStars = SearchForm.getMaxStars();
-        brand = SearchForm.getBrand();
+        brands = SearchForm.getBrands();
         minPrice = SearchForm.getMinPrice();
         maxPrice = SearchForm.getMaxPrice();
         modelID = SearchForm.getModelID();
+        categories = SearchForm.getCategories();
 
         String[] columnNames = {"Model ID", "Price", "Brand", "Rating"};
 
@@ -144,10 +146,11 @@ public class SearchSelect extends ColumnPage {
 
         addParameter(searchParametersPanel, "Minimum Rating: ", minStars, minStars != 0);
         addParameter(searchParametersPanel, "Maximum Rating: ", maxStars, maxStars != 10);
-        addParameter(searchParametersPanel, "Brand", brand, brand != null);
+        addParameter(searchParametersPanel, "Brands: ", brands.toString(), brands != null);
         addParameter(searchParametersPanel, "Minimum Price: $", minPrice, minPrice != 0);
         addParameter(searchParametersPanel, "Maximum Price: $", maxPrice, maxPrice != 500);
         addParameter(searchParametersPanel, "Model ID: ", modelID, modelID != null);
+        addParameter(searchParametersPanel, "Categories: ", categories.toString(), categories != null);
 
         addBuffer();
 

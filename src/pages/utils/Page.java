@@ -12,8 +12,8 @@ import static pages.utils.UISettings.*;
 
 public abstract class Page extends JPanel {  
 
-    protected JLabel title;
-    protected JPanel content;
+    protected final JLabel title;
+    protected final JPanel content;
 
     public Page(String name) {
         super(new GridBagLayout());

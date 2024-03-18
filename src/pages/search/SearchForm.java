@@ -22,19 +22,26 @@ import java.sql.*;
 
 public class SearchForm extends ColumnPage {
 
-    private static JTextField modelIDField = new JTextField();
-    private static JComboBox<String> brandBox;
-    private static RangeSlider priceSlider;
-    private static RangeSlider starsSlider;
+    // Search parameters
     private static Integer modelID;
-    private static String brand;
+    private static String[] brands;
     private static Integer minPrice;
     private static Integer maxPrice;
     private static Integer minStars;
     private static Integer maxStars;
+    private static String[] categories;
     private static String[][] data;
 
-    private JPanel selectedPanel;
+    private static JTextField modelIDField = new JTextField();
+    private static RangeSlider priceSlider = new RangeSlider(0, 500);
+    private static RangeSlider starsSlider = new RangeSlider(0, 10);
+
+    private JPanel modelIDPanel;
+    private static SelectBox brandPanel;
+    private JPanel pricePanel;
+    private JPanel starsPanel;
+    private static SelectBox categoryPanel;
+    private JButton searchButton;
 
     public SearchForm() {
         super("Search Models");
@@ -42,84 +49,63 @@ public class SearchForm extends ColumnPage {
 
     @Override
     protected void populateContent() {
-        brandBox = new JComboBox<String>();
-        brandBox.setRenderer(new MyComboBoxRenderer());
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        priceSlider = new RangeSlider(0, 500);
-        starsSlider = new RangeSlider(0, 10);
+        modelIDPanel = createTempFieldPanel(
+            "Model ID:","Enter a Model ID...", 
+            modelIDField
+        );
 
-        JPanel modelIDEntry = createTempFieldPanel("Model ID:","Enter a Model ID...", modelIDField);
-        JPanel brandEntry = createBoxPanel("Brand:", false);
-        JPanel modelBrandEntry = doubleItemPanel(modelIDEntry, brandEntry);
-        JPanel priceEntry = new Slider(priceSlider, "Price:", "$", 0, 5000);
-        JPanel starsEntry = new Slider(starsSlider, "Stars:","", 0, 10);
-        JButton searchButton = createButton("Search", BUTTON_GREEN, e -> submit());
-        this.selectedPanel = new SelectBox("Category:", "Select categories...", "SELECT DISTINCT Cname FROM Belongs", "Cname");
+        brandPanel = new SelectBox(
+            true, "Brand:", "Select a brand...", 
+            "SELECT DISTINCT name FROM BrandPage", "name"
+        );
 
-        addBuffer(0.05);
-        addComponent(modelBrandEntry, 0.01);
-        addBuffer(0.02);
-        addComponent(priceEntry, 0.01);
-        addBuffer(0.02);
-        addComponent(starsEntry, 0.01);
-        addBuffer(0.02);
-        addComponent(this.selectedPanel, 0.8);
-        addBuffer(0.02);
-        addComponent(searchButton, 0.1);
-        setPreferredSizeToBuffer(this.selectedPanel);
-        addSideBuffers();
-    }
+        pricePanel = new Slider(
+            priceSlider, 
+            "Price:", "$", 0, 5000
+        );
 
-    private JPanel createBoxPanel(String label, boolean required) {
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
+        starsPanel = new Slider(
+            starsSlider,
+            "Stars:","", 0, 10
+        );
 
-        JLabel lbl = new JLabel(label + (required ? "*" : ""));
-        lbl.setFont(new Font ("Arial", Font.BOLD, 20));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.insets = new Insets(0, 0, 0, 10);
-        gbc.anchor = GridBagConstraints.WEST;
-        panel.add(lbl, gbc);
+        categoryPanel = new SelectBox(
+            true, "Category:", "Select categories...", 
+            "SELECT DISTINCT Cname FROM Belongs", "Cname"
+        );
 
-        brandBox.setFont(new Font("Arial", Font.PLAIN, 16));
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel.add(brandBox, gbc);
+        searchButton = createButton("Search", BUTTON_GREEN, e -> submit());
 
-        return panel;
-    }
-
-    private JPanel doubleItemPanel(JPanel item1, JPanel item2) {
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-    
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0.5;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(0, 0, 0, 20);
-        panel.add(item1, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.weightx = 0.5;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(0, 20, 0, 0);
-        panel.add(item2, gbc);
-    
-        return panel;
+        this.add(modelIDPanel);
+        this.add(pricePanel);
+        this.add(starsPanel);
+        this.add(brandPanel);
+        this.add(new Box.Filler(categoryPanel.getMinimumSize(), categoryPanel.getPreferredSize(), new Dimension(0, Integer.MAX_VALUE)));
+        this.add(searchButton);
+        //addBuffer(0.05);
+        //addComponent(modelBrandPanel, 0.01);
+        //addBuffer(0.02);
+        //addComponent(pricePanel, 0.01);
+        //addBuffer(0.02);
+        //addComponent(starsPanel, 0.01);
+        //addBuffer(0.02);
+        //addComponent(categoryPanel, 0.8);
+        //addBuffer(0.02);
+        //addComponent(searchButton, 0.1);
+        //addSideBuffers();
     }
 
     private void submit() {
         List<String[]> dataList = new ArrayList<>();
         modelID = getModelID();
-        brand = getBrand();
+        brands = getBrands();
         minPrice = getMinPrice();
         maxPrice = getMaxPrice();
         minStars = getMinStars();
         maxStars = getMaxStars();
+        categories = getCategories();
 
         StringBuilder sql = new StringBuilder(
             "SELECT Model.modelID, Model.price, BrandPage.name AS brandName, Model.stars, COUNT(Purchased.modelID) AS productsSold " +
@@ -130,10 +116,29 @@ public class SearchForm extends ColumnPage {
 
         if (minStars != null) sql.append(" AND Model.stars >= ?");
         if (maxStars != null) sql.append(" AND Model.stars <= ?");
-        if (brand != null) sql.append(" AND BrandPage.name = ?");
+        if (brands != null) {
+            sql.append(" AND BrandPage.name IN (");
+            for (int i = 0; i < brands.length; i++) {
+                sql.append("?");
+                if (i < brands.length - 1) {
+                    sql.append(", ");
+                }
+            }
+            sql.append(")");
+        }
         if (minPrice != null) sql.append(" AND Model.price >= ?");
         if (maxPrice != null) sql.append(" AND Model.price <= ?");
         if (modelID != null) sql.append(" AND Model.modelID = ?");
+        if (categories != null) {
+            sql.append(" AND Model.modelID IN (");
+            for (int i = 0; i < categories.length; i++) {
+                sql.append("SELECT modelID FROM Belongs WHERE Cname = ?");
+                if (i < categories.length - 1) {
+                    sql.append(" UNION ");
+                }
+            }
+            sql.append(")");
+        }
         sql.append(" GROUP BY Model.modelID, Model.price, BrandPage.name, Model.stars");
         
         try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
@@ -141,11 +146,19 @@ public class SearchForm extends ColumnPage {
             int paramIndex = 1;
             if (minStars != null) stmt.setInt(paramIndex++, minStars);
             if (maxStars != null) stmt.setInt(paramIndex++, maxStars);
-            if (brand != null) stmt.setString(paramIndex++, brand);
+            if (brands != null) {
+                for (String brand : brands) {
+                    stmt.setString(paramIndex++, brand);
+                }
+            }
             if (minPrice != null) stmt.setInt(paramIndex++, minPrice);
             if (maxPrice != null) stmt.setInt(paramIndex++, maxPrice);
             if (modelID != null) stmt.setInt(paramIndex++, modelID);
-        
+            if (categories != null) {
+                for (String category : categories) {
+                    stmt.setString(paramIndex++, category);
+                }
+            }
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -205,9 +218,12 @@ public class SearchForm extends ColumnPage {
         return starsSlider.getUpperValue();
     }
 
-    public static String getBrand() {
-        String selectedBrand = (String) brandBox.getSelectedItem();
-        return "-Select-".equals(selectedBrand) ? null : selectedBrand;
+    public static String[] getBrands() {
+        return brandPanel.getSelected();
+    }
+
+    public static String[] getCategories() {
+        return categoryPanel.getSelected();
     }
 
     public static String[][] getData() {
@@ -217,7 +233,7 @@ public class SearchForm extends ColumnPage {
     private void printData(){
         System.out.println("Search successful. Parameters:");
         System.out.println("    Model ID: " + modelID);
-        System.out.println("    Brand: " + brand);
+        System.out.println("    Brand: " + brands);
         System.out.println("    Price: " + minPrice + " - " + maxPrice);
         System.out.println("    Stars: " + minStars + " - " + maxStars);
         System.out.println("Data:");
