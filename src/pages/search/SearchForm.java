@@ -5,26 +5,20 @@ import pages.utils.ColumnPage;
 import pages.utils.Popup;
 import pages.utils.slider.RangeSlider;
 import pages.utils.slider.Slider;
+import pages.utils.SelectBox;
+import static pages.utils.UISettings.*;
+import database.Database;
 
 import javax.swing.*;
+import java.awt.*;
 
-import com.ibm.db2.jcc.am.ad;
-
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.util.List;
-
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import static pages.utils.UISettings.*;
 
-import database.Database;
-import pages.utils.SelectBox;
+import java.sql.*;
+
+
 
 public class SearchForm extends ColumnPage {
 
@@ -40,6 +34,8 @@ public class SearchForm extends ColumnPage {
     private static Integer maxStars;
     private static String[][] data;
 
+    private JPanel selectedPanel;
+
     public SearchForm() {
         super("Search Models");
     }
@@ -48,7 +44,6 @@ public class SearchForm extends ColumnPage {
     protected void populateContent() {
         brandBox = new JComboBox<String>();
         brandBox.setRenderer(new MyComboBoxRenderer());
-        SelectBox.populateComboBox(brandBox, "-Select-", "SELECT name FROM BrandPage ORDER BY name", "name");
 
         priceSlider = new RangeSlider(0, 500);
         starsSlider = new RangeSlider(0, 10);
@@ -59,8 +54,7 @@ public class SearchForm extends ColumnPage {
         JPanel priceEntry = new Slider(priceSlider, "Price:", "$", 0, 5000);
         JPanel starsEntry = new Slider(starsSlider, "Stars:","", 0, 10);
         JButton searchButton = createButton("Search", BUTTON_GREEN, e -> submit());
-        JPanel categoryEntry = new SelectBox("Category:", "Select categories...", "SELECT DISTINCT Cname FROM Belongs", "Cname");
-        categoryEntry.setPreferredSize(new Dimension(categoryEntry.getPreferredSize().width, 50));
+        this.selectedPanel = new SelectBox("Category:", "Select categories...", "SELECT DISTINCT Cname FROM Belongs", "Cname");
 
         addBuffer(0.05);
         addComponent(modelBrandEntry, 0.01);
@@ -69,10 +63,10 @@ public class SearchForm extends ColumnPage {
         addBuffer(0.02);
         addComponent(starsEntry, 0.01);
         addBuffer(0.02);
-        addComponent(categoryEntry, 0.8);
+        addComponent(this.selectedPanel, 0.8);
         addBuffer(0.02);
         addComponent(searchButton, 0.1);
-        setPreferredSizeToBuffer(categoryEntry);
+        setPreferredSizeToBuffer(this.selectedPanel);
         addSideBuffers();
     }
 

@@ -33,7 +33,6 @@ public class SearchSelect extends ColumnPage {
     private Integer minPrice;
     private Integer maxPrice;
     private Integer modelID;
-    private String categories;
     private String[][] data;
     private int paramCol = 0;
 
