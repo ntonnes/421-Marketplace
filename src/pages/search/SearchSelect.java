@@ -2,6 +2,7 @@ package pages.search;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.GridBagLayout;
@@ -37,8 +38,9 @@ public class SearchSelect extends ColumnPage {
     private String[][] data;
     private int paramCol = 0;
 
-    public SearchSelect() {
+    public SearchSelect(String sort) {
         super("Search Results");
+        sortByBox.setSelectedItem(sort);
     }
 
     class ButtonRenderer extends JButton implements TableCellRenderer {
@@ -91,7 +93,7 @@ public class SearchSelect extends ColumnPage {
 
     @Override
     protected void populateContent() {
-        setWeights(1,.3);
+        setWeights(.6,.2);
 
         // Create the "sort by" dropdown menu
         String[] sortByOptions = {
@@ -123,7 +125,8 @@ public class SearchSelect extends ColumnPage {
 
         String[] columnNames = {"Model ID", "Price", "Brand", "Rating"};
 
-        table = new JTable(data, columnNames) {
+        DefaultTableModel model = new DefaultTableModel(data, columnNames);
+        table = new JTable(model) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -137,45 +140,57 @@ public class SearchSelect extends ColumnPage {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         JScrollPane scrollPane = new JScrollPane(table);
-        addComponent(scrollPane, 0.7);
+        JPanel tablePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        tablePanel.add(scrollPane);
+        addComponent(tablePanel, 0.7);
 
-        JPanel paramFrame = new JPanel(new BorderLayout());
-        addComponent(paramFrame, 0.1);
-        JPanel searchParametersPanel = new JPanel(new GridBagLayout());
-        paramFrame.add(searchParametersPanel, BorderLayout.WEST);
+        JPanel searchParametersPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        addComponent(searchParametersPanel, .3);
 
-        addParameter(searchParametersPanel, "Minimum Rating: ", minStars, minStars != 0);
-        addParameter(searchParametersPanel, "Maximum Rating: ", maxStars, maxStars != 10);
-        addParameter(searchParametersPanel, "Brands: ", brands.toString(), brands != null);
-        addParameter(searchParametersPanel, "Minimum Price: $", minPrice, minPrice != 0);
-        addParameter(searchParametersPanel, "Maximum Price: $", maxPrice, maxPrice != 500);
-        addParameter(searchParametersPanel, "Model ID: ", modelID, modelID != null);
-        addParameter(searchParametersPanel, "Categories: ", categories.toString(), categories != null);
-
-        addBuffer();
-
-        resetWeights();
-    }
-
-    private void addParameter(JPanel panel, String name, Object value, boolean condition) {
-        if (condition) {
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.gridx = paramCol;
-            gbc.gridy = 0;
-            gbc.weightx = 0;
-
-            JLabel nameLabel = new JLabel(name);
-            nameLabel.setForeground(DEFAULT_FOREGROUND);
-            panel.add(nameLabel, gbc);
-
-            paramCol++;
-            gbc.gridx = paramCol;
-            gbc.insets = new Insets(0, 0, 0, 10);
-            JLabel valueLabel = new JLabel(value.toString());
-            valueLabel.setForeground(BUTTON_GREEN);
-            panel.add(valueLabel, gbc);
-            paramCol++;
+        if (minStars != 0) {
+            searchParametersPanel.add(new JLabel("Minimum Rating: "));
+            searchParametersPanel.add(new JLabel(String.valueOf(minStars)));
         }
+        if (maxStars != 10) {
+            searchParametersPanel.add(new JLabel("Maximum Rating: "));
+            searchParametersPanel.add(new JLabel(String.valueOf(maxStars)));
+        }
+        if (brands != null) {
+            for (int i = 0; i < brands.length; i++) {
+                String brand = brands[i];
+                if (i < categories.length - 1) { // If it's not the last category
+                    searchParametersPanel.add(new JLabel(brand + ", "));
+                } else { // If it's the last category
+                    searchParametersPanel.add(new JLabel(brand+ "   "));
+                }
+            }
+        }
+        if (minPrice != 0) {
+            searchParametersPanel.add(new JLabel("Minimum Price: $"));
+            searchParametersPanel.add(new JLabel(String.valueOf(minPrice)));
+        }
+        if (maxPrice != 500) {
+            searchParametersPanel.add(new JLabel("Maximum Price: $"));
+            searchParametersPanel.add(new JLabel(String.valueOf(maxPrice)));
+        }
+        if (modelID != null) {
+            searchParametersPanel.add(new JLabel("Model ID: "));
+            searchParametersPanel.add(new JLabel(modelID.toString()));
+        }
+        if (categories != null) {
+            searchParametersPanel.add(new JLabel("Categories: "));
+            for (int i = 0; i < categories.length; i++) {
+                String category = categories[i];
+                if (i < categories.length - 1) { // If it's not the last category
+                    searchParametersPanel.add(new JLabel(category + ", "));
+                } else { // If it's the last category
+                    searchParametersPanel.add(new JLabel(category));
+                }
+            }
+        }
+
+        addSideBuffers();
+        resetWeights();
     }
 
     private void sortData() {

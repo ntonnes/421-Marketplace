@@ -15,7 +15,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.Collections;
 import java.sql.*;
 
 
@@ -36,6 +36,7 @@ public class SearchForm extends ColumnPage {
     private static RangeSlider priceSlider = new RangeSlider(0, 500);
     private static RangeSlider starsSlider = new RangeSlider(0, 10);
 
+    private static JComboBox<String> sortByBox;
     private JPanel modelIDPanel;
     private static SelectBox brandPanel;
     private JPanel pricePanel;
@@ -49,15 +50,13 @@ public class SearchForm extends ColumnPage {
 
     @Override
     protected void populateContent() {
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
         modelIDPanel = createTempFieldPanel(
             "Model ID:","Enter a Model ID...", 
             modelIDField
         );
 
         brandPanel = new SelectBox(
-            true, "Brand:", "Select a brand...", 
+            true, "Select brands to include:", "Select a brand...", 
             "SELECT DISTINCT name FROM BrandPage", "name"
         );
 
@@ -72,29 +71,69 @@ public class SearchForm extends ColumnPage {
         );
 
         categoryPanel = new SelectBox(
-            true, "Category:", "Select categories...", 
+            true, "Select categories to include:", "Select categories...", 
             "SELECT DISTINCT Cname FROM Belongs", "Cname"
         );
 
         searchButton = createButton("Search", BUTTON_GREEN, e -> submit());
 
-        this.add(modelIDPanel);
-        this.add(pricePanel);
-        this.add(starsPanel);
-        this.add(brandPanel);
-        this.add(new Box.Filler(categoryPanel.getMinimumSize(), categoryPanel.getPreferredSize(), new Dimension(0, Integer.MAX_VALUE)));
-        this.add(searchButton);
-        //addBuffer(0.05);
-        //addComponent(modelBrandPanel, 0.01);
-        //addBuffer(0.02);
-        //addComponent(pricePanel, 0.01);
-        //addBuffer(0.02);
-        //addComponent(starsPanel, 0.01);
-        //addBuffer(0.02);
-        //addComponent(categoryPanel, 0.8);
-        //addBuffer(0.02);
-        //addComponent(searchButton, 0.1);
-        //addSideBuffers();
+        // Create the "sort by" dropdown menu
+        String[] sortByOptions = {
+            "Best Selling",
+            "Price Low to High",
+            "Price High to Low",
+            "Rating High to Low",
+            "Rating Low to High",
+            "Model ID",
+            "Brand"
+        };
+        sortByBox = new JComboBox<>(sortByOptions);
+        JPanel sortByPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = createGBC(
+            0, 0, 
+            GridBagConstraints.BOTH,
+            0, 1,
+            new Insets(0, 0, 0, 5));
+        gbc.anchor = GridBagConstraints.PAGE_END;
+        JLabel label = new JLabel("Sort by:");
+        label.setFont(new Font ("Arial", Font.BOLD, 20));
+        sortByPanel.add(label, gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 1;
+        gbc.insets = new Insets(0, 5, 0, 0);
+        sortByPanel.add(sortByBox, gbc);
+
+        JPanel dp1 = doublePanel(modelIDPanel, sortByPanel);
+        JPanel dp2 = doublePanel(pricePanel, starsPanel);
+
+        setWeights(0.70, 0.15);
+
+        addBuffer(0);
+        addComponent(dp1,0);
+        addBuffer(0);
+        addComponent(dp2,0);
+        addBuffer(0);
+        addComponent(brandPanel, 0.48);
+        addComponent(categoryPanel, 0.48);
+        addComponent(searchButton, 0.04);
+        addSideBuffers();
+
+        resetWeights();
+    }
+
+    private JPanel doublePanel(JComponent item1, JComponent item2) {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = createGBC(
+            0, 0, 
+            GridBagConstraints.BOTH,
+            0.5, 1,
+            new Insets(0, 0, 0, 10));
+        gbc.anchor = GridBagConstraints.PAGE_END;
+        panel.add(item1, gbc);
+        gbc.gridx = 1;
+        gbc.insets = new Insets(0, 10, 0, 0);
+        panel.add(item2, gbc);
+        return panel;
     }
 
     private void submit() {
@@ -108,7 +147,7 @@ public class SearchForm extends ColumnPage {
         categories = getCategories();
 
         StringBuilder sql = new StringBuilder(
-            "SELECT Model.modelID, Model.price, BrandPage.name AS brandName, Model.stars, COUNT(Purchased.modelID) AS productsSold " +
+            "SELECT Model.modelID, Model.price, BrandPage.name AS brand, Model.stars, COUNT(Purchased.modelID) AS productsSold " +
             "FROM Model " +
             "JOIN BrandPage ON Model.url = BrandPage.url " +
             "LEFT JOIN Purchased ON Model.modelID = Purchased.modelID " +
@@ -116,33 +155,26 @@ public class SearchForm extends ColumnPage {
 
         if (minStars != null) sql.append(" AND Model.stars >= ?");
         if (maxStars != null) sql.append(" AND Model.stars <= ?");
-        if (brands != null) {
-            sql.append(" AND BrandPage.name IN (");
-            for (int i = 0; i < brands.length; i++) {
-                sql.append("?");
-                if (i < brands.length - 1) {
-                    sql.append(", ");
-                }
-            }
-            sql.append(")");
+        if (brands != null && brands.length > 0) {
+            String placeholders = String.join(", ", Collections.nCopies(brands.length, "?"));
+            sql.append(" AND BrandPage.name IN (" + placeholders + ")");
+        } else {
+            sql.append(" AND BrandPage.name IS NULL");
         }
         if (minPrice != null) sql.append(" AND Model.price >= ?");
         if (maxPrice != null) sql.append(" AND Model.price <= ?");
         if (modelID != null) sql.append(" AND Model.modelID = ?");
-        if (categories != null) {
-            sql.append(" AND Model.modelID IN (");
-            for (int i = 0; i < categories.length; i++) {
-                sql.append("SELECT modelID FROM Belongs WHERE Cname = ?");
-                if (i < categories.length - 1) {
-                    sql.append(" UNION ");
-                }
-            }
-            sql.append(")");
+        if (categories != null && categories.length > 0) {
+            String placeholders = String.join(" UNION ", Collections.nCopies(categories.length, "SELECT modelID FROM Belongs WHERE Cname = ?"));
+            sql.append(" AND Model.modelID IN (" + placeholders + ")");
+        } else {
+            sql.append(" AND Model.modelID IS NULL");
         }
         sql.append(" GROUP BY Model.modelID, Model.price, BrandPage.name, Model.stars");
+        sql.append(" ").append(getSortSQL());
         
         try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
-        PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             int paramIndex = 1;
             if (minStars != null) stmt.setInt(paramIndex++, minStars);
             if (maxStars != null) stmt.setInt(paramIndex++, maxStars);
@@ -169,7 +201,7 @@ public class SearchForm extends ColumnPage {
                 String[] row = {
                     rs.getString("modelID"),
                     rs.getString("price"),
-                    rs.getString("brandName"),
+                    rs.getString("brand"),
                     stars,
                     String.valueOf(rs.getInt("productsSold"))
                 };
@@ -182,7 +214,7 @@ public class SearchForm extends ColumnPage {
         data = dataList.toArray(new String[0][]);
         printData();
 
-        Main.goNew(new SearchSelect(), "Search Results");
+        Main.goNew(new SearchSelect((String) sortByBox.getSelectedItem()), "Search Results");
     }
 
 
@@ -229,27 +261,35 @@ public class SearchForm extends ColumnPage {
     public static String[][] getData() {
         return data;
     }
+    public static String getSortSQL() {
+        if (sortByBox.getSelectedItem().equals("Best Selling")) {
+            return "ORDER BY productsSold DESC";
+        } else if (sortByBox.getSelectedItem().equals("Price Low to High")) {
+            return "ORDER BY Model.price";
+        } else if (sortByBox.getSelectedItem().equals("Price High to Low")) {
+            return "ORDER BY Model.price DESC";
+        } else if (sortByBox.getSelectedItem().equals("Rating High to Low")) {
+            return "ORDER BY Model.stars DESC";
+        } else if (sortByBox.getSelectedItem().equals("Rating Low to High")) {
+            return "ORDER BY Model.stars";
+        } else if (sortByBox.getSelectedItem().equals("Brand")) {
+            return "ORDER BY BrandPage.name";
+        }
+        return "ORDER BY productsSold DESC";
+    }
 
     private void printData(){
         System.out.println("Search successful. Parameters:");
+        
         System.out.println("    Model ID: " + modelID);
-        System.out.println("    Brand: " + brands);
         System.out.println("    Price: " + minPrice + " - " + maxPrice);
-        System.out.println("    Stars: " + minStars + " - " + maxStars);
-        System.out.println("Data:");
+        System.out.println("    Stars: $" + minStars + " - $" + maxStars);
+        System.out.println("    Brands: " + Arrays.toString(brands));
+        System.out.println("    Categories: " + Arrays.toString(categories));
+        System.out.println("\nData:");
         for (String[] row : data) {
             System.out.println("    " + Arrays.toString(row));
         }
-    }  
-    
-    class MyComboBoxRenderer extends DefaultListCellRenderer {
-        @Override
-        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            if (isSelected) {
-                setBackground(list.isSelectionEmpty() ? DEFAULT_BACKGROUND : DEFAULT_BACKGROUND.darker());
-            }
-            return this;
-        }
     }
+
 }

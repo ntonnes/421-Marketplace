@@ -6,6 +6,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import pages.banner.*;
+import pages.utils.O;
 import pages.utils.Page;
 import pages.utils.UISettings;
 import database.users.*;
@@ -40,6 +41,7 @@ public class Main {
     }
 
     private static void createAndShowGUI() {
+
         // Setting defaults for the GUI
         UIManager.put("Panel.background", Color.DARK_GRAY);
         UIManager.put("Button.background", Color.LIGHT_GRAY);

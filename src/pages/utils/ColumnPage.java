@@ -46,13 +46,13 @@ public abstract class ColumnPage extends Page {
             XCONTENT, YBUFFER,
             new Insets(0, 0, 0, 0));
         content.add(new JPanel(), verticalGBC);
-        gridy++;
 
         GridBagConstraints horizontalGBC = createGBC(
-            0, gridy,
-            GridBagConstraints.VERTICAL,
+            0, 0,
+            GridBagConstraints.NONE,
             XBUFFER, 1,
             new Insets(0, 0, 0, 0));
+            horizontalGBC.gridheight = gridy;
         content.add(new JPanel(), horizontalGBC);
 
         horizontalGBC.gridx = 2;
@@ -61,17 +61,29 @@ public abstract class ColumnPage extends Page {
 
     protected void addSideBuffers() {
         GridBagConstraints horizontalGBC = createGBC(
-            0, gridy,
-            GridBagConstraints.VERTICAL,
+            0, 0,
+            GridBagConstraints.NONE,
             XBUFFER, 1,
             new Insets(0, 0, 0, 0)
         );
+        horizontalGBC.gridheight = gridy;
         content.add(new JPanel(), horizontalGBC);
 
         horizontalGBC.gridx = 2;
         content.add(new JPanel(), horizontalGBC);
     }
     
+    protected void addSouth(JComponent component, double weightY){
+        GridBagConstraints gbc = createGBC(
+            1, gridy,
+            GridBagConstraints.BOTH,
+            XCONTENT, weightY,
+            new Insets(10, 0, 10, 0)
+        );
+        content.add(component, gbc);
+        gridy++;
+        YBUFFER-=weightY;
+    }
 
     protected void setPreferredSizeToBuffer(JComponent component) {
         int bufferHeight = (int) (YBUFFER * content.getHeight());
