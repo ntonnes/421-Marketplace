@@ -97,4 +97,56 @@ public class Customer extends User {
             modelsOrderedStr +
             orderListStr;
     }
+
+    public void setName(String name) {
+        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
+        PreparedStatement stmt = conn.prepareStatement("UPDATE User SET name = ? WHERE userID = ?")) {
+            stmt.setString(1, name);
+            stmt.setInt(2, userID);
+            stmt.executeUpdate();
+            System.out.println("Name changed to " + name);
+        } catch (SQLException e) {
+            System.out.println("Error while updating user name");
+            e.printStackTrace();
+        }
+    }
+
+    public void setEmail(String email) {
+        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
+        PreparedStatement stmt = conn.prepareStatement("UPDATE User SET email = ? WHERE userID = ?")) {
+            stmt.setString(1, email);
+            stmt.setInt(2, userID);
+            stmt.executeUpdate();
+            System.out.println("Email changed to " + email);
+        } catch (SQLException e) {
+            System.out.println("Error while updating user email");
+            e.printStackTrace();
+        }
+    }
+
+    public void setPassword(String password) {
+        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
+        PreparedStatement stmt = conn.prepareStatement("UPDATE User SET password = ? WHERE userID = ?")) {
+            stmt.setString(1, password);
+            stmt.setInt(2, userID);
+            stmt.executeUpdate();
+            System.out.println("Password changed to " + password);
+        } catch (SQLException e) {
+            System.out.println("Error while updating user password");
+            e.printStackTrace();
+        }
+    }
+
+    public void setDob(String dob) {
+        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
+        PreparedStatement stmt = conn.prepareStatement("UPDATE User SET dob = ? WHERE userID = ?")) {
+            stmt.setString(1, dob);
+            stmt.setInt(2, userID);
+            stmt.executeUpdate();
+            System.out.println("Date of birth changed to " + dob);
+        } catch (SQLException e) {
+            System.out.println("Error while updating user date of birth");
+            e.printStackTrace();
+        }
+    }
 }
