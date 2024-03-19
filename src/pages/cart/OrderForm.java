@@ -9,9 +9,12 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.text.*;
 import java.util.Date;
+import java.util.Random;
+
 import javax.swing.*;
 
 import database.Database;
@@ -144,8 +147,196 @@ public class OrderForm extends ColumnPage {
     }
 
     private void submit() {
-        String email;
+        String email = emailField.getText();
         String cardNumber = cardNumberField.getText();
+        String expDate = expDateField.getText();
         String address = addressField.getText();
+
+        createOrder(cardNumber, expDate, address, email);
+    }
+
+    public void createOrder(String cardNum, String cardExp, String address, String email) {
+        System.out.println("Creating order...");
+        Integer userID;
+        if (Main.user instanceof Customer){
+            userID = Main.user.getUserID();
+        } else {
+            userID = null;
+        }
+        BigDecimal total = BigDecimal.valueOf(CartSelect.getTotal());
+        System.out.println("Total: " + total);
+        Date date = new Date();
+        System.out.println("Date: " + date);
+
+        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS)) {
+
+            // Check if there are enough serial numbers available
+            if (!(areSerialNosAvailable(conn))) {
+                return;
+            }
+            
+            // Get a unique random OrderID
+            Random rand = new Random();
+            int orderID=0;
+            boolean unique = false;
+            while (!unique) {
+                orderID = rand.nextInt(99999, 1000000);  // Generate a random number between 0 and 999999
+                try (PreparedStatement stmt = conn.prepareStatement("SELECT OrderID FROM Order WHERE OrderID = ?")) {
+                    stmt.setInt(1, orderID);
+                    ResultSet rs = stmt.executeQuery();
+                    if (!rs.next()) {
+                        unique = true;  // The OrderID is unique
+                    }
+                }
+            }
+            System.out.println("OrderID: " + orderID);
+            
+            // Insert into Card table if necessary
+            try (PreparedStatement stmt = conn.prepareStatement("INSERT INTO Card(CardNum, CardExp, UserID) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE CardNum=CardNum")) {
+                stmt.setString(1, cardNum);
+                stmt.setString(2, cardExp);
+                if (userID != null) {
+                    stmt.setInt(3, userID);
+                } else {
+                    stmt.setNull(3, Types.INTEGER);
+                }
+                stmt.executeUpdate();
+            }
+
+            // Insert into Order table
+            try (PreparedStatement stmt = conn.prepareStatement("INSERT INTO Order(OrderID, DeliverAdd, Total, Date, Email, CardNum) VALUES (?, ?, ?, ?, ?, ?)")) {
+                stmt.setInt(1, orderID);
+                stmt.setString(2, address);
+                stmt.setBigDecimal(3, total);
+                stmt.setDate(4, new java.sql.Date(date.getTime()));
+                stmt.setString(5, email);
+                stmt.setString(6, cardNum);
+                stmt.executeUpdate();
+            }
+
+            // Insert into Purchased table
+            try (PreparedStatement stmt = conn.prepareStatement("SELECT ModelID, Copies FROM InCart WHERE UserID = ?")) {
+                stmt.setInt(1, userID);
+                ResultSet rs = stmt.executeQuery();
+                while (rs.next()) {
+                    int modelID = rs.getInt("ModelID");
+                    int copies = rs.getInt("Copies");
+                    for (int i = 0; i < copies; i++) {
+                        try (PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO Purchased(ModelID, SerialNo, OrderID, ShipmentNo, ShipperName) VALUES (?, ?, ?, ?, ?)")) {
+                            stmt2.setInt(1, modelID);
+                            stmt2.setInt(2, getAvailableSerialNo(conn, modelID));
+                            stmt2.setInt(3, orderID);
+                            Shipment shipment = getShipment(conn);
+                            stmt2.setInt(4, shipment.getShipmentNo());
+                            stmt2.setString(5, shipment.getShipperName());
+                            stmt2.executeUpdate();
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while creating order");
+            e.printStackTrace();
+        }
+    }
+
+    private Shipment getShipment(Connection conn) {
+        Shipment shipment = null;
+        try {
+            // Get the count of all shipments
+            try (PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) AS count FROM Shipment")) {
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    int count = rs.getInt("count");
+
+                    // Generate a random index
+                    Random rand = new Random();
+                    int index = rand.nextInt(count);
+
+                    // Select the shipment at the random index
+                    try (PreparedStatement stmt2 = conn.prepareStatement("SELECT * FROM Shipment LIMIT 1 OFFSET ?")) {
+                        stmt2.setInt(1, index);
+                        ResultSet rs2 = stmt2.executeQuery();
+                        if (rs2.next()) {
+                            // Assuming Shipment has fields ShipperNo and ShipperName
+                            int shipperNo = rs2.getInt("ShipperNo");
+                            String shipperName = rs2.getString("ShipperName");
+                            shipment = new Shipment(shipperNo, shipperName);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while getting shipment");
+            e.printStackTrace();
+        }
+        return shipment;
+    }
+
+
+    private class Shipment {
+        private int shipmentNo;
+        private String shipperName;
+
+        public Shipment(int shipmentNo, String shipperName) {
+            this.shipmentNo = shipmentNo;
+            this.shipperName = shipperName;
+        }
+        public int getShipmentNo() {
+            return shipmentNo;
+        }
+        public String getShipperName() {
+            return shipperName;
+        }
+    }
+
+    private Integer getAvailableSerialNo(Connection conn, int modelID) {
+        int serialNo = -1;
+        try (PreparedStatement stmt = conn.prepareStatement("SELECT SerialNo FROM Product where ModelID = ? AND SerialNo NOT IN (SELECT SerialNo FROM Purchased)")) {
+            stmt.setInt(1, modelID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                serialNo = rs.getInt("SerialNo");
+            } else {
+                System.out.println("No available serial numbers for modelID: " + modelID);
+                return null;
+            }
+            return serialNo;
+        } catch (SQLException e) {
+            System.out.println("Error while getting available serial number");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Boolean areSerialNosAvailable(Connection conn) {
+        int userID = Main.user.getUserID();
+
+        try (PreparedStatement stmt = conn.prepareStatement("SELECT ModelID, Copies FROM InCart WHERE UserID = ?")) {
+            stmt.setInt(1, userID);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                int modelID = rs.getInt("ModelID");
+                int copies = rs.getInt("Copies");
+
+                try (PreparedStatement stmt2 = conn.prepareStatement("SELECT COUNT(*) AS count FROM Product WHERE ModelID = ? AND SerialNo NOT IN (SELECT SerialNo FROM Purchased)")) {
+                    stmt2.setInt(1, modelID);
+                    ResultSet rs2 = stmt2.executeQuery();
+                    if (rs2.next()) {
+                        int count = rs2.getInt("count");
+                        if (count < copies) {
+                            Popup.showErr("Not enough serial numbers available for modelID: " + modelID + ". In Cart: " + copies + ", Available: " + count);
+                            return false;
+                        }
+                    }
+                    System.out.println("No available serial numbers for modelID: " + modelID);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while checking availability of serial numbers");
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }

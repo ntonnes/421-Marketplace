@@ -17,7 +17,7 @@ import pages.utils.Popup;
 
 public class CartSelect extends ColumnPage {
     private static JTable table;
-    private JLabel totalCostLabel;
+    private static JLabel totalCostLabel;
 
     public CartSelect() {
         super("Your Cart");
@@ -157,5 +157,9 @@ public class CartSelect extends ColumnPage {
 
     public static Boolean cartIsEmpty() {
         return table.getModel().getRowCount() == 0;
+    }
+
+    public static double getTotal() {
+        return Double.parseDouble(totalCostLabel.getText().substring(13));
     }
 }
