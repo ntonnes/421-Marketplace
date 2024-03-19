@@ -56,7 +56,7 @@ public class SearchForm extends ColumnPage {
         );
 
         brandPanel = new SelectBox(
-            true, "Select brands to include:", "Select a brand...", 
+            true, "Select brands to filter for:", 
             "SELECT DISTINCT name FROM BrandPage", "name"
         );
 
@@ -71,7 +71,7 @@ public class SearchForm extends ColumnPage {
         );
 
         categoryPanel = new SelectBox(
-            true, "Select categories to include:", "Select categories...", 
+            true, "Select categories to filter for:", 
             "SELECT DISTINCT Cname FROM Belongs", "Cname"
         );
 
@@ -158,8 +158,6 @@ public class SearchForm extends ColumnPage {
         if (brands != null && brands.length > 0) {
             String placeholders = String.join(", ", Collections.nCopies(brands.length, "?"));
             sql.append(" AND BrandPage.name IN (" + placeholders + ")");
-        } else {
-            sql.append(" AND BrandPage.name IS NULL");
         }
         if (minPrice != null) sql.append(" AND Model.price >= ?");
         if (maxPrice != null) sql.append(" AND Model.price <= ?");
@@ -167,8 +165,6 @@ public class SearchForm extends ColumnPage {
         if (categories != null && categories.length > 0) {
             String placeholders = String.join(" UNION ", Collections.nCopies(categories.length, "SELECT modelID FROM Belongs WHERE Cname = ?"));
             sql.append(" AND Model.modelID IN (" + placeholders + ")");
-        } else {
-            sql.append(" AND Model.modelID IS NULL");
         }
         sql.append(" GROUP BY Model.modelID, Model.price, BrandPage.name, Model.stars");
         sql.append(" ").append(getSortSQL());

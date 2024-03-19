@@ -1,9 +1,7 @@
 import java.sql.*;
-import java.util.Scanner;
 
 import database.Database;
 import database.users.*;
-import main.Main;
 
 
 public class LoginPage implements Page {
@@ -19,7 +17,6 @@ public class LoginPage implements Page {
 
     @Override
     public void go(int option) {
-        Scanner scanner = new Scanner(System.in);
         switch (option) {
             case 1:
 

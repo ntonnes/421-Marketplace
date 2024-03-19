@@ -1,7 +1,10 @@
 package pages.search;
 
-import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,7 +14,6 @@ import java.util.Comparator;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 
 import database.Database;
 
@@ -34,62 +36,9 @@ public class SearchSelect extends ColumnPage {
 
     public SearchSelect(String sort) {
         super("Search Results");
-        sortByBox.setSelectedItem(sort);
     }
 
-    class ButtonRenderer extends JButton implements TableCellRenderer {
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setText((value == null) ? "" : value.toString());
-            return this;
-        }
-    }
-
-    class ButtonEditor extends DefaultCellEditor {
-        protected JButton button;
-        private String label;
-        private boolean isPushed;
-        private int row;
-
-        public ButtonEditor(JCheckBox checkBox) {
-            super(checkBox);
-            button = new JButton();
-            button.setOpaque(true);
-            button.addActionListener(e -> fireEditingStopped());
-        }
-
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            label = (value == null) ? "" : value.toString();
-            button.setText(label);
-            isPushed = true;
-            this.row = row;
-            return button;
-        }
-
-        public Object getCellEditorValue() {
-            if (isPushed) {
-                int modelID = (int) table.getModel().getValueAt(row, 0);
-                if (label.equals("Add to Cart")) {
-                    addToCart(modelID);
-                } else if (label.equals("View")) {
-                    Main.goNew(new ModelPage(modelID), "Model");
-                }
-            }
-            isPushed = false;
-            return label;
-        }
-    
-
-        public boolean stopCellEditing() {
-            isPushed = false;
-            return super.stopCellEditing();
-        }
-    }
-
-    @Override
-    protected void populateContent() {
-        setWeights(.6,.2);
-
-        // Create the "sort by" dropdown menu
+    public JPanel createSortByBox() {
         String[] sortByOptions = {
             "Best Selling",
             "Price Low to High",
@@ -101,11 +50,28 @@ public class SearchSelect extends ColumnPage {
         };
         sortByBox = new JComboBox<>(sortByOptions);
         sortByBox.addActionListener(e -> sortData());
-        JPanel sortByPanel = new JPanel();
-        sortByPanel.add(new JLabel("Sort by:"));
-        sortByPanel.add(sortByBox);
+        JLabel sortByLabel = new JLabel("Sort by:");
+            sortByLabel.setFont(new Font ("Arial", Font.BOLD, 20));
+        JPanel sortByPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.anchor = GridBagConstraints.WEST;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+        sortByPanel.add(sortByLabel, gbc);
+            gbc.gridx = 1;
+            gbc.insets = new Insets(0, 10, 0, 0);
+        sortByPanel.add(sortByBox, gbc);
+        return sortByPanel;
+    }
 
-        addComponent(sortByPanel, 0.1);
+    @Override
+    protected void populateContent() {
+        setWeights(.6,.2);
+
+        JPanel sortByPanel = createSortByBox();
+
+        addComponent(sortByPanel, 0);
 
                 
         data = SearchForm.getData();
@@ -119,27 +85,22 @@ public class SearchSelect extends ColumnPage {
 
         String[] columnNames = {"Model ID", "Price", "Brand", "Rating"};
 
-        DefaultTableModel model = new DefaultTableModel(data, columnNames);
-        table = new JTable(model) {
+        DefaultTableModel model = new DefaultTableModel(data, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
-            @Override
-            public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
-            }
         };
 
+        table = new JTable(model);
         table.setRowHeight(30);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         JScrollPane scrollPane = new JScrollPane(table);
-        JPanel tablePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        tablePanel.add(scrollPane);
-        addComponent(tablePanel, 0.7);
+        addComponent(scrollPane, 0.6);
 
         JPanel searchParametersPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        addComponent(searchParametersPanel, .3);
+        addComponent(searchParametersPanel, .4);
 
         if (minStars != 0) {
             searchParametersPanel.add(new JLabel("Minimum Rating: "));

@@ -24,7 +24,7 @@ public class SelectBox extends JPanel {
     private final Vector<String> optionList = new Vector<String>();
     private final JPanel selectedPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); 
 
-    public SelectBox(Boolean multiSelect, String lbl, String placehldr, String qry, String col) {
+    public SelectBox(Boolean multiSelect, String lbl, String qry, String col) {
         super(new GridBagLayout());
         this.label = lbl;
         this.query = qry;
@@ -100,7 +100,7 @@ public class SelectBox extends JPanel {
     private class GroupedIcon extends JPanel {
         private final String name;
         private final JLabel label;
-        private Boolean selected = true;
+        private Boolean selected = false;
 
         public GroupedIcon(String opt) {
             this.name = opt;
@@ -124,6 +124,7 @@ public class SelectBox extends JPanel {
             label.setBackground(new Color (0,0,0,0));
             label.setOpaque(true);
             label.setFont(new Font("Arial", Font.PLAIN, 14));
+            label.setForeground(Color.LIGHT_GRAY.darker());
             this.setBorder(BorderFactory.createCompoundBorder(
                 createCustomBorder(),
                 BorderFactory.createEmptyBorder(3,6,3,6)
@@ -139,7 +140,11 @@ public class SelectBox extends JPanel {
                     int halfThickness = 1;
                     Graphics2D g2d = (Graphics2D) g.create();
                     g2d.setStroke(new BasicStroke(borderThickness));
-                    g2d.setColor(DEFAULT_FOREGROUND.darker());
+                    if (selected) { 
+                        g2d.setColor(DEFAULT_FOREGROUND.darker());
+                    } else {
+                        g2d.setColor(DEFAULT_FOREGROUND.darker().darker());
+                    }
                     g2d.drawRoundRect(borderThickness + halfThickness, borderThickness + halfThickness, width - 2 * borderThickness, height - 2 * borderThickness, height - 2 * borderThickness, height - 2 * borderThickness);
                     if (selected) { 
                         g2d.setColor(BUTTON_BLUE.darker());
@@ -147,7 +152,11 @@ public class SelectBox extends JPanel {
                         g2d.setColor(Color.DARK_GRAY);
                     }
                     g2d.fillRoundRect(borderThickness, borderThickness, width - 2 * borderThickness, height - 2 * borderThickness, height - 2 * borderThickness, height - 2 * borderThickness);
-                    g2d.setColor(DEFAULT_FOREGROUND);
+                    if (selected) { 
+                        g2d.setColor(DEFAULT_FOREGROUND);
+                    } else {
+                        g2d.setColor(DEFAULT_FOREGROUND.darker());
+                    }
                     g2d.drawRoundRect(borderThickness, borderThickness, width - 2 * borderThickness, height - 2 * borderThickness, height - 2 * borderThickness, height - 2 * borderThickness);
                     g2d.dispose();
                 }

@@ -5,13 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import database.Database;
 import database.users.User;
-import main.Main;
-import pages.search.SearchSelect;
 
 public class SearchPage implements Page {
     private int minRating = 0;

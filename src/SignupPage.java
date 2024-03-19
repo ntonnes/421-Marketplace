@@ -22,6 +22,7 @@ public class SignupPage implements Page {
     public void go(int option) {
         switch (option) {
             case 1:
+                App.scanner.nextLine();
                 System.out.println("Enter your name: ");
                 String name = App.scanner.nextLine();
                 System.out.println("Enter your email: ");
@@ -45,7 +46,7 @@ public class SignupPage implements Page {
     private int submit(int userID, String name, String email, String password, String dob) {
 
         // Validate DOB
-        if (!dob.isEmpty()) {
+        if (dob !=null) {
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat("mm/dd/yyyy");
                 Date date = sdf.parse(dob);
