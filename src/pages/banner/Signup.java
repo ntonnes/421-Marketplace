@@ -42,21 +42,22 @@ public class Signup extends ColumnPage {
         JPanel emailEntry = createFieldPanel("Email:", true, emailField);
         JPanel passwordEntry = createFieldPanel("Password:", true, passwordField);
         JPanel dobEntry = createFieldPanel("Date of Birth (mm/dd/yyyy):", false, dobField);
-        signupButton = createButton("Sign Up", BUTTON_BLUE, e -> submit());
+        signupButton = createButton("Sign Up", BUTTON_GREEN, e -> submit());
 
         addBuffer(0.05);
-        addComponent(fNameEntry, 0.01);
+        addComponent(fNameEntry, 0);
         addBuffer(0.02);
-        addComponent(lNameEntry, 0.01);
+        addComponent(lNameEntry, 0);
         addBuffer(0.02);
-        addComponent(emailEntry, 0.01);
+        addComponent(emailEntry, 0);
         addBuffer(0.02);
-        addComponent(passwordEntry, 0.01);
+        addComponent(passwordEntry, 0);
         addBuffer(0.02);
-        addComponent(dobEntry, 0.01);
+        addComponent(dobEntry, 0);
         addBuffer(0.02);
         addComponent(signupButton, 0.1);
-        addBuffer();
+        addBuffer(0.9);
+        addSideBuffers();
     }
 
 

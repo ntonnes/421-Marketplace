@@ -121,21 +121,6 @@ public class SearchForm extends ColumnPage {
         resetWeights();
     }
 
-    private JPanel doublePanel(JComponent item1, JComponent item2) {
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = createGBC(
-            0, 0, 
-            GridBagConstraints.BOTH,
-            0.5, 1,
-            new Insets(0, 0, 0, 10));
-        gbc.anchor = GridBagConstraints.PAGE_END;
-        panel.add(item1, gbc);
-        gbc.gridx = 1;
-        gbc.insets = new Insets(0, 10, 0, 0);
-        panel.add(item2, gbc);
-        return panel;
-    }
-
     private void submit() {
         List<String[]> dataList = new ArrayList<>();
         modelID = getModelID();

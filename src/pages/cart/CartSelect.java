@@ -13,9 +13,10 @@ import database.Database;
 import main.Main;
 import pages.utils.ColumnPage;
 import static pages.utils.UISettings.*;
+import pages.utils.Popup;
 
 public class CartSelect extends ColumnPage {
-    private JTable table;
+    private static JTable table;
     private JLabel totalCostLabel;
 
     public CartSelect() {
@@ -95,7 +96,11 @@ public class CartSelect extends ColumnPage {
     }
 
     private void order() {
-        // Implement the order logic here
+        if (CartSelect.cartIsEmpty()) {
+            Popup.showErr("Your cart is empty. Add some items before placing an order.");
+            return;
+        }
+        Main.goNew(new OrderForm(), "Order Form");
     }
 
     private void removeItem() {
@@ -148,5 +153,9 @@ public class CartSelect extends ColumnPage {
 
         Main.goBack();
         Main.goNew(new CartSelect(), "Your Cart");
+    }
+
+    public static Boolean cartIsEmpty() {
+        return table.getModel().getRowCount() == 0;
     }
 }

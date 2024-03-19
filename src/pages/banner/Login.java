@@ -33,13 +33,14 @@ public class Login extends ColumnPage {
        loginButton = createButton("Log in", BUTTON_BLUE, e -> submit());
 
         addBuffer(0.05);
-        addComponent(emailEntry, 0.01);
+        addComponent(emailEntry, 0);
         addBuffer(0.02);
-        addComponent(passwordEntry, 0.01);
+        addComponent(passwordEntry, 0);
         addBuffer(0.02);
-        addComponent(loginButton, 0.1);
-        addComponent(signupLink, 0.0);
-        addBuffer();
+        addComponent(loginButton, 0.05);
+        addComponent(signupLink, 0);
+        addBuffer(0.9);
+        addSideBuffers();
     }
 
     // Performs queries to validate the user's input
