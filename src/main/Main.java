@@ -6,7 +6,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import pages.banner.*;
-import pages.utils.O;
 import pages.utils.Page;
 import pages.utils.UISettings;
 import database.users.*;

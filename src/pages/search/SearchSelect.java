@@ -1,11 +1,7 @@
 package pages.search;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.GridBagLayout;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,7 +14,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import database.Database;
-import static pages.utils.UISettings.*;
 
 import main.Main;
 import pages.utils.ColumnPage;
@@ -36,7 +31,6 @@ public class SearchSelect extends ColumnPage {
     private Integer modelID;
     private String[] categories;
     private String[][] data;
-    private int paramCol = 0;
 
     public SearchSelect(String sort) {
         super("Search Results");
