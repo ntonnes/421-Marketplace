@@ -27,12 +27,14 @@ public class App {
     }
 
     public static void push(Page page) {
-        history.push(currentPage);
         currentPage = page;
+        history.push(currentPage);
     }
 
     public static void pop() {
-        currentPage = history.pop();
+        if (history.size() > 0) {
+            currentPage = history.pop();
+        }
     }
 
     public static void goHome() {
@@ -126,7 +128,7 @@ public class App {
 
     public void displayBanner() {
 
-        System.out.println("\n\nWelcome to the 421 MarketPlace!");
+        System.out.println("\n\nWelcome to the 421 MarketPlace!\n");
 
         if (currentUser instanceof Customer) {
             Customer customer = (Customer) currentUser;

@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.Scanner;
 
 import database.Database;
 import database.users.*;
@@ -18,8 +19,11 @@ public class LoginPage implements Page {
 
     @Override
     public void go(int option) {
+        Scanner scanner = new Scanner(System.in);
         switch (option) {
             case 1:
+
+                App.scanner.nextLine();
                 System.out.println("Enter your email: ");
                 String email = App.scanner.nextLine();
                 System.out.println("Enter your password: ");
@@ -27,6 +31,7 @@ public class LoginPage implements Page {
                 if (submit(email, password, App.getUser()) == 0) {
                     App.pop();
                 }
+                break;
 
             case 2:
                 App.push(new SignupPage());
@@ -53,7 +58,7 @@ public class LoginPage implements Page {
                 if (resultSet.getString("password").equals(password)) {
 
                     // Delete the temporary guest
-                    deleteStmt.setInt(1, Main.user.getUserID());
+                    deleteStmt.setInt(1, App.getUser().getUserID());
                     deleteStmt.executeUpdate();
                     System.out.println("Deleted temporary guest with userID: " + user.getUserID());
 

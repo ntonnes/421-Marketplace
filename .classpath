@@ -3,6 +3,6 @@
     <classpathentry kind="src" path="src"/>
     <classpathentry kind="output" path="bin"/>
     <classpathentry kind="lib" path="lib/db2jcc4.jar"/>
-    <classpathentry kind="lib" path="jline-2.14.6.jar"/>
-    <classpathentry kind="lib" path="jansi-1.18.jar"/>
+    <classpathentry kind="lib" path="lib/jline-2.14.6.jar"/>
+    <classpathentry kind="lib" path="lib/jansi-1.18.jar"/>
 </classpath>
