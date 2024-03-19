@@ -5,10 +5,12 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import pages.banner.*;
+import pages.banner.Login;
+import pages.banner.Signup;
 import pages.utils.Page;
 import pages.utils.UISettings;
-import database.users.*;
+import database.Customer;
+import database.User;
 
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -60,7 +62,7 @@ public class Main {
             public void windowClosing(WindowEvent e) {
                 // Delete the user from the database if they are a guest
                 if (!(user instanceof Customer)){
-                    user.delete();
+                    user.deleteGuest();
                 }
                 // Disconnect from the database and exit the application
                 System.exit(0);

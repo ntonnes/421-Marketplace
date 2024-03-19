@@ -1,3 +1,4 @@
+package cmd_app;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import database.Database;
-import database.users.User;
+import database.User;
 
 public class SearchPage implements Page {
     private int minRating = 0;

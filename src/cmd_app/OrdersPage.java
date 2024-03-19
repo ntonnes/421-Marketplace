@@ -1,6 +1,8 @@
-import database.users.User;
+package cmd_app;
+import database.User;
 
-public class CartPage implements Page {
+public class OrdersPage implements Page {
+
     @Override
     public void display(User user) {
         // TODO Auto-generated method stub
@@ -11,5 +13,6 @@ public class CartPage implements Page {
     public void go(int option) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'go'");
-    }  
+    }
+    
 }

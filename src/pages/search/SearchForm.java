@@ -154,7 +154,7 @@ public class SearchForm extends ColumnPage {
         sql.append(" GROUP BY Model.modelID, Model.price, BrandPage.name, Model.stars");
         sql.append(" ").append(getSortSQL());
         
-        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
+        try (Connection conn = Database.connect();
              PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             int paramIndex = 1;
             if (minStars != null) stmt.setInt(paramIndex++, minStars);

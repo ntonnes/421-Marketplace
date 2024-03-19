@@ -1,7 +1,6 @@
-package database.users;
+package database;
 import java.sql.*;
 
-import database.Database;
 import main.Main;
 
 public class User {
@@ -9,16 +8,17 @@ public class User {
     
     // Constructor for a new guest user
     public User() {
-        this.userID = getUniqueUserID();
-    }
-    // Constructor for an existing user
-    public User(int userID) {
-        this.userID = userID;
-        createUser(userID);
+        this.userID = createGuest();
     }
 
-    private int getUniqueUserID() {
-        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS)) {
+    // Constructor for an existing guest; only use for debugging
+    public User(int userID) {
+        this.userID = userID;
+        getGuest(userID);
+    }
+
+    private int createGuest() {
+        try (Connection conn = Database.connect()) {
             while (true) {
                 int userID = (int) ((Math.random() * 9 + 1) * 100000000);  // Generate a 9-digit integer
 
@@ -30,7 +30,7 @@ public class User {
                             try (PreparedStatement insertStmt = conn.prepareStatement("INSERT INTO User (userID) VALUES (?)")) {
                                 insertStmt.setInt(1, userID);
                                 insertStmt.executeUpdate();
-                                System.out.println("\nNew guest user added to the database:\nUser{userID=" + userID + "}\n");
+                                System.out.println("\nNew guest user added to the database:\nUserID = " + userID + "}\n");
                             }
                             return userID;
                         }
@@ -38,18 +38,19 @@ public class User {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Error while accessing the database");
+            System.out.println("Error while accessing the database:");
             e.printStackTrace();
             return -1;
         }
     }
 
-    private void createUser(int userID) {
+    // Only use for debugging
+    private void getGuest(int userID) {
         try (Connection conn = Database.connect();
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO User (userID) VALUES (?)")) {
             stmt.setInt(1, userID);
             stmt.executeUpdate();
-            System.out.println("\nNew guest user added to the database:\nUser{userID=" + userID + "}\n");
+            System.out.println("\nNew guest user added to the database:\nUserID = " + userID + "}\n");
         } catch (SQLException e) {
             System.out.println("\nThe application closed unexpectedly in the last debug session.\n"+
                                "User{userID=\" + userID + \"} already exists in the database.\n" +
@@ -57,27 +58,28 @@ public class User {
         }
     }
 
-public void delete() {
-    int userID = Main.user.getUserID();
-    try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS)) {
-        // Delete from InCart table
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM InCart WHERE userID = ?")) {
-            stmt.setInt(1, userID);
-            stmt.executeUpdate();
-            System.out.println("All items removed from the cart of " + userID + ".");
-        }
+    // Removes a guest user from the database, used at the end of a session or when a user logs in
+    public void deleteGuest() {
+        int userID = Main.user.getUserID();
+        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS)) {
+            // Delete from InCart table
+            try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM InCart WHERE userID = ?")) {
+                stmt.setInt(1, userID);
+                stmt.executeUpdate();
+                System.out.println("All items removed from the cart of " + userID + ".");
+            }
 
-        // Delete from User table
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM User WHERE userID = ?")) {
-            stmt.setInt(1, userID);
-            stmt.executeUpdate();
-            System.out.println("User " + userID + " deleted from the User table");
+            // Delete from User table
+            try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM User WHERE userID = ?")) {
+                stmt.setInt(1, userID);
+                stmt.executeUpdate();
+                System.out.println("User " + userID + " deleted from the User table");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while deleting user from the database");
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        System.out.println("Error while deleting user from the database");
-        e.printStackTrace();
     }
-}
 
     public int getUserID() {
         return userID;

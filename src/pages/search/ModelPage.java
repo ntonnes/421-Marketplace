@@ -72,7 +72,7 @@ public class ModelPage extends ColumnPage {
     public void findModel(int modelID) {
         reviews = null;
 
-        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS)) {
+        try (Connection conn = Database.connect()) {
             String modelQuery = "SELECT * FROM Model WHERE modelID = ?";
             PreparedStatement modelStmt = conn.prepareStatement(modelQuery);
             modelStmt.setInt(1, modelID);

@@ -1,4 +1,5 @@
-import database.users.User;
+package cmd_app;
+import database.User;
 
 public class ReviewPage implements Page {
     @Override

@@ -1,7 +1,8 @@
+package cmd_app;
 import java.io.IOException;
 
-import database.users.Customer;
-import database.users.User;
+import database.Customer;
+import database.User;
 import jline.console.ConsoleReader;
 
 public class AccountPage implements Page {

@@ -3,8 +3,8 @@ package pages.banner;
 import java.sql.*;
 import javax.swing.*;
 
+import database.Customer;
 import database.Database;
-import database.users.*;
 import main.Main;
 import pages.utils.ColumnPage;
 import pages.utils.Popup;
@@ -49,7 +49,7 @@ public class Login extends ColumnPage {
         String email = emailField.getText();
         String password = new String(passwordField.getPassword());
 
-        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
+        try (Connection conn = Database.connect();
         PreparedStatement getstmt = conn.prepareStatement("SELECT * FROM Customer WHERE email = ?");
         PreparedStatement deleteStmt = conn.prepareStatement("DELETE FROM User WHERE userID = ?")) {
             getstmt.setString(1, email);

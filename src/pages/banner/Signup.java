@@ -9,8 +9,9 @@ import java.text.*;
 import java.util.Date;
 import javax.swing.*;
 
+import database.Customer;
 import database.Database;
-import database.users.Customer;
+
 import static pages.utils.UISettings.*;
 
 
@@ -94,7 +95,7 @@ public class Signup extends ColumnPage {
             return;
         }
 
-        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
+        try (Connection conn = Database.connect();
         PreparedStatement getStmt = conn.prepareStatement("SELECT * FROM Customer WHERE email = ?");
         PreparedStatement insertStmt = conn.prepareStatement("INSERT INTO Customer (userID, Name, Email, Password, DOB) VALUES (?, ?, ?, ?, ?)")) {
             

@@ -30,7 +30,7 @@ public class CartSelect extends ColumnPage {
 
         List<String[]> data = new ArrayList<>();
         double totalCost = 0.0;
-        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
+        try (Connection conn = Database.connect();
              PreparedStatement stmt = conn.prepareStatement(
                 "SELECT Model.modelID, Model.price, BrandPage.name AS brand, Model.stars, InCart.copies "+
                 "FROM Model INNER JOIN InCart ON Model.modelID = InCart.modelID "+
@@ -127,7 +127,7 @@ public class CartSelect extends ColumnPage {
             return;
         }
 
-        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS)) {
+        try (Connection conn = Database.connect()) {
             if (copiesToRemove == copiesInCart) {
                 // If all copies are removed, delete the row from the database
                 try (PreparedStatement stmt = conn.prepareStatement(

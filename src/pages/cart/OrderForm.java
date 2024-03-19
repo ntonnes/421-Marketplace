@@ -11,14 +11,14 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.math.BigDecimal;
 import java.sql.*;
-import java.text.*;
 import java.util.Date;
 import java.util.Random;
 
 import javax.swing.*;
 
+import database.Customer;
 import database.Database;
-import database.users.Customer;
+
 import static pages.utils.UISettings.*;
 
 
@@ -129,7 +129,7 @@ public class OrderForm extends ColumnPage {
         });
 
         int userID = Main.user.getUserID();
-        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS)) {
+        try (Connection conn = Database.connect()) {
             try (PreparedStatement stmt = conn.prepareStatement("SELECT cardNum FROM Card WHERE userID = ?")) {
                 stmt.setInt(1, userID);
                 ResultSet rs = stmt.executeQuery();
@@ -168,7 +168,7 @@ public class OrderForm extends ColumnPage {
         Date date = new Date();
         System.out.println("Date: " + date);
 
-        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS)) {
+        try (Connection conn = Database.connect()) {
 
             // Check if there are enough serial numbers available
             if (!(areSerialNosAvailable(conn))) {

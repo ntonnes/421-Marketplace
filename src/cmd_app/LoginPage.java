@@ -1,7 +1,9 @@
+package cmd_app;
 import java.sql.*;
 
+import database.Customer;
 import database.Database;
-import database.users.*;
+import database.User;
 
 
 public class LoginPage implements Page {

@@ -6,7 +6,6 @@ import javax.swing.*;
 import database.Database;
 import main.Main;
 import pages.utils.ColumnPage;
-import database.Model;
 import static pages.utils.UISettings.*;
 
 public class ReviewForm extends ColumnPage{
@@ -38,7 +37,7 @@ public class ReviewForm extends ColumnPage{
         int userID = Main.user.getUserID();
         int modelID = ReviewSelect.getSelected();
 
-        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
+        try (Connection conn = Database.connect();
              PreparedStatement stmt = conn.prepareStatement("INSERT INTO Review (userID, modelID, rating, message) VALUES (?, ?, ?, ?)")) {
 
             stmt.setInt(1, userID);
@@ -59,7 +58,6 @@ public class ReviewForm extends ColumnPage{
     }
 
     private void updateRating(int modelID, Connection conn) throws SQLException {
-        double oldRating = Model.getModel(modelID, conn).getStars();
         try (PreparedStatement stmt = conn.prepareStatement("SELECT AVG(rating) FROM Review WHERE modelID = ?")) {
             stmt.setInt(1, modelID);
             ResultSet rs = stmt.executeQuery();
@@ -70,7 +68,7 @@ public class ReviewForm extends ColumnPage{
                 updateStmt.setDouble(1, newRating);
                 updateStmt.setInt(2, modelID);
                 updateStmt.executeUpdate();
-                System.out.println("Rating for model " + modelID + " updated from " + oldRating + " to " + newRating);
+                System.out.println("Rating for model " + modelID + " updated.");
             }
         }
     }

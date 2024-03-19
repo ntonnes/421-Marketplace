@@ -1,10 +1,12 @@
+package cmd_app;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import database.Customer;
 import database.Database;
-import database.users.*;
+import database.User;
 
 public class SignupPage implements Page {
 

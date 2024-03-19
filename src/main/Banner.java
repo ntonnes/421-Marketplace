@@ -1,11 +1,12 @@
-package pages.banner;
+package main;
 
 import javax.swing.*;
 
+import database.Customer;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
-import database.users.Customer;
-import main.Main;
+
 import pages.cart.CartSelect;
 import static pages.utils.UISettings.*;
 

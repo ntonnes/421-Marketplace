@@ -1,5 +1,6 @@
-import database.users.Customer;
-import database.users.User;
+package cmd_app;
+import database.Customer;
+import database.User;
 
 public class HomePage implements Page {
     private User user;

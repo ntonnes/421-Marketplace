@@ -1,13 +1,16 @@
 package main;
 
 import javax.swing.*;
+
+import database.Customer;
+
 import java.awt.*;
 
 import pages.review.ReviewSelect;
 import pages.search.SearchForm;
 import pages.utils.ColumnPage;
 import pages.utils.Popup;
-import database.users.Customer;
+
 import static pages.utils.UISettings.*;
 
 public class Menu extends ColumnPage{

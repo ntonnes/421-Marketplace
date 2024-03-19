@@ -1,8 +1,9 @@
+package cmd_app;
 import java.util.Scanner;
 import java.util.Stack;
 
-import database.users.Customer;
-import database.users.User;
+import database.Customer;
+import database.User;
 
 public class App {
     final static Scanner scanner = new Scanner(System.in);
