@@ -57,18 +57,27 @@ public class User {
         }
     }
 
-    public void delete() {
-        int userID = Main.user.getUserID();
-        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
-        PreparedStatement stmt = conn.prepareStatement("DELETE FROM User WHERE userID = ?")) {
+public void delete() {
+    int userID = Main.user.getUserID();
+    try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS)) {
+        // Delete from InCart table
+        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM InCart WHERE userID = ?")) {
             stmt.setInt(1, userID);
             stmt.executeUpdate();
-            System.out.println("User " + userID + " deleted from the database\n");
-        } catch (SQLException e) {
-            System.out.println("Error while deleting user from the database");
-            e.printStackTrace();
+            System.out.println("All items removed from the cart of " + userID + ".");
         }
+
+        // Delete from User table
+        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM User WHERE userID = ?")) {
+            stmt.setInt(1, userID);
+            stmt.executeUpdate();
+            System.out.println("User " + userID + " deleted from the User table");
+        }
+    } catch (SQLException e) {
+        System.out.println("Error while deleting user from the database");
+        e.printStackTrace();
     }
+}
 
     public int getUserID() {
         return userID;

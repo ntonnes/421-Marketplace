@@ -1,10 +1,15 @@
 package pages.search;
 
+import static pages.utils.UISettings.*;
+
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,6 +19,8 @@ import java.util.Comparator;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import database.Database;
 
@@ -24,6 +31,7 @@ import pages.utils.Popup;
 public class SearchSelect extends ColumnPage {
     private JTable table;
     private JComboBox<String> sortByBox;
+    private JButton addToCartButton;
 
     private Integer minStars;
     private Integer maxStars;
@@ -100,7 +108,7 @@ public class SearchSelect extends ColumnPage {
         addComponent(scrollPane, 0.6);
 
         JPanel searchParametersPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        addComponent(searchParametersPanel, .4);
+        addComponent(searchParametersPanel, .3);
 
         if (minStars != 0) {
             searchParametersPanel.add(new JLabel("Minimum Rating: "));
@@ -110,39 +118,26 @@ public class SearchSelect extends ColumnPage {
             searchParametersPanel.add(new JLabel("Maximum Rating: "));
             searchParametersPanel.add(new JLabel(String.valueOf(maxStars)));
         }
-        if (brands != null) {
-            for (int i = 0; i < brands.length; i++) {
-                String brand = brands[i];
-                if (i < categories.length - 1) { // If it's not the last category
-                    searchParametersPanel.add(new JLabel(brand + ", "));
-                } else { // If it's the last category
-                    searchParametersPanel.add(new JLabel(brand+ "   "));
-                }
-            }
+        if (brands != null && brands.length != 0) {
+            searchParametersPanel.add(new JLabel("Brands: " + String.join(", ", brands)));
         }
-        if (minPrice != 0) {
-            searchParametersPanel.add(new JLabel("Minimum Price: $"));
-            searchParametersPanel.add(new JLabel(String.valueOf(minPrice)));
+        if (minPrice != 0 && minPrice != null) {
+            searchParametersPanel.add(new JLabel("Minimum Price: $" + String.valueOf(minPrice)));
         }
-        if (maxPrice != 500) {
-            searchParametersPanel.add(new JLabel("Maximum Price: $"));
-            searchParametersPanel.add(new JLabel(String.valueOf(maxPrice)));
+        if (maxPrice != 500 && maxPrice != null) {
+            searchParametersPanel.add(new JLabel("Maximum Price: $" + String.valueOf(maxPrice)));
         }
         if (modelID != null) {
-            searchParametersPanel.add(new JLabel("Model ID: "));
-            searchParametersPanel.add(new JLabel(modelID.toString()));
+            searchParametersPanel.add(new JLabel("Model ID: " + modelID.toString()));
         }
-        if (categories != null) {
-            searchParametersPanel.add(new JLabel("Categories: "));
-            for (int i = 0; i < categories.length; i++) {
-                String category = categories[i];
-                if (i < categories.length - 1) { // If it's not the last category
-                    searchParametersPanel.add(new JLabel(category + ", "));
-                } else { // If it's the last category
-                    searchParametersPanel.add(new JLabel(category));
-                }
-            }
+        if (categories != null && categories.length != 0) {
+            searchParametersPanel.add(new JLabel("Categories: " + String.join(", ", categories)));
         }
+
+        addToCartButton = createButton("Add to Cart", BUTTON_GREEN, e -> addToCart(
+            Integer.parseInt((String) table.getValueAt(table.getSelectedRow(), 0)
+        )));
+        addComponent(addToCartButton, 0.1);
 
         addSideBuffers();
         resetWeights();
