@@ -5,9 +5,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Database {
-    public static final String DB_URL = "jdbc:db2://winter2024-comp421.cs.mcgill.ca:50000/COMP421";
-    public static final String USER = "cs421g10";
-    public static final String PASS = "Cat!Dog923";
+    public static final String DB_URL = "SOCSURL";
+    public static final String USER = "SOCSUSER";
+    public static final String PASS = "SOCSPASSWD";
 
     public static Connection connect() {
         Connection conn = null;
