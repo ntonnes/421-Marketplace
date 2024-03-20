@@ -11,6 +11,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.math.BigDecimal;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
@@ -28,6 +29,8 @@ public class OrderForm extends ColumnPage {
     private static JTextField cardNumberField = new JTextField(20);
     private static JTextField expDateField = new JTextField(20);
     private static JTextField addressField = new JTextField(20);
+
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
     private JButton orderButton;
 
     public OrderForm() {
@@ -191,12 +194,7 @@ public class OrderForm extends ColumnPage {
 
     public void createOrder(String cardNum, String cardExp, String address, String email) {
         System.out.println("Creating order...");
-        Integer userID;
-        if (Main.user instanceof Customer){
-            userID = Main.user.getUserID();
-        } else {
-            userID = null;
-        }
+        Integer userID = Main.user.getUserID();
         BigDecimal total = BigDecimal.valueOf(CartSelect.getTotal());
         System.out.println("Total: " + total);
         Date date = new Date();
@@ -226,26 +224,33 @@ public class OrderForm extends ColumnPage {
             System.out.println("OrderID: " + orderID);
 
             // Insert into Card table if necessary
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "MERGE INTO Card USING (VALUES (?, ?, ?)) AS vals(x,y,z) ON Card.CardNum = vals.x " +
-                            "WHEN MATCHED THEN UPDATE SET CardNum = vals.x " +
-                            "WHEN NOT MATCHED THEN INSERT (CardNum, CardExp, UserID) VALUES (vals.x, vals.y, vals.z)")) {
-                stmt.setString(1, cardNum);
-                stmt.setString(2, cardExp);
-                if (userID != null) {
-                    stmt.setInt(3, userID);
-                } else {
-                    stmt.setNull(3, Types.INTEGER);
+            try (PreparedStatement stmt1 = conn.prepareStatement("SELECT COUNT(*) as count FROM Card where CardNum = ?");
+                 PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO Card(CardNum, CardExp, UserID) VALUES (?, ?, ?)")) {
+                stmt1.setString(1, cardNum);
+                ResultSet res = stmt1.executeQuery();
+                if (res.next()) {
+                    int count = res.getInt("count");
+                    if (count == 0) {
+                        stmt2.setString(1, cardNum);
+                        stmt2.setString(2, cardExp);
+                        if (Main.user instanceof Customer) {
+                            stmt2.setInt(3, userID);
+                        } else {
+                            stmt2.setNull(3, Types.INTEGER);
+                        }
+                        stmt2.executeUpdate();
+                    }
                 }
-                stmt.executeUpdate();
             }
 
             // Insert into Order table
             try (PreparedStatement stmt = conn.prepareStatement("INSERT INTO Order(OrderID, DeliverAdd, Total, Date, Email, CardNum) VALUES (?, ?, ?, ?, ?, ?)")) {
-                stmt.setInt(1, orderID);
+                stmt.setInt(1, 375847364);
                 stmt.setString(2, address);
                 stmt.setBigDecimal(3, total);
-                stmt.setDate(4, new java.sql.Date(date.getTime()));
+                Date d = new java.sql.Date(date.getTime());
+                String sqlDate = sdf.format(d);
+                stmt.setString(4, sqlDate);
                 stmt.setString(5, email);
                 stmt.setString(6, cardNum);
                 stmt.executeUpdate();
