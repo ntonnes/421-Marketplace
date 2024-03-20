@@ -153,6 +153,40 @@ public class OrderForm extends ColumnPage {
         String address = addressField.getText();
 
         createOrder(cardNumber, expDate, address, email);
+
+        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
+             PreparedStatement checkCard = conn.prepareStatement("INSERT INTO Card VALUES (?,?,?)");
+             PreparedStatement addCard = conn.prepareStatement("INSERT INTO Card VALUES (?,?,?)");
+             PreparedStatement addOrder = conn.prepareStatement("SELECT * FROM Customer WHERE email = ?")) {
+
+
+            /*
+            // Check if email already exists
+            if (resultSet.next()) {
+                Popup.showErr("An account with that email already exists.");
+                return;
+
+                // If email is unique, create the customer
+            } else {
+                insertStmt.setInt(1, userID);
+                insertStmt.setString(2, dob);
+                insertStmt.setString(3, password);
+                insertStmt.setString(4, email);
+                insertStmt.setString(5, name);
+                insertStmt.executeUpdate();
+
+                Main.setUser(new Customer(userID, name, email, password, dob));
+                System.out.println("\nSuccessfully registered user " + name + ":\n" + Main.user.toString() + "\n");
+                Main.goBack();
+                return;
+            }
+            */
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Popup.showErr("An error occurred while executing an SQL statement.");
+            return;
+        }
+
     }
 
     public void createOrder(String cardNum, String cardExp, String address, String email) {
@@ -190,9 +224,12 @@ public class OrderForm extends ColumnPage {
                 }
             }
             System.out.println("OrderID: " + orderID);
-            
+
             // Insert into Card table if necessary
-            try (PreparedStatement stmt = conn.prepareStatement("INSERT INTO Card(CardNum, CardExp, UserID) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE CardNum=CardNum")) {
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "MERGE INTO Card USING (VALUES (?, ?, ?)) AS vals(x,y,z) ON Card.CardNum = vals.x " +
+                            "WHEN MATCHED THEN UPDATE SET CardNum = vals.x " +
+                            "WHEN NOT MATCHED THEN INSERT (CardNum, CardExp, UserID) VALUES (vals.x, vals.y, vals.z)")) {
                 stmt.setString(1, cardNum);
                 stmt.setString(2, cardExp);
                 if (userID != null) {
@@ -319,8 +356,9 @@ public class OrderForm extends ColumnPage {
                 int modelID = rs.getInt("ModelID");
                 int copies = rs.getInt("Copies");
 
-                try (PreparedStatement stmt2 = conn.prepareStatement("SELECT COUNT(*) AS count FROM Product WHERE ModelID = ? AND SerialNo NOT IN (SELECT SerialNo FROM Purchased)")) {
+                try (PreparedStatement stmt2 = conn.prepareStatement("SELECT COUNT(*) AS count FROM Product WHERE ModelID = ? AND SerialNo NOT IN (SELECT SerialNo FROM Purchased WHERE ModelID = ?)")) {
                     stmt2.setInt(1, modelID);
+                    stmt2.setInt(2, modelID);
                     ResultSet rs2 = stmt2.executeQuery();
                     if (rs2.next()) {
                         int count = rs2.getInt("count");
