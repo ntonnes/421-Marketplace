@@ -11,8 +11,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.math.BigDecimal;
 import java.sql.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Random;
 
 import javax.swing.*;
@@ -27,10 +28,8 @@ public class OrderForm extends ColumnPage {
 
     private static JTextField emailField = new JTextField(20);
     private static JTextField cardNumberField = new JTextField(20);
-    private static JTextField expDateField = new JTextField(20);
+    private static JFormattedTextField expDateField = createDateField();
     private static JTextField addressField = new JTextField(20);
-
-    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
     private JButton orderButton;
 
     public OrderForm() {
@@ -50,7 +49,7 @@ public class OrderForm extends ColumnPage {
         // Add the components to the panel
         JPanel emailEntry = createFieldPanel("Email", true, emailField);
         JPanel cardNumberEntry = createFieldPanel("Card Number:", true, cardNumberField);
-        JPanel expDateEntry = createFieldPanel("Expiration Date (mm/dd/yyyy):", true, expDateField);
+        JPanel expDateEntry = createFieldPanel("Card Expiration (yyyy/mm/dd):", true, expDateField);
         JPanel cardPanel = doublePanel(cardNumberEntry, expDateEntry);
         JPanel addressEntry = createFieldPanel("Shipping Address:", true, addressField);
         orderButton = createButton("Place Order", BUTTON_BLUE, e -> submit());
@@ -78,7 +77,9 @@ public class OrderForm extends ColumnPage {
             if (cardBox.getSelectedIndex() != 0) {
                 Card card = (Card) cardBox.getSelectedItem();
                 cardNumberField.setText(card.cardNumber);
-                expDateField.setText(card.expDate);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+                String formattedDate = card.expDate.format(formatter);
+                expDateField.setText(formattedDate);
             }
         });
         JLabel cardLabel = new JLabel("Use a Saved Card:");
@@ -99,10 +100,10 @@ public class OrderForm extends ColumnPage {
 
     private class Card {
         private String cardNumber;
-        private String expDate;
+        private LocalDate expDate;
         private String display;
 
-        public Card(String cardNumber, String expDate) {
+        public Card(String cardNumber, LocalDate expDate) {
             this.cardNumber = cardNumber;
             this.expDate = expDate;
             if (cardNumber == null) {
@@ -133,12 +134,13 @@ public class OrderForm extends ColumnPage {
 
         int userID = Main.user.getUserID();
         try (Connection conn = Database.connect()) {
-            try (PreparedStatement stmt = conn.prepareStatement("SELECT cardNum FROM Card WHERE userID = ?")) {
+            try (PreparedStatement stmt = conn.prepareStatement("SELECT cardNum, CardExp FROM Card WHERE userID = ?")) {
                 stmt.setInt(1, userID);
                 ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
                     String cardNumber = rs.getString("cardNum");
-                    String expDate = rs.getString("CardExp");
+                    java.sql.Date sqlDate = rs.getDate("CardExp");
+                    LocalDate expDate = sqlDate.toLocalDate();
                     savedCards.addItem(new Card (cardNumber, expDate));
                 }
             }
@@ -151,54 +153,46 @@ public class OrderForm extends ColumnPage {
 
     private void submit() {
         String email = emailField.getText();
-        String cardNumber = cardNumberField.getText();
-        String expDate = expDateField.getText();
+        long cardNumber = Long.parseLong(cardNumberField.getText());
+        String expDateString = expDateField.getText();
+        java.sql.Date sqlDate = null;
         String address = addressField.getText();
 
-        createOrder(cardNumber, expDate, address, email);
+        // Validate card expiration date
+        if (!expDateString.isEmpty() && !expDateString.equals("----/--/--")) {
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+                LocalDate expDate = LocalDate.parse(expDateString, formatter);
 
-        try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS);
-             PreparedStatement checkCard = conn.prepareStatement("INSERT INTO Card VALUES (?,?,?)");
-             PreparedStatement addCard = conn.prepareStatement("INSERT INTO Card VALUES (?,?,?)");
-             PreparedStatement addOrder = conn.prepareStatement("SELECT * FROM Customer WHERE email = ?")) {
+                // Check if the date is in the future
+                if (expDate.isBefore(LocalDate.now())) {
+                    Popup.showErr("The card you are trying to use is expired.");
+                    expDateField.setText(""); // Reset the expDateField
+                    return;
+                }
 
-
-            /*
-            // Check if email already exists
-            if (resultSet.next()) {
-                Popup.showErr("An account with that email already exists.");
-                return;
-
-                // If email is unique, create the customer
-            } else {
-                insertStmt.setInt(1, userID);
-                insertStmt.setString(2, dob);
-                insertStmt.setString(3, password);
-                insertStmt.setString(4, email);
-                insertStmt.setString(5, name);
-                insertStmt.executeUpdate();
-
-                Main.setUser(new Customer(userID, name, email, password, dob));
-                System.out.println("\nSuccessfully registered user " + name + ":\n" + Main.user.toString() + "\n");
-                Main.goBack();
+                // Convert LocalDate to java.sql.Date
+                sqlDate = java.sql.Date.valueOf(expDate);
+            } catch (DateTimeParseException e) {
+                Popup.showErr("Invalid Date format. Please use yyyy/mm/dd");
+                expDateField.setText(""); // Reset the expDateField
                 return;
             }
-            */
-        } catch (SQLException e) {
-            e.printStackTrace();
-            Popup.showErr("An error occurred while executing an SQL statement.");
+        } else if (!expDateString.equals("----/--/--")) {
+            Popup.showErr("Invalid Card Expiration Date. Try again.");
+            expDateField.setText(""); // Reset the expDateField
             return;
         }
 
+        createOrder(cardNumber, sqlDate, address, email);
     }
 
-    public void createOrder(String cardNum, String cardExp, String address, String email) {
+    public void createOrder(long cardNum, java.sql.Date cardExp, String address, String email) {
         System.out.println("Creating order...");
         Integer userID = Main.user.getUserID();
         BigDecimal total = BigDecimal.valueOf(CartSelect.getTotal());
         System.out.println("Total: " + total);
-        Date date = new Date();
-        System.out.println("Date: " + date);
+        int orderID=0;
 
         try (Connection conn = Database.connect()) {
 
@@ -206,53 +200,70 @@ public class OrderForm extends ColumnPage {
             if (!(areSerialNosAvailable(conn))) {
                 return;
             }
+
+            // Check if the card exists in the database, validate, and insert if needed
+            try (PreparedStatement stmt = conn.prepareStatement("SELECT CardExp FROM Card WHERE CardNum = ?")) {
+                stmt.setLong(1, cardNum);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    java.sql.Date existingCardExp = rs.getDate("CardExp");
+                    if (!existingCardExp.equals(cardExp)) {
+                        Popup.showErr("The expiration date does not match the card number. Please try again.");
+                    } else {
+                        System.out.println("Card validated: " + cardNum + " " + cardExp);
+                    }
+                } else {
+                    // Card does not exist, insert it
+                    Boolean saved = false;
+                    try (PreparedStatement insertStmt = conn.prepareStatement("INSERT INTO Card (CardNum, CardExp, UserID) VALUES (?, ?, ?)")) {
+                        insertStmt.setLong(1, cardNum);
+                        insertStmt.setDate(2, cardExp);
+
+                        // If the user is a customer, ask if they want to save the card
+                        if (Main.user instanceof Customer) {
+                            int choice = Popup.showConfirm("Would you like to save the card?");
+                            // If the user answers yes, save the card with their userID
+                            if (choice == JOptionPane.YES_OPTION) {
+                                insertStmt.setInt(3, Main.user.getUserID());
+                                saved = true;
+                            // If the user answers no, save the card with a null userID
+                            } else {
+                                insertStmt.setNull(3, Types.INTEGER);
+                            }
+                        // If the user is a guest, save the card with a null userID
+                        } else {
+                            insertStmt.setNull(3, Types.INTEGER);
+                        }
+                        insertStmt.executeUpdate();
+                        System.out.println("Card successfully inserted: " + cardNum + " " + cardExp + ". Saved to a user: " + saved);
+                    }
+                }
+            }
             
             // Get a unique random OrderID
             Random rand = new Random();
-            int orderID=0;
             boolean unique = false;
             while (!unique) {
-                orderID = rand.nextInt(99999, 1000000);  // Generate a random number between 0 and 999999
+                orderID = rand.nextInt(900000000) + 100000000;
                 try (PreparedStatement stmt = conn.prepareStatement("SELECT OrderID FROM Order WHERE OrderID = ?")) {
                     stmt.setInt(1, orderID);
                     ResultSet rs = stmt.executeQuery();
                     if (!rs.next()) {
                         unique = true;  // The OrderID is unique
-                    }
-                }
-            }
-            System.out.println("OrderID: " + orderID);
-
-            // Insert into Card table if necessary
-            try (PreparedStatement stmt1 = conn.prepareStatement("SELECT COUNT(*) as count FROM Card where CardNum = ?");
-                 PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO Card(CardNum, CardExp, UserID) VALUES (?, ?, ?)")) {
-                stmt1.setString(1, cardNum);
-                ResultSet res = stmt1.executeQuery();
-                if (res.next()) {
-                    int count = res.getInt("count");
-                    if (count == 0) {
-                        stmt2.setString(1, cardNum);
-                        stmt2.setString(2, cardExp);
-                        if (Main.user instanceof Customer) {
-                            stmt2.setInt(3, userID);
-                        } else {
-                            stmt2.setNull(3, Types.INTEGER);
-                        }
-                        stmt2.executeUpdate();
+                        System.out.println("Unique OrderID found: " + orderID);
                     }
                 }
             }
 
             // Insert into Order table
+            java.sql.Date sqlDate = java.sql.Date.valueOf(LocalDate.now());
             try (PreparedStatement stmt = conn.prepareStatement("INSERT INTO Order(OrderID, DeliverAdd, Total, Date, Email, CardNum) VALUES (?, ?, ?, ?, ?, ?)")) {
-                stmt.setInt(1, 375847364);
+                stmt.setInt(1, orderID);
                 stmt.setString(2, address);
                 stmt.setBigDecimal(3, total);
-                Date d = new java.sql.Date(date.getTime());
-                String sqlDate = sdf.format(d);
-                stmt.setString(4, sqlDate);
+                stmt.setDate(4, sqlDate);
                 stmt.setString(5, email);
-                stmt.setString(6, cardNum);
+                stmt.setLong(6, cardNum);
                 stmt.executeUpdate();
             }
 
@@ -264,14 +275,22 @@ public class OrderForm extends ColumnPage {
                     int modelID = rs.getInt("ModelID");
                     int copies = rs.getInt("Copies");
                     for (int i = 0; i < copies; i++) {
+                        Integer serialNo = getAvailableSerialNo(conn, modelID);
+                        if (serialNo == null) {
+                            System.out.println("No available serial numbers for modelID: " + modelID);
+                            return;
+                        }
                         try (PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO Purchased(ModelID, SerialNo, OrderID, ShipmentNo, ShipperName) VALUES (?, ?, ?, ?, ?)")) {
                             stmt2.setInt(1, modelID);
-                            stmt2.setInt(2, getAvailableSerialNo(conn, modelID));
+                            stmt2.setInt(2, serialNo);
                             stmt2.setInt(3, orderID);
                             Shipment shipment = getShipment(conn);
                             stmt2.setInt(4, shipment.getShipmentNo());
                             stmt2.setString(5, shipment.getShipperName());
                             stmt2.executeUpdate();
+                            System.out.println("Purchased: model " + modelID + ", serialNo " + serialNo + ", orderID " + orderID + 
+                            " shipmentNo:" + shipment.getShipmentNo() + " shipper name:" + shipment.getShipperName() + "\n");
+                            Popup.showMsg("Order placed successfully! Your OrderID is: " + orderID + ". Check your email for the shipment details.");
                         }
                     }
                 }
@@ -280,6 +299,7 @@ public class OrderForm extends ColumnPage {
             System.out.println("Error while creating order");
             e.printStackTrace();
         }
+        Main.go("Menu");
     }
 
     private Shipment getShipment(Connection conn) {
@@ -300,10 +320,9 @@ public class OrderForm extends ColumnPage {
                         stmt2.setInt(1, index);
                         ResultSet rs2 = stmt2.executeQuery();
                         if (rs2.next()) {
-                            // Assuming Shipment has fields ShipperNo and ShipperName
-                            int shipperNo = rs2.getInt("ShipperNo");
+                            int shipmentNo = rs2.getInt("ShipmentNo");
                             String shipperName = rs2.getString("ShipperName");
-                            shipment = new Shipment(shipperNo, shipperName);
+                            shipment = new Shipment(shipmentNo, shipperName);
                         }
                     }
                 }
@@ -334,11 +353,16 @@ public class OrderForm extends ColumnPage {
 
     private Integer getAvailableSerialNo(Connection conn, int modelID) {
         int serialNo = -1;
-        try (PreparedStatement stmt = conn.prepareStatement("SELECT SerialNo FROM Product where ModelID = ? AND SerialNo NOT IN (SELECT SerialNo FROM Purchased)")) {
+        try (PreparedStatement stmt = conn.prepareStatement(
+            "SELECT SerialNo FROM Product " +
+            "WHERE ModelID = ? AND SerialNo NOT IN "+
+            "(SELECT SerialNo FROM Purchased WHERE ModelID = ?)")) {
             stmt.setInt(1, modelID);
+            stmt.setInt(2, modelID);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 serialNo = rs.getInt("SerialNo");
+                System.out.println("Using serial number: " + serialNo + " for modelID: " + modelID);
             } else {
                 System.out.println("No available serial numbers for modelID: " + modelID);
                 return null;
@@ -351,9 +375,11 @@ public class OrderForm extends ColumnPage {
         }
     }
 
+    // Checks if there are enough serial numbers available for the items in the cart
     private Boolean areSerialNosAvailable(Connection conn) {
         int userID = Main.user.getUserID();
 
+        // Get the number of items in the cart for each modelID
         try (PreparedStatement stmt = conn.prepareStatement("SELECT ModelID, Copies FROM InCart WHERE UserID = ?")) {
             stmt.setInt(1, userID);
             ResultSet rs = stmt.executeQuery();
@@ -361,7 +387,11 @@ public class OrderForm extends ColumnPage {
                 int modelID = rs.getInt("ModelID");
                 int copies = rs.getInt("Copies");
 
-                try (PreparedStatement stmt2 = conn.prepareStatement("SELECT COUNT(*) AS count FROM Product WHERE ModelID = ? AND SerialNo NOT IN (SELECT SerialNo FROM Purchased WHERE ModelID = ?)")) {
+                // Get the count of available serial numbers for each modelID
+                try (PreparedStatement stmt2 = conn.prepareStatement(
+                    "SELECT COUNT(*) AS count FROM Product " +
+                    "WHERE ModelID = ? AND (SerialNo, ModelID) NOT IN " +
+                    "(SELECT SerialNo, ModelID FROM Purchased WHERE ModelID = ?)")) {
                     stmt2.setInt(1, modelID);
                     stmt2.setInt(2, modelID);
                     ResultSet rs2 = stmt2.executeQuery();
@@ -370,9 +400,13 @@ public class OrderForm extends ColumnPage {
                         if (count < copies) {
                             Popup.showErr("Not enough serial numbers available for modelID: " + modelID + ". In Cart: " + copies + ", Available: " + count);
                             return false;
+                        } else {
+                            System.out.println("Available serial numbers for modelID: " + modelID + " is " + count + ". In Cart: " + copies);
                         }
+                    } else {
+                        Popup.showErr("No available serial numbers for modelID: " + modelID);
+                        return false;
                     }
-                    System.out.println("No available serial numbers for modelID: " + modelID);
                 }
             }
         } catch (SQLException e) {

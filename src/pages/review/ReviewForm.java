@@ -7,6 +7,7 @@ import database.Database;
 import main.Main;
 import pages.utils.ColumnPage;
 import static pages.utils.UISettings.*;
+import pages.utils.Popup;
 
 public class ReviewForm extends ColumnPage{
     private static JTextPane messageField = new JTextPane();
@@ -20,30 +21,51 @@ public class ReviewForm extends ColumnPage{
     @Override
     protected void populateContent() {
 
-        JPanel ratingEntry = createFieldPanel("Rating:", true, ratingField);
+        JPanel ratingEntry = createFieldPanel("Rating (0-10):", true, ratingField);
         JPanel messageEntry = createFieldPanel("Message:", false, messageField);
-        addComponent(ratingEntry, 0.01);
+        addComponent(ratingEntry, 0);
         addBuffer(0.02);
-        addComponent(messageEntry, 0.1);
+        addComponent(messageEntry, 0.3);
         addBuffer(0.02);
         submitButton = createButton("Submit", BUTTON_GREEN, e -> submit());
-        addComponent(submitButton, 0.1);
-        addBuffer();
+        addComponent(submitButton, 0.05);
+        addBuffer(0.6);
+        addSideBuffers();
     }
 
     private void submit() {
         String message = messageField.getText();
-        String rating = ratingField.getText();
+        if (message.isEmpty()) {
+            message = null;
+        }
+        String ratingStr = ratingField.getText();
         int userID = Main.user.getUserID();
         int modelID = ReviewSelect.getSelected();
+
+        // Validate rating
+        int rating;
+        try {
+            rating = Integer.parseInt(ratingStr);
+            if (rating < 0 || rating > 10) {
+                Popup.showErr("Rating must be an integer between 0 and 10.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            Popup.showErr("Invalid rating. Rating must be an integer between 0 and 10.");
+            return;
+        }
 
         try (Connection conn = Database.connect();
              PreparedStatement stmt = conn.prepareStatement("INSERT INTO Review (userID, modelID, rating, message) VALUES (?, ?, ?, ?)")) {
 
             stmt.setInt(1, userID);
             stmt.setInt(2, modelID);
-            stmt.setString(3, rating);
-            stmt.setString(4, message);
+            stmt.setInt(3, rating);
+            if (message == null) {
+                stmt.setNull(4, Types.VARCHAR);
+            } else {
+                stmt.setString(4, message);
+            }
             stmt.executeUpdate();
 
             updateRating(modelID, conn);
@@ -54,7 +76,7 @@ public class ReviewForm extends ColumnPage{
             System.out.println("Error while submitting review");
             e.printStackTrace();
         }
-        Main.go("Home");
+        Main.go("Menu");
     }
 
     private void updateRating(int modelID, Connection conn) throws SQLException {

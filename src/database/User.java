@@ -14,7 +14,9 @@ public class User {
     // Constructor for an existing guest; only use for debugging
     public User(int userID) {
         this.userID = userID;
-        getGuest(userID);
+        if (Main.DEBUG_MODE) {
+            getGuest(userID);
+        }
     }
 
     private int createGuest() {

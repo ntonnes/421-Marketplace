@@ -77,6 +77,7 @@ public class Login extends ColumnPage {
                     // Go back to the main menu
                     Customer customer = (Customer) Main.user;
                     System.out.println("\nSuccessfully logged in as user " + customer.getName() + ":\n" + customer.toString() + "\n");
+                    Popup.showMsg("Successfully logged in as " + customer.getName() + "!");
                     Main.goBack();
 
                 } else {

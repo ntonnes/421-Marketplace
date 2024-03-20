@@ -31,7 +31,7 @@ public class Menu extends ColumnPage{
         addComponent(b1, 0.05);
 
         // TODO: Implement Task 2
-        b2 = createButton("Task 2", BUTTON_GRAY, e -> System.out.println("You selected task 2"));
+        b2 = createButton("View Past Orders", BUTTON_GRAY, e -> System.out.println("You selected task 2"));
         addComponent(b2, 0.05);
 
         b3 = createButton("Leave a Review", BUTTON_GRAY, e -> {

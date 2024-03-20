@@ -100,5 +100,12 @@ public class UISettings {
         UIManager.put("ScrollBar.thumbHighlight", DEFAULT_BACKGROUND);
         UIManager.put("ScrollBar.thumbShadow", DEFAULT_BACKGROUND);
         UIManager.put("ScrollBar.width", Integer.valueOf(18));
+
+        UIManager.put("TextPane.font", FONT_FIELD);
+        UIManager.put("TextPane.foreground", DEFAULT_FOREGROUND);
+        UIManager.put("TextPane.background", new Color(0, 103, 235));
+        UIManager.put("TextPane.selectionBackground", BUTTON_BLUE);
+        UIManager.put("TextPane.selectionForeground", DEFAULT_FOREGROUND);
+        UIManager.put("TextPane.caratForeground", DEFAULT_FOREGROUND);
     }
 }

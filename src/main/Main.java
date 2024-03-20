@@ -27,7 +27,7 @@ public class Main {
 
     // Debugging variables; set a"debug" system property to "true" to enable
     public static int DEBUG_USERID = 816278546;
-    private static boolean DEBUG_MODE = Boolean.parseBoolean(System.getProperty("debug", "false"));
+    public static boolean DEBUG_MODE = Boolean.parseBoolean(System.getProperty("debug", "false"));
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -63,6 +63,8 @@ public class Main {
                 // Delete the user from the database if they are a guest
                 if (!(user instanceof Customer)){
                     user.deleteGuest();
+                } else {
+                    System.out.println("Logging out user " + user.getUserID() + "...");
                 }
                 // Disconnect from the database and exit the application
                 System.exit(0);

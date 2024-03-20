@@ -99,6 +99,7 @@ public abstract class Page extends JPanel {
             component.setBorder(BorderFactory.createCompoundBorder(originalBorder, paddingBorder));
 
         } else if (component instanceof JTextPane){
+            label.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
             Border originalBorder = new LineBorder(DEFAULT_FOREGROUND) {
                 public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
                     Graphics2D g2d = (Graphics2D)g;
@@ -109,7 +110,6 @@ public abstract class Page extends JPanel {
             };
             component.setBorder(BorderFactory.createCompoundBorder(originalBorder, paddingBorder));
             component.setOpaque(false);
-            component.setBackground(new Color(0, 103, 235));
 
         } else {
             throw new IllegalArgumentException("UIUtils.beautifyField does not support component type: " + component.getClass().getName());
@@ -175,7 +175,7 @@ public abstract class Page extends JPanel {
 
     public static JFormattedTextField createDateField() {
         try {
-            MaskFormatter dateMask = new MaskFormatter("##/##/####");
+            MaskFormatter dateMask = new MaskFormatter("####/##/##");
             dateMask.setPlaceholderCharacter('-');
             return new JFormattedTextField(dateMask);
         } catch (ParseException ex) {
