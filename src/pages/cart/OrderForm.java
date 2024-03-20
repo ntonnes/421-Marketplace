@@ -290,7 +290,6 @@ public class OrderForm extends ColumnPage {
                             stmt2.executeUpdate();
                             System.out.println("Purchased: model " + modelID + ", serialNo " + serialNo + ", orderID " + orderID + 
                             " shipmentNo:" + shipment.getShipmentNo() + " shipper name:" + shipment.getShipperName() + "\n");
-                            Popup.showMsg("Order placed successfully! Your OrderID is: " + orderID + ". Check your email for the shipment details.");
                         }
                     }
                 }
@@ -299,6 +298,8 @@ public class OrderForm extends ColumnPage {
             System.out.println("Error while creating order");
             e.printStackTrace();
         }
+        
+        Popup.showMsg("Order placed successfully! Your OrderID is: " + orderID + ". Check your email for the shipment details.");
         Main.go("Menu");
     }
 

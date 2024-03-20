@@ -5,6 +5,7 @@ import javax.swing.*;
 
 import database.Customer;
 import database.Database;
+import database.User;
 import main.Main;
 import pages.utils.ColumnPage;
 import pages.utils.Popup;
@@ -61,8 +62,7 @@ public class Login extends ColumnPage {
                 if (resultSet.getString("password").equals(password)) {
 
                     // Delete the temporary guest
-                    deleteStmt.setInt(1, Main.user.getUserID());
-                    deleteStmt.executeUpdate();
+                    User.deleteGuest();
                     System.out.println("Deleted temporary guest with userID: " + Main.user.getUserID());
 
                     // Set the user in the Menu class and switch to the main menu

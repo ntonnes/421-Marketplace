@@ -61,7 +61,7 @@ public class User {
     }
 
     // Removes a guest user from the database, used at the end of a session or when a user logs in
-    public void deleteGuest() {
+    public static void deleteGuest() {
         int userID = Main.user.getUserID();
         try (Connection conn = DriverManager.getConnection(Database.DB_URL, Database.USER, Database.PASS)) {
             // Delete from InCart table

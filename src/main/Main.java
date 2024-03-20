@@ -62,7 +62,7 @@ public class Main {
             public void windowClosing(WindowEvent e) {
                 // Delete the user from the database if they are a guest
                 if (!(user instanceof Customer)){
-                    user.deleteGuest();
+                    User.deleteGuest();
                 } else {
                     System.out.println("Logging out user " + user.getUserID() + "...");
                 }
